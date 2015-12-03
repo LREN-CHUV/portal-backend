@@ -1,0 +1,64 @@
+<div class="container-fluid">
+    <div class="logo-area">
+
+      <a class="navbar-brand" href="#/home">Human Brain Project</a>
+
+      <div class="toolbar-icon-bg hidden-xs" id="toolbar-search">
+        <div class="input-group">
+          <span class="input-group-btn"><button class="btn" type="button"><i class="ti ti-search"></i></button></span>
+          <input type="text" class="form-control" placeholder="{{ 'header.menu.search' | translate }}" size="25">
+        </div>
+      </div>
+        <span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg" ng-click="toggleLeftBar()" ng-show="!getLayoutOption('layoutHorizontal')">
+			<a data-toggle="tooltips" data-placement="right" title="{{'header.menu.my-data' | translate}}" href="#/data/mydata">
+				<span class="icon-bg">
+					<i class="ti ti-menu"></i>
+				</span>
+            </a>
+		</span>
+		<span class="toolbar-trigger toolbar-icon-bg" >
+			<a href="#/data/communitydata" title="{{'header.menu.my-community' | translate}}">
+				<span class="icon-bg">
+					<i class="ti ti-world"></i>
+				</span>
+            </a>
+		</span>
+    </div>
+    <!-- logo-area -->
+
+    <ul class="nav navbar-nav toolbar pull-right">
+      <li class="toolbar-icon-bg hidden-xs disabled">
+        <a href="" title="{{'header.menu.ee' | translate}}"><span class="icon-bg"><i>{{'header.menu.ee' | translate}}</i></span></a>
+      </li>
+
+      <li class="toolbar-icon-bg hidden-xs">
+        <a href="#/models" title="{{'header.menu.ia' | translate}}"><span class="icon-bg"><i>{{'header.menu.ia' | translate}}</i></span></a>
+      </li>
+
+      <li class="toolbar-icon-bg hidden-xs disabled">
+        <a href="" title="{{'header.menu.bsd' | translate}}"><span class="icon-bg"><i>{{'header.menu.bsd' | translate}}</i></span></a>
+      </li>
+
+      <li class="dropdown toolbar-icon-bg">
+        <a href="#" class="dropdown-toggle username" data-toggle="dropdown" data-position="right">
+          <img class="img-circle" ng-src="{{user.picture}}" alt="{{user.fullname}}"/>
+        </a>
+        <ul class="dropdown-menu userinfo arrow">
+          <li><a href="#/profile"><i class="ti ti-user"></i><span>{{'header.menu.profile' | translate}}</span></a></li>
+          <li class="disabled"><a href=""><i class="ti ti-settings"></i><span>{{'header.menu.settings' | translate}}</span></a>
+          </li>
+          <li class="divider"></li>
+          <li><a href="" ng-click="logout()"><i class="ti ti-shift-right"></i><span>{{'header.menu.signout' | translate}}</span></a></li>
+        </ul>
+      </li>
+      <li class="toolbar-trigger toolbar-icon-bg">
+          <a href="#/hbpapps" title="{{'header.menu.app' | translate}}">
+                <span class="icon-bg">
+                    <i class="ti ti-layout-grid3-alt " style="font-family: 'themify';font-weight: normal;"></i>
+                </span>
+          </a>
+      </li>
+    </ul>
+
+</div>
+

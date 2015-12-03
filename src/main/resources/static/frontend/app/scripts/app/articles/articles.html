@@ -1,0 +1,54 @@
+<div class="panel" data-widget='{"draggable": "false"}'>
+<div class="panel-heading">
+    <h2>Recent Articles</h2>
+    <div class="panel-ctrls button-icon-bg"
+         data-actions-container=""
+         data-action-collapse='{"target": ".panel-body"}'
+         data-action-refresh-demo='{"type": "circular"}'>
+    </div>
+</div>
+<div class="panel-body scroll-pane" style="height: 320px;">
+    <div class="custom-scrollbar" scrollbar>
+        <ul class="mini-timeline">
+            <li ng-class="{'mini-timeline-owner': isMine(article), 'mini-timeline-default': !isMine(article) }" ng-repeat="article in articles">
+                <div class="timeline-icon"></div>
+                <div class="timeline-body">
+                    <div class="timeline-content">
+                        <a href="" ng-click="showModal(article)" class="name">{{article.title}}</a>
+                        <div class="author-box">
+                            <a href="{{'#/users/' + article.createdBy.id }}" class="avatar">
+                                <img ng-src="{{article.createdBy.picture}}" alt="" class="avatar" />
+                            </a>
+                            by <a href="{{'#/users/' + article.createdBy.id }}">{{article.createdBy.fullname}}</a><br />
+                            <span class="time">{{article.createdAt | fromNow}}</span>
+                        </div>
+                    </div>
+                    <div class="timeline-action">
+                        <a href="" ng-click="showModal(article)" class="icon-tl">
+                            <i class="icon-preview"></i>
+                        </a>
+                        <a ng-href="{{getPdfUrl(article.slug)}}" target="_blank" class="icon-tl">
+                            <i class="icon-pdf"></i>
+                        </a>
+                        <a ng-if="isMine(article)" href="#/articles/edit/{{article.slug}}" ng-if="isAuthorized(article)" class="icon-tl">
+                            <i class="icon-html"></i>
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <li ng-if="articles.length > 0" class="mini-timeline-default">
+                <div class="timeline-body ml-n">
+                    <div class="timeline-content">
+                        <button type="button" data-loading-text="Loading..." class="loading-example-btn btn btn-sm btn-default">See more</button>
+                    </div>
+                </div>
+            </li>
+          <li ng-if="!articles || articles.length == 0" class="mini-timeline-default">
+            <div class="timeline-body ml-n">
+              <div class="timeline-content">No article available</div>
+            </div>
+          </li>
+        </ul>
+    </div>
+</div>
+</div>

@@ -1,0 +1,20 @@
+{
+    "search.configuration.pie":"Pie chart",
+    "search.configuration.line":"Line chart",
+    "search.configuration.bar":"Bar chart",
+    "search.configuration.column":"Column chart",
+    "search.charts.results.title":"Graphiques et résultats",
+    "search.hide.table":"Masquer la table",
+    "search.show.table":"Afficher la table",
+    "search.criteria.groupBy":"Grouper par",
+    "search.criteria.services":"Services",
+    "search.chart.configuration":"Configuration du graphique",
+    "criteria.covariable.description":"Vous pouvez sélectionner plusieurs covariables",
+    "criteria.filters.description":"Selectionner puis compléter les filtres",
+    "criteria.variable.title":"Variable",
+    "criteria.grouping.title":"Grouper par",
+    "criteria.covariable.title":"Covariable",
+    "criteria.filters.title":"Filtres",
+    "model.validate":"Publier ce modèle",
+    "model.yours.title":"Titre du modèle"
+}

@@ -1,0 +1,13 @@
+{
+  "requests": {
+    "label": "Label",
+    "type": "Type",
+    "author": "Author",
+    "titles": {
+      "search": "My searchs",
+      "create": "New search",
+      "edit": "Edit a search"
+    },
+    "by": "By {{author}}"
+  }
+}

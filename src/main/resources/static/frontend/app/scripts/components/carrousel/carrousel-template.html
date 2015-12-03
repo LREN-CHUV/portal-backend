@@ -1,0 +1,39 @@
+<div class="panel panel-transparent box-researches">
+    <div class="panel-heading">
+        <h2>Reasearches</h2>
+    </div>
+    <div class="panel-body">
+        <form class="form">
+            <input type="text" />
+            <button type="submit">
+                <i class="ti ti-search"></i>
+            </button>
+            <div class="icheck-minimal">
+                <div class="checkbox red">
+                    <label>
+                        <input type="checkbox" ng-model="mine" ng-change="onChangeMine({checked:mine})"> Only mine
+                    </label>
+                </div>
+            </div>
+        </form>
+        <div class="search-list">
+            <ul>
+                <li ng-repeat="item in items">
+                    <h3 class="search-title"><a href="#">{{item.title}}</a></h3>
+                    <span class="search-img">
+                        <carrousel-chart model="item"></carrousel-chart>
+                    </span>
+                    <div class="author-box">
+                      <a href="{{'#/users/' + item.createdBy.id }}" class="avatar">
+                        <img ng-src="{{item.createdBy.picture}}" alt="" class="avatar" />
+                      </a>
+                      by <a href="{{'#/users/' + item.createdBy.id }}">{{item.createdBy.fullname}}</a><br />
+                      <span class="time">{{item.createdAt | fromNow}}</span>
+                    </div>
+                </li>
+            </ul>
+            <carroussel-button class="carrousel-button carrousel-down" icon-class="ti ti-angle-down" on-click="onClickBtnDown(event)"></carroussel-button>
+            <carroussel-button class="carrousel-button carrousel-up" icon-class="ti ti-angle-up" on-click="onClickBtnUp(event)"></carroussel-button>
+        </div>
+    </div>
+</div>

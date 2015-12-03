@@ -1,0 +1,91 @@
+<div>
+
+    <div class="container-fluid container-write">
+        <div class="row content-write mt">
+            <div class="col-md-3">
+                <carrousel items="models" on-change-mine="onChangeMine(checked)"></carrousel>
+            </div>
+            <div class="col-md-9">
+                <div class="panel panel-form-write-article">
+                    <div class="panel-heading">
+                        <h2>{{article.title}}</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div>&nbsp;</div>
+                        <form >
+                            <div class="form-group row">
+                                <label class="control-label col-sm-12">{{ 'articles.title' | translate }}</label>
+                                <div class="col-sm-12">
+                                    <input type="text" required="required" class="form-control" id="title" ng-model="article.title"
+                                           placeholder="{{ 'articles.title' | translate }}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="control-label col-sm-12">{{ 'articles.abstract' | translate }}</label>
+                                <div class="col-sm-12">
+                                    <textarea required="required" cols="100" rows="10" class="form-control" ng-model="article.abstract"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="control-label col-sm-12">{{ 'articles.content' | translate }}</label>
+                                <div class="col-sm-12">
+                                    <textarea ui-tinymce="editorContentOption" required="required" ng-model="article.content"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="toolbar-footer section-save-article">
+    <div class="toolbar-container" toolbar>
+        <form>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <ul class="nav navbar-nav pull-right toolbar">
+                            <li>
+                                <span>Preview</span>
+                            </li>
+                            <li class="toolbar-icon-bg hidden-xs">
+                                <a href="" ng-click="showModal(article)"><span class="icon-bg"><i class="ti ti-eye"></i></span></a>
+                            </li>
+                            <li class="toolbar-icon-bg hidden-xs">
+                                <a ng-href="{{getPdfUrl(article.slug)}}" target="_blank"><span class="icon-bg"><i class="icon-pdf"></i></span></a>
+                            </li>
+                            <li class="toolbar-icon-bg hidden-xs">
+                                <a href="" target="_blank" ng-click="saveToDropbox(article)" title="Save to dropbox"><span class="icon-bg"><span style="font-weight: normal;">DOC</span></span></a>
+                            </li>
+                            <li class="toolbar-icon-bg hidden-xs disabled">
+                                <a href=""><span class="icon-bg"><i class="ti-email"></i></span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="form icheck-minimal validate-model-field">
+                            <div class="checkbox red">
+                                <label>
+                                    <input type="checkbox" ng-model="publishArticle" ng-checked="article.status === 'published'">
+                                    {{'articles.publish-title' | translate}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <ul class="nav navbar-nav pull-right toolbar">
+                            <li>
+                                <button type="submit" ng-click="save()" class="btn-round">
+                                    <span><span>{{'common.save' | translate }}</span><i class="ti ti-arrow-down"></i></span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

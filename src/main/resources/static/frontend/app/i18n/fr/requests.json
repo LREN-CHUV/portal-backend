@@ -1,0 +1,13 @@
+{
+  "requests": {
+    "label": "Libellé",
+    "type": "Type",
+    "author": "Auteur",
+    "titles": {
+      "search": "Mes recherches",
+      "create": "Nouvelle recherche",
+      "edit": "Modifier une recherche"
+    },
+    "by": "Par {{author}}"
+  }
+}

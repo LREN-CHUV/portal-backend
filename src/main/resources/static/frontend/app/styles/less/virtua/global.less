@@ -1,0 +1,308 @@
+// FONTS
+@font-face {
+  font-family: 'fontello';
+  src: url('../../font/fontello.eot?42020904');
+  src: url('../../font/fontello.eot?42020904#iefix') format('embedded-opentype'),
+       url('../../font/fontello.woff?42020904') format('woff'),
+       url('../../font/fontello.ttf?42020904') format('truetype'),
+       url('../../font/fontello.svg?42020904#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+// FIX RETINA
+
+/* HiDPI support */
+@media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+  .checkbox .icheckbox_minimal-red,
+  .checkbox .iradio_minimal-red {
+    -webkit-background-size: 240px 20px !important;
+    background-size: 240px 20px !important;
+  }
+}
+
+// GLOBAL
+body {
+	background: #f5f5f5 url("../../images/body-bg.jpg") top center no-repeat;
+	background-size: 100% auto;
+	background-attachment: fixed;
+	font-family: 'Open Sans', sans-serif;
+	overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.badge {
+  font-family: 'Open Sans', sans-serif;
+  text-transform: none !important;
+  font-size: 11px;
+  font-weight: 300;
+
+  &.badge-transparent {
+    color: #b9b9b9;
+    background: #FFF;
+    border: 1px solid #efefef;
+    padding: 2px 7px;
+  }
+}
+
+.tinymce {
+}
+
+
+// BUTTONS
+.btn-round {
+	display: inline-block;
+	border: none;
+	height: 80px;
+	width: 80px;
+	background: #FFF;
+	text-align: center;
+	font-size: 16px;
+	position: relative;
+	border-radius: 50%;
+
+	& > span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: #ef3b4a;
+		letter-spacing: -0.025em;
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-weight: 700;
+		line-height: 20px;
+		text-transform: uppercase;
+		pointer-events: none;
+		z-index: 1;
+
+		& > span {
+			display: block;
+			transition: all 0.3s ease;
+		}
+
+		.ti {
+			display: block;
+			color: #000;
+			transition: all 0.3s ease;
+		}
+	}
+
+	&:after {
+		content: '';
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		position: absolute;
+		background: #ef3b4a;
+		transition: all 0.3s ease;
+		transform: scale(0);
+		border-radius: 50%;
+	}
+
+	&:hover {
+		& > span {
+			color: #FFF;
+
+			& > * {
+				transform: translate(0, 3px);
+
+				&:first-child {
+					transform: translate(0, -3px);
+				}
+			}
+		}
+
+		&:after {
+			transform: scale(1.1);
+		}
+	}
+}
+
+// ICONES
+
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  /* opacity: .8; */
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.icon-pdf:before { content: '\e800'; } /* '' */
+.icon-html:before { content: '\e801'; } /* '' */
+.icon-preview:before { content: '\e802'; } /* '' */
+.icon-exam:before { content: '\e803'; } /* '' */
+.icon-molecular:before { content: '\e804'; } /* '' */
+.icon-glasses:before { content: '\e805'; } /* '' */
+.icon-write:before { content: '\e806'; } /* '' */
+
+
+// TOOLBAR FOOTER
+.toolbar-footer{
+  height: 98px;
+  width: 100%;
+  margin-bottom: -20px;
+  .toolbar-container {
+    height: 98px;
+    background: #2c2826;
+    border-bottom: 2px solid #000;
+    bottom: 55px;
+    width: 100%;
+    postion:absolute;
+    &.fixed{
+      position: fixed;
+      bottom: 0px;
+    }
+    .form {
+      position: relative;
+      margin:24px 0;
+    }
+
+    .txt {
+      line-height: 40px;
+      position: absolute;
+      top: 0;
+      left: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #aaaaaa;
+    }
+
+    .checkbox {
+      color: #cdcdcd;
+      line-height: 40px;
+      position: absolute;
+      top: 0;
+      right: 4px;
+      margin: 0;
+      font-size: 10px;
+      label{
+        line-height: 20px;
+      }
+    }
+
+    input[type="text"] {
+      line-height: 40px;
+      display: block;
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid #666666;
+      padding: 0;
+      background: transparent;
+      padding-left: 130px;
+      padding-right: 140px;
+      font-size: 24px;
+      color: #FFF;
+      font-family: 'EB Garamond', serif;
+    }
+
+
+
+
+      li {
+        padding-left: 15px;
+        float: none;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 98px;
+        height: 98px;
+      }
+
+      .btn-round {
+        margin: 9px 0;
+      }
+      a {
+        padding: 0 2px;
+        margin: 0;
+        background-color: transparent !important;
+        display: inline-block;
+        vertical-align: middle;
+
+        span.icon-bg {
+          background-color: #FFF;
+          position: relative;
+          display: block;
+          border-radius: 20px;
+          padding: 0;
+          line-height: 40px;
+          font-size: 17px;
+          text-align: center;
+          height: 40px;
+          width: 40px;
+          transition: all 0.3s ease;
+          color: #000;
+
+          span {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+            text-indent: -0.025em;
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-weight: 700;
+            font-style: normal;
+          }
+
+          i {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+          }
+
+          &:after {
+            width: 40px;
+            content: '';
+            height: 40px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin-top: -20px;
+            margin-left: -20px;
+            background: #ef3b4a;
+            position: absolute;
+            transform: scale(0);
+            transition: all 0.3s ease;
+          }
+        }
+
+        &:hover {
+          .icon-bg {
+            color: #FFF;
+
+            &:after {
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+
+  }
+}

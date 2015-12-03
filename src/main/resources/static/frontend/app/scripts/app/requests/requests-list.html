@@ -1,0 +1,81 @@
+<div class="row">
+  <div class="col-md-12">
+
+    <h1>{{'requests.titles.search' | translate}}</h1>
+
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">{{'common.filters' | translate}}</div>
+        <div class="panel-body">
+          <div ng-repeat="facet in facets">
+            <h4>{{'requests.' + facet.name | translate}}</h4>
+
+            <div class="list-group">
+              <a href="#"
+                 ng-click="useFilter(facet.name, value)"
+                 ng-class="{ 'active': isSelectedFilter(facet.name, value) }"
+                 class="list-group-item"
+                 ng-repeat="(value, count) in facet.values" >
+                <span ng-class="{
+                'glyphicon-check': isSelectedFilter(facet.name, value),
+                'glyphicon-unchecked': !isSelectedFilter(facet.name, value) }"
+                      class="glyphicon" ng-click="useFilter(facet.name, value)"></span>
+                <span class="badge">{{count}}</span> {{value | translate}}
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-9">
+
+      <div class="pull-right"></div>
+      <h3>{{ 'common.results' | translate:{count: requests.length} }}</h3>
+
+      <div class="col-md-offset-6 col-md-6">
+        <div class="input-group">
+          <input type="text" ng-model="query" class="form-control" placeholder="{{'header.menu.search' | translate}}">
+          <span class="input-group-btn">
+            <button class="btn btn-default" ng-click="refresh()" type="button"><i class="glyphicon glyphicon-search"></i></button>
+          </span>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+      <div class="media" ng-repeat="request in requests">
+
+        <hr/>
+
+        <div class="btn-group btn-group-xs pull-right" role="group">
+          <a href="#" class="btn btn-xs btn-link" title="{{ 'common.action.edit' | translate }}"><span class="glyphicon glyphicon-edit"></span></a>
+          <a href="#" ng-click="remove(request.id)" class="btn btn-xs btn-link" title="{{ 'common.action.delete' | translate }}"><span class="glyphicon glyphicon-trash"></span></a>
+          <a href="#" ng-click="duplicate(request.id)" class="btn btn-xs btn-link" title="{{ 'common.action.duplicate' | translate }}"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+
+        <div class="media-left">
+          <a href="#">
+            <img class="media-object img-circle" height="64" width="64" ng-src="{{ request.thumbnail }}" alt="{{ request.label }}" title="{{ request.label }}">
+          </a>
+        </div>
+
+        <div class="media-body">
+          <h4 class="media-heading">{{ request.label }} <small>{{'requests.by' | translate:{author:request.author} }}</small></h4>
+          <div class="pull-right">
+            <span class="label label-primary">{{ request.type }}</span>
+            <span class="label label-info">{{ request.date | date : 'short' }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <p ng-if="requests.length == 0">{{'common.results.empty' | translate}}</p>
+
+    </div>
+
+  </div>
+
+</div>

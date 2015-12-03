@@ -1,0 +1,46 @@
+<div ng-controller="ModelFooterController">
+    <section class="toolbar-footer section-save-graph">
+        <div class="toolbar-container" toolbar>
+            <form>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form icheck-minimal validate-model-field">
+                                <label class="txt">{{'model.yours.title' | translate}}</label>
+                                <input type="text" ng-model="chartConfig.title.text" ng-disabled="!isMine(model)" />
+                                <div class="checkbox red" ng-if="isMine(model)">
+                                    <label>
+                                        <input type="checkbox" ng-model="model.valid" />
+                                        {{'model.validate' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                            <ul class="nav navbar-nav pull-right toolbar disabled">
+                                <li class="toolbar-icon-bg hidden-xs">
+                                    <a href="" ng-click="copyModel()" ng-if="!isNew()"><span class="icon-bg"><i class="ti ti-files"></i></span></a>
+                                </li>
+                                <li class="toolbar-icon-bg hidden-xs">
+                                    <a href="" ng-click="exportPdf()"><span class="icon-bg"><i class="icon-pdf"></i></span></a>
+                                </li>
+                                <li class="toolbar-icon-bg hidden-xs disabled">
+                                    <a href=""><span class="icon-bg"><span>XLS</span></span></a>
+                                </li>
+                                <li ng-if="isMine(model)">
+                                    <button type="submit" ng-click="saveModel()" class="btn-round">
+                                    <span>
+                                        <span>{{'common.save' | translate }}</span>
+                                        <i class="ti ti-arrow-down"></i>
+                                    </span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>

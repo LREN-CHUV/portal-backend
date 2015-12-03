@@ -1,0 +1,194 @@
+<div  ng-if="isMine(model)" class="container-ee-search-resume">
+    <div class="bg">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>you are searching for :</label>
+                    <div class="search-list">
+                        <div class="wrapper-search-list">
+                            <span>
+                                <a ng-repeat="criteria in query.variables" href="" ng-click="emitEventFocus('focusVariable')">
+                                    {{criteria.code}}
+                                    <i class="ti ti-close" ng-click="emitEventFocus('removeVariable')"></i>
+                                </a>
+                            </span>
+                            <a ng-repeat="criteria in query.groupings" href="" ng-click="emitEventFocus('focusGrouping','query-grouping'+$index)">
+                                {{criteria.code}}
+                                <i class="ti ti-close" ng-click="removeItem(query.groupings,$index)"></i>
+                            </a>
+                            <a ng-repeat="criteria in query.coVariables" href="" ng-click="emitEventFocus('focusCovariable'+$index,'query-covariable'+$index)">
+                                {{criteria.code}}
+                                <i class="ti ti-close" ng-click="removeItem(query.coVariables,$index)"></i>
+                            </a>
+                            <a ng-repeat="criteria in query.filters" href="" ng-click="emitEventFocus('focusFilter'+$index,'query-filter'+$index)">
+                                {{criteria.variable.code}}
+                                <i class="ti ti-close" ng-click="removeItem(query.filters,$index)"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="search-list-arrows">
+                        <a href="#" class="prev"><i class="ti ti-angle-left"></i></a>
+                        <a href="#" class="next"><i class="ti ti-angle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-ee-search">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="container-brain">
+                    <div class="brain"></div>
+                </div>
+            </div>
+
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-3 form-conf">
+                        <div class="custom-scrollbar">
+                            <h3>Variable</h3>
+                            <criteria-chained-select groups="groups"
+                                                     use-group-criteria="true"
+                                                     variables="variables"
+                                                     remove-event="removeVariable"
+                                                     focus-event="focusVariable"
+                                                     criteria="query.variables"></criteria-chained-select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 form-conf white">
+                        <div class="custom-scrollbar">
+                            <h3>Grouping</h3>
+
+                            <p class="consigne"><i class="ti ti-info-alt"></i> You can select several grouping</p>
+
+                            <div class="query-groupings form-group-covariable " ng-repeat="grouping in query.groupings"
+                                 id="query-grouping{{$index}}"
+                                 ng-class="{active:grouping.code === undefined}">
+                                <input type="text"
+                                       ng-value="getDataByCode(groupingVariables,grouping.code).label"
+                                       ng-click="activateGroup($event)"
+                                       readonly="readonly"/>
+                                <a href="" class="trigger-del" ng-click="removeItem(query.groupings,$index)"><i
+                                        class="ti ti-close"></i></a>
+                                <div class="form-group-select">
+                                    <criteria-chained-select groups="groups" variables="groupingVariables"
+                                                             criteria="query.groupings[$index]"
+                                                             remove-event="removeGrouping{{$index}}"
+                                                             focus-event="focusGrouping{{$index}}"
+                                                             class="form-group-select"></criteria-chained-select>
+                                </div>
+                            </div>
+
+                            <div class="form-action">
+                                <a href="" ng-click="addItem(query.groupings,{},'query-groupings')">
+                                    <i class="ti ti-plus"></i>
+                                </a>
+                                <a href="">
+                                    <i class="ti ti-check"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 form-conf blue">
+                        <div class="custom-scrollbar">
+                            <h3>covariable</h3>
+
+                            <p class="consigne"><i class="ti ti-info-alt"></i> You can select several covariables</p>
+
+                            <div class="query-covariables form-group-covariable " ng-repeat="coVariable in query.coVariables"
+                                 id="query-covariable{{$index}}"
+                                 ng-class="{active:coVariable.code === undefined}">
+                                <input type="text"
+                                       ng-value="getCoVariableByCode(coVariable.code).label"
+                                       ng-click="activateGroup($event)"
+                                       readonly="readonly"/>
+                                <a href="" class="trigger-del" ng-click="removeItem(query.coVariables,$index)"><i
+                                        class="ti ti-close"></i></a>
+                                <div class="form-group-select">
+                                    <criteria-chained-select groups="groups" variables="coVariables"
+                                                             criteria="query.coVariables[$index]"
+                                                             remove-event="removeCovariable{{$index}}"
+                                                             focus-event="focusCovariable{{$index}}"
+                                                             class="form-group-select"></criteria-chained-select>
+                                </div>
+                            </div>
+
+                            <div class="form-action">
+                                <a href="" ng-click="addItem(query.coVariables,{},'query-covariables')">
+                                    <i class="ti ti-plus"></i>
+                                </a>
+                                <a href="">
+                                    <i class="ti ti-check"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 form-conf white">
+                        <div class="custom-scrollbar">
+                            <h3>Filters</h3>
+
+                            <p class="consigne"><i class="ti ti-info-alt"></i> Select then complete your filters</p>
+
+                            <div class="query-filters form-group-covariable active"  ng-repeat="filterVariable in query.filters"
+                                 id="query-filter{{$index}}">
+                                <input type="text"
+                                       ng-value="getDataByCode(filterVariables,filterVariable.variable.code).label"
+                                       ng-click="activateGroup($event)"
+                                       readonly="readonly"
+                                       />
+                                <a href="" class="trigger-del" ng-click="removeItem(query.filters,$index)"><i
+                                        class="ti ti-close"></i></a>
+                                <div class="form-group-select">
+                                    <criteria-chained-select groups="groups"
+                                                             variables="filterVariables"
+                                                            criteria="filterVariable.variable"
+                                                            remove-event="removeFilter{{$index}}"
+                                                            focus-event="focusFilter{{$index}}"
+                                                            class="form-group-select"></criteria-chained-select>
+                                    <div class="form-group-filter row">
+                                        <div class="col-md-5">
+                                            <label>MIN</label>
+                                            <input type="text"
+                                                   style=" background-color: white;"
+                                                   placeholder="min" ng-model="filterVariable.values[0]"
+                                                   ng-disabled="filterVariable.variable === undefined"
+                                                   ng-change="setFilterValue(filterVariable,0);setOperator(filterVariable)">
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <label>&nbsp;</label>
+                                            TO
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label>MAX</label>
+                                            <input type="text"
+                                                   placeholder="max" ng-model="filterVariable.values[1]"
+                                                   style=" background-color: white;"
+                                                   ng-disabled="query.filters[$index].variable === undefined || filterVariable.values[0]=== undefined"
+                                                   ng-change="setFilterValue(filterVariable,1);setOperator(filterVariable)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-action">
+                                <a href="" ng-click="addItem(query.filters,{operator:'',values:[]},'query-filters')">
+                                    <i class="ti ti-plus"></i>
+                                </a>
+                                <a href="">
+                                    <i class="ti ti-check"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <rounded-button label="{{'common.button.execute' | translate}}" icon-class="ti ti-arrow-down"
+                    on-click="executeQuery()"></rounded-button>
+</div>

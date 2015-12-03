@@ -1,0 +1,22 @@
+{
+  "articles": {
+    "title": "Titre",
+    "date": "Date",
+    "author": "Auteur",
+    "status": "Etat",
+    "published": "Partagé",
+    "draft": "Brouillon",
+    "summary": "Résumé",
+    "content": "Contenu",
+    "titles": {
+      "search": "Mes articles",
+      "create": "Créer un article",
+      "edit": "Modifier un article"
+    },
+    "by": "Par {{author}}",
+    "publish-title":"Partager cet article",
+    "abstract":"Résumé"
+  },
+  "published": "Partagé",
+  "draft": "Brouillon"
+}

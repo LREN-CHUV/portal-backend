@@ -1,0 +1,57 @@
+<div class="mt">
+    <div class="container-fluid">
+        <div data-widget-group="group1" class="gridster">
+                <div ng-repeat="item in rows" class="grid-item" data-row="{{item.row}}" data-col="{{item.col}}" data-sizex="{{item.size}}" data-sizey="1">
+                    <div class="panel panel-default ui-state-default panel-height-fixe"
+                         data-widget='{"draggable": "false"}'>
+                        <div class="panel-heading">
+                            <h2>{{item.data.title}}</h2>
+
+                            <div class="panel-ctrls button-icon-bg"
+                                 data-actions-container=""
+                                 data-action-collapse='{"target": ".panel-body"}'
+                                 data-action-refresh-demo='{"type": "circular"}'
+                                    >
+                            </div>
+                        </div>
+                      <div class="panel-body panel-body-graph" ng-if="item.type === 'M'">
+                        <highchart config="item.data.chartConfig"></highchart>
+                      </div>
+                        <a ng-href="#/models/{{item.data.slug}}/false" class="panel-link" ng-if="item.type === 'M'"><i>+</i></a>
+                        <div class="panel-body panel-body-article" ng-if="item.type === 'A'">
+                            <div class="content">
+                                <h3 class="content-title">{{item.data.title}}</h3>
+                                <p class="content-abstract" ng-bind-html="item.data.abstract"></p>
+                            </div>
+
+                            <div class="author-box">
+                              <a ng-href="#/users/{{item.data.createdBy.id}}" class="avatar">
+                                <img ng-src="{{item.data.createdBy.picture}}" alt="" class="avatar" />
+                              </a>
+                              by <a ng-href="#/users/{{item.data.createdBy.id}}">{{item.data.createdBy.fullname}}</a><br />
+                              <span class="time">{{item.data.createdAt | fromNow}}</span>
+                            </div>
+
+                            <div class="action">
+                                <a data-toggle="modal" href="" ng-click="showArticleModal(item.data)" class="icon-tl">
+                                        <span class="icon-bg">
+                                            <i class="icon-preview"></i>
+                                        </span>
+                                </a>
+                                <a ng-href="{{getPdfUrl(item.data.slug)}}" target="_blank" class="icon-tl">
+                                        <span class="icon-bg">
+                                            <i class="icon-pdf"></i>
+                                        </span>
+                                </a>
+                                <a ng-if="isMine(item.data)" href="#/articles/edit/{{item.data.slug}}" class="icon-tl">
+                                        <span class="icon-bg">
+                                            <i class="icon-html"></i>
+                                        </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>

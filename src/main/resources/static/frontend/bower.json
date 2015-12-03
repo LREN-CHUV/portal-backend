@@ -1,0 +1,71 @@
+{
+  "name": "chuvFrontend",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "1.4.3",
+    "bootstrap": "3.2.0",
+    "angular-animate": "1.4.3",
+    "angular-cookies": "1.4.3",
+    "angular-resource": "1.4.3",
+    "angular-route": "1.4.3",
+    "angular-sanitize": "1.4.3",
+    "angular-touch": "1.4.3",
+    "angular-translate": "2.7.2",
+    "angular-translate-loader-partial": "2.7.2",
+    "angular-translate-loader-static-files": "2.7.2",
+    "angular-translate-storage-cookie": "2.7.2",
+    "angular-ui-router": "0.2.15",
+    "angular-ui-tinymce": "0.0.9",
+    "highcharts-ng": "0.0.8",
+    "highcharts": "https://github.com/highslide-software/highcharts-release/archive/v4.1.7.zip",
+    "highmaps": "https://github.com/highslide-software/highmaps-release/archive/v1.1.8.zip",
+    "underscore": "1.8.3",
+    "angular-i18n": "~1.4.4",
+    "angular-dynamic-locale": "0.1.27",
+    "font-awesome": "~4.2.0",
+    "themify-icons": "~0.1.0",
+    "moment": "~2.8.0",
+    "angular-moment": "~0.10.2",
+    "angular-bootstrap-colorpicker": "3.0.18",
+    "angular-gridster": "~0.13.5",
+    "javascript-detect-element-resize": "~0.5.3",
+    "less": "~2.5.1",
+    "gsap": ">1.0",
+    "iCheck": "1.0.2",
+    "angular-ui-select": "~0.12",
+    "gridster": "0.5.6",
+    "malihu-custom-scrollbar-plugin": "~3.0.9",
+    "angular-bootstrap": "0.12.0",
+    "jquery.ui": "~1.10.4",
+    "angular-utf8-base64": "~0.0.5"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.4.3"
+  },
+  "overrides": {
+    "gridster": {
+      "main": [
+        "dist/jquery.gridster.with-extras.min.js",
+        "dist/jquery.gridster.min.css"
+      ]
+    },
+    "jquery.ui": {
+      "main": [
+        "ui/jquery.ui.core.js",
+        "ui/jquery.ui.widget.js",
+        "ui/jquery.ui.mouse.js",
+        "ui/jquery.ui.draggable.js",
+        "ui/jquery.ui.sortable.js",
+        "ui/jquery.ui.resizable.js"
+      ]
+    },
+    "themify-icons": {
+      "main": "themify-icons.css"
+    }
+  },
+  "appPath": "app",
+  "moduleName": "chuvApp",
+  "resolutions": {
+    "angular": "1.4.3"
+  }
+}

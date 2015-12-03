@@ -1,0 +1,29 @@
+.full-width{
+    width: 100%;
+}
+
+.select2-container .select2-choice {
+    background-image: none;
+}
+
+.article-modal{
+    z-index: 1250;
+}
+
+.mt-xxxl {
+  margin-top: 60px;
+}
+
+.toolbar-container {
+  z-index: 1000;
+}
+
+h6.copyright {
+  background: url("../../images/logo_chuv.png") no-repeat left center;
+  text-indent: 70px;
+  margin: 0;
+}
+
+.list-graphs li a .ti.ti-custom-bar-chart.graph-plot {
+  background: url("../../images/pictos-graph-2.png") -248px 0;
+}

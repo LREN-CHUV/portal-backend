@@ -1,0 +1,7 @@
+{
+    "login.username":"Username",
+    "login.at-least-characters":"At least {{number}} characters",
+    "login.password":"Password",
+    "login.title":"Login",
+    "login.forgot-password":"I forgot my password"
+}

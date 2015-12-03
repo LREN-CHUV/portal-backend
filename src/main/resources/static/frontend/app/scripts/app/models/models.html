@@ -1,0 +1,22 @@
+    <ul class="search-list" >
+        <li ng-repeat="model in models">
+            <span >
+                <img ng-src="{{getSvgUrl(model)}}" alt="" class="search-img">
+            </span>
+            <h3 class="search-title"><a ui-sref="models-edit({ slug: model.slug })">{{model.title}}</a></h3>
+            <div class="author-box">
+              <a href="{{'#/users/' + model.createdBy.id }}" class="avatar">
+                <img ng-src="{{model.createdBy.picture}}" alt="" class="avatar" />
+              </a>
+              by <a href="{{'#/users/' + model.createdBy.id }}">{{model.createdBy.fullname}}</a><br />
+              <span class="time">{{model.createdAt | fromNow}}</span>
+            </div>
+        </li>
+        <li ng-if="!models || models.length == 0" class="mini-timeline-default">
+          <div class="timeline-body ml-n">
+            <div class="timeline-content">No model available</div>
+          </div>
+        </li>
+    </ul>
+
+    <button ng-if="models.length > 0" type="button" data-loading-text="Loading..." class="loading-example-btn btn btn-sm btn-default">See more</button>

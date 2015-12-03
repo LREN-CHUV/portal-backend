@@ -1,0 +1,85 @@
+// LOGIN
+.login-form {
+	#footer,
+	#topnav {
+		display: none;
+	}
+
+	.login-logo {
+		display: block;
+		text-align: center;
+	}
+
+	.forgot-pass {
+		position: absolute;
+		bottom: 15px;
+		right: 20px;
+		color: #FFF;
+		font-size: 12px;
+	}
+}
+.block-login {
+	position: relative;
+	margin-top: 40px;
+	
+	h2 {
+		font-size: 72px;
+		padding-left: 12px;
+		letter-spacing: -0.05em;
+		margin: 0;
+	}
+
+	.btn-round {
+		position: absolute;
+		left: 50%;
+		bottom: -48px;
+		transform: translate(-50%, 0);
+	}
+
+	ul {
+		padding-left: 10px;
+		font-size: 23px;
+		line-height: 30px;
+		margin-top: 20px;
+
+		li {
+			padding: 0 8px;
+		}
+	}
+
+	.form {
+		position: absolute;
+		top: 50%;
+		transform: translate(0, -50%);
+		right: 0;
+		width: 46%;
+
+		.input-group {
+			border-bottom: 2px solid #FFF;
+			background: none;
+
+			.input-group-addon {
+				border: none;
+				background: none !important;
+
+				i {
+					color: #000;
+				}
+			}
+
+			.form-control {
+				height: 45px;
+				background: none;
+				border: none;
+				outline: 0;
+				font-size: 13px;
+				color: #FFF;
+			}
+
+			::-webkit-input-placeholder { color:#FFF !important; }
+			::-moz-placeholder { color:#FFF !important; } /* firefox 19+ */
+			:-ms-input-placeholder { color:#FFF !important; } /* ie */
+			input:-moz-placeholder { color:#FFF !important; }
+		}
+	}
+}

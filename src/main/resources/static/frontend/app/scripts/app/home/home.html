@@ -1,0 +1,114 @@
+<div class="container-fluid intro-container" ng-show="isNewVisitor()">
+    <a href="" ng-click="closePanel($event)" class="trigger-close-intro">
+        <i class="ti ti-close"></i>
+    </a>
+    <div class="intro block-header">
+        <h3>Access the largest</h3>
+        <h2>Brain</h2>
+        <ul>
+            <li>clinical</li>
+            <li>database</li>
+        </ul>
+        <img src="images/intro.png" />
+    </div>
+
+    <div class="block-content row intro-txt">
+        <div class="col-md-6 col-md-offset-3">
+            <h4>Titre chapitre :</h4>
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+            <h3>Titre chapitre :</h3>
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+        </div>
+    </div>
+    <a class="trigger-intro" ng-click="animateIntro()">
+        <i class="ti ti-arrow-down"></i>
+    </a>
+</div>
+
+<div class="container-fluid mt" ng-show="!isNewVisitor()">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="info-tile tile-orange">
+                <div class="tile-icon"><i class="icon-glasses"></i></div>
+                <div class="tile-heading"><span>Scientists</span></div>
+                <div class="tile-body"><span>{{datas.scientists}}</span></div>
+                <div class="tile-footer">Scientists registered <br />on the platform sipides</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="info-tile tile-blue">
+                <div class="tile-icon"><i class="icon-exam"></i></div>
+                <div class="tile-heading"><span>Articles</span></div>
+                <div class="tile-body"><span>{{datas.articles}}</span></div>
+                <div class="tile-footer">Articles written on <br />the platform</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="info-tile tile-gray">
+                <div class="tile-icon"><i class="icon-molecular"></i></div>
+                <div class="tile-heading"><span>Records</span></div>
+                <div class="tile-body"><span>{{datas.patients}}</span></div>
+                <div class="tile-footer">Records in database</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="info-tile tile-edit">
+                <div class="tile-icon"><i class="icon-write"></i></div>
+                <div class="tile-heading"><span>&nbsp;</span></div>
+                <div class="tile-body"><span>&nbsp;</span></div>
+                <a href="#/articles/create" class="tile-title">
+                    <big>write</big>
+                    <span>an article</span>
+
+                    <span class="icon">+</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div data-widget-group="group1" class="ui-sortable">
+        <div class="row">
+
+            <div class="col-md-4" ng-repeat="model in models">
+                <div class="panel panel-default ui-state-default panel-height-fixe" data-widget="{'draggable': 'false'}" data-widget-static="">
+                    <div class="panel-heading">
+                        <h2>{{model.title}}</h2>
+                        <div class="panel-ctrls button-icon-bg"
+                             data-actions-container=""
+                             data-action-collapse='{"target": ".panel-body"}'
+                             data-action-refresh-demo='{"type": "circular"}' >
+                        </div>
+                    </div>
+                    <div class="panel-body panel-body-graph">
+                      <highchart config="model.chartConfig"></highchart>
+                    </div>
+                    <a ng-href="#/models/{{model.slug}}/false" class="panel-link"><i>+</i></a>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+        <div class="col-md-6">
+            <div ng-include="'scripts/app/articles/articles.html'" ng-controller="ArticlesController"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel" data-widget='{"draggable": "false"}'>
+                <div class="panel-heading">
+                    <h2>Recent Models</h2>
+                    <div class="panel-ctrls button-icon-bg"
+                         data-actions-container=""
+                         data-action-collapse='{"target": ".panel-body"}'
+                         data-action-refresh-demo='{"type": "circular"}'
+                            >
+                    </div>
+                </div>
+                <div class="panel-body scroll-pane" style="height: 320px;">
+                    <div class="custom-scrollbar" scrollbar>
+                        <div ng-include="'scripts/app/models/models.html'" ng-controller="ModelsController" params='{"limit":10,"team":1,"valid":1}'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    </div>
+</div>

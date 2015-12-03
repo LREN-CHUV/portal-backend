@@ -1,0 +1,22 @@
+hbp:
+  client:
+    clientId: 996f97c5-a3ca-460e-b18b-00df3e2be89a
+    clientSecret: aD0Tueb3KkNkcZqZgQbNyDWgnM95IfZ0xPCQ_6Z9dQNHXY00RIrnAD_m7sNJh1oofYSX8aHkl72MkwI0K626Ug
+    accessTokenUri: https://services.humanbrainproject.eu/oidc/token
+    userAuthorizationUri: https://services.humanbrainproject.eu/oidc/authorize
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://services.humanbrainproject.eu/oidc/v0/api/user/me
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+spring:
+  resources:
+    chain:
+      enabled: true
+
+
