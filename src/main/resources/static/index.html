@@ -22,7 +22,10 @@
 	</div>
 	<div class="container" ng-show="home.authenticated">
 		Logged in as: <span ng-bind="home.user"></span>
+		<br />
 		E-mail: <span ng-bind="home.email"></span>
+		<br />
+		(Id, Contractor and so on are also available)
 		<hr />
 		<div>
 			<button ng-click="home.logout()" class="btn btn-primary">Logout</button>
