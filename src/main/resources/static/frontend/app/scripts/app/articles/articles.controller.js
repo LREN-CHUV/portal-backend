@@ -41,11 +41,11 @@ angular.module('chuvApp.articles')
             "importcss media nonbreaking noneditable pagebreak paste preview print save searchreplace spellchecker " +
             "tabfocus table template textcolor textpattern visualblocks visualchars wordcount eqneditor",
         external_plugins: {
-          "eqneditor": "/libs/tinymce/plugins/eqneditor/plugin.min.js"
+          "eqneditor": "/frontend/app/libs/tinymce/plugins/eqneditor/plugin.min.js"
         },
         language: $scope.getLanguageCodeForTinyMCE(),
         paste_data_images: true,
-        language_url: "/libs/tinymce/langs/" + $scope.getLanguageCodeForTinyMCE() + ".js",
+        language_url: "/frontend/app/libs/tinymce/langs/" + $scope.getLanguageCodeForTinyMCE() + ".js",
         height: 500
       };
 

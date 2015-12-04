@@ -48,15 +48,29 @@
 <body ng-app="chuvApp" class="ng-cloak" ng-cloak to-top-on-load>
 
 <!-- Add your site or application content here -->
+<!--<header id="topnav" class="navbar navbar-default navbar-fixed-top fixed" change-on-scroll role="banner"
+        ng-include="'scripts/app/header/header.html'" ng-controller="HeaderController" ng-show="!isNewVisitor()"></header>-->
 <header id="topnav" class="navbar navbar-default navbar-fixed-top fixed" change-on-scroll role="banner"
-        ng-include="'scripts/app/header/header.html'" ng-controller="HeaderController" ng-show="!isNewVisitor()"></header>
+        ng-include="'scripts/app/header/header.html'" ng-controller="HeaderController"></header>
 <div id="wrapper">
     <div id="layout-static">
         <div class="static-content-wrapper">
             <div class="static-content">
                 <div class="page-content" ui-view class="mainview-animation animated"></div>
             </div>
-            <footer id="footer" role="contentinfo" ng-cloak ng-show="!isNewVisitor()">
+          <footer id="footer" role="contentinfo" ng-cloak>
+            <div class="clearfix container-fluid">
+              <div class="row">
+                <ul class="list-unstyled list-inline col-md-6">
+                  <li><h6 class="copyright">&copy; 2015 Human Brain Project. All right reserved</h6></li>
+                </ul>
+                <div class="col-md-6 text-right">
+                  <a href="http://www.virtua.ch/" targe="_blank">Powered by V//</a>
+                </div>
+              </div>
+            </div>
+          </footer>
+            <!--<footer id="footer" role="contentinfo" ng-cloak ng-show="!isNewVisitor()">
                 <div class="clearfix container-fluid">
                     <div class="row">
                         <ul class="list-unstyled list-inline col-md-6">
@@ -67,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer>-->
         </div>
     </div>
 </div>
