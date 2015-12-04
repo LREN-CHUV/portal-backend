@@ -33,8 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hbp.mip.mock.ArticleMock;
 import org.hbp.mip.mock.ModelMock;
-import org.hbp.mip.model.Article;
-import org.hbp.mip.model.Model;
+import org.hbp.mip.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -43,6 +42,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -58,9 +58,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -73,23 +71,113 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     OAuth2ClientContext oauth2ClientContext;
 
     @RequestMapping("/user")
+    @ResponseBody
     public Principal user(Principal principal) {
         return principal;
     }
 
     @RequestMapping(value = "/articles", method = RequestMethod.GET)
-    public List<Article> articles() {
+    @ResponseBody
+    public List<Article> getArticles() {
         List<Article> articles = new LinkedList<>();
         articles.add(new ArticleMock(1));
         articles.add(new ArticleMock(2));
         return articles;
     }
 
+    @RequestMapping(value = "/articles/{slug}", method = RequestMethod.GET)
+    @ResponseBody
+    public Article getArticle(@PathVariable("slug") String slug) {
+        return new ArticleMock(1);
+    }
+
+    @RequestMapping(value = "/datasets/{code}", method = RequestMethod.GET)
+    @ResponseBody
+     public Dataset getDatasets(@PathVariable("code") String code) {
+        return null;
+    }
+
     @RequestMapping(value = "/models", method = RequestMethod.GET)
+    @ResponseBody
     public List<Model> getModels() {
         List<Model> models = new LinkedList<>();
         models.add(new ModelMock(1));
         return models;
+    }
+
+    @RequestMapping(value = "/models/{slug}", method = RequestMethod.GET)
+    @ResponseBody
+    public Model getModel(@PathVariable("slug") String slug) {
+        return new ModelMock(1);
+    }
+
+    @RequestMapping(value = "/articles", method = RequestMethod.POST)
+    @ResponseBody
+    public Article postArticle(@RequestBody Article article) {
+        return new ArticleMock(1);
+    }
+
+    @RequestMapping(value = "/models", method = RequestMethod.POST)
+    @ResponseBody
+    public Model postModel(@RequestBody Model model) {
+        return new ModelMock(1);
+    }
+
+    @RequestMapping(value = "/models/{slug}/copies", method = RequestMethod.POST)
+    @ResponseBody
+    public Model postModelCopies(@PathVariable("slug") String slug) {
+        return new ModelMock(1);
+    }
+
+    @RequestMapping(value = "/queries/requests", method = RequestMethod.POST)
+    @ResponseBody
+    public Query postRequest(@RequestBody Query query) {
+        return null;
+    }
+
+    @RequestMapping(value = "/articles/{slug}", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void putArticle(@PathVariable("slug") String slug) {
+    }
+
+    @RequestMapping(value = "/models/{slug}", method = RequestMethod.PUT)
+    @ResponseBody
+    public Model putModel(@PathVariable("slug") String slug) {
+        return null;
+    }
+
+    @RequestMapping(value = "/articles/{slug}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteArticle(@PathVariable("slug") String slug) {
+    }
+
+    @RequestMapping(value = "/models/{slug}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteModel(@PathVariable("slug") String slug, @RequestBody Model model) {
+    }
+
+    @RequestMapping(value = "/groups")
+    @ResponseBody
+    public Group getGroups(){
+        return null;
+    }
+
+    @RequestMapping(value = "/variables")
+    @ResponseBody
+    public List<Variable> getVariables(){
+        return null;
+    }
+
+    @RequestMapping(value = "/variables/{code}")
+    @ResponseBody
+    public Variable getVariable(@PathVariable("code") String code){
+        return null;
+    }
+
+    @RequestMapping(value = "/variables/{code}/values")
+    @ResponseBody
+    public List<Value> getValues(@PathVariable("code") String code){
+        return null;
     }
 
     @Override
