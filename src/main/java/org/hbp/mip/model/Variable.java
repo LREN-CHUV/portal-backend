@@ -4,11 +4,16 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
 public class Variable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
     private Group group;
     private String code;
     private String label;
@@ -18,6 +23,7 @@ public class Variable {
     private boolean isGrouping;
     private boolean isCovariable;
     private boolean isFilter;
+    @ManyToMany
     private List<Value> values;
 
     public Variable() {

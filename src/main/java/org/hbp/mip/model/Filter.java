@@ -4,8 +4,14 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
+
+@Entity
 public class Filter {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
     private Variable variable;
     private String operator;
 

@@ -4,14 +4,22 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
 public class Query {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToMany
     private List<Variable> variables;
+    @ManyToMany
     private List<Variable> covariables;
+    @ManyToMany
     private List<Variable> grouping;
+    @ManyToMany
     private List<Filter> filters;
     private String request;
 

@@ -4,20 +4,29 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.Date;
 
+@Entity
 public class Model {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String slug;
     private String description;
+    @ManyToOne
     private Query query;
+    @ManyToOne
     private Dataset dataset;
     private boolean valid;
+    @ManyToOne
     private Chart chart;
     private Date createdAt;
     private Date updatedAt;
+    @ManyToOne
     private User createdBy;
+    @ManyToOne
     private User updatedBy;
 
     public Model() {

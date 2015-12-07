@@ -4,13 +4,18 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
 public class Group {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
     private String label;
+    @ManyToMany
     private List<Group> groups;
 
     public Group() {

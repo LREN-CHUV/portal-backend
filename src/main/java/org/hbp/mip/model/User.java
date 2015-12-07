@@ -4,10 +4,14 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String fullname;
     private String username;
@@ -18,6 +22,7 @@ public class User {
     private String phone;
     private String birthday;
     private String gender;
+    @ElementCollection
     private List<String> languages;
     private String city;
     private String country;
@@ -26,6 +31,7 @@ public class User {
     private boolean isActive;
     private String apikey;
     private String team;
+    @ElementCollection
     private List<String> roles;
 
     public User() {

@@ -4,17 +4,21 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+@Entity
 public class Dataset {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
     private Date date;
+    @ElementCollection
     private List<String> header;
-    private List<Map<String, List<Object>>> data;
+    //@ElementCollection
+    //private List<Map<String, List<Object>>> data;
 
     public Dataset() {
     }
@@ -51,7 +55,7 @@ public class Dataset {
         this.header = header;
     }
 
-    public List<Map<String, List<Object>>> getData() {
+    /*public List<Map<String, List<Object>>> getData() {
         return data;
     }
 
@@ -70,5 +74,5 @@ public class Dataset {
             this.data = new LinkedList<>();
         }
         this.data.add(map);
-    }
+    }*/
 }

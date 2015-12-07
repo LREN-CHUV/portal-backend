@@ -4,13 +4,18 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
 public class Chart {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String chartType;
     private String xAxis;
+    @ManyToMany
     private List<ChartConfigSet> chartConfigSets;
 
     public Chart() {

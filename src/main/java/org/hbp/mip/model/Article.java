@@ -4,11 +4,10 @@
 
 package org.hbp.mip.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 public class Article {
@@ -23,9 +22,12 @@ public class Article {
     private Date publishedAt;
     private Date createdAt;
     private Date updatedAt;
-    /*private User createdBy;
+    @ManyToOne
+    private User createdBy;
+    @ManyToOne
     private User updatedBy;
-    private List<Tag> tags;*/
+    @ManyToMany
+    private List<Tag> tags;
 
     public Article() {
     }
@@ -102,7 +104,7 @@ public class Article {
         this.updatedAt = updatedAt;
     }
 
-    /*public User getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
@@ -131,5 +133,5 @@ public class Article {
             this.tags = new LinkedList<>();
         }
         this.tags.add(tag);
-    }*/
+    }
 }

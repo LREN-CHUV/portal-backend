@@ -18,6 +18,17 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <mapping class="org.hbp.mip.model.Article"/>
+        <mapping class="org.hbp.mip.model.Chart"/>
+        <mapping class="org.hbp.mip.model.ChartConfigSet"/>
+        <mapping class="org.hbp.mip.model.Dataset"/>
+        <mapping class="org.hbp.mip.model.Model"/>
+        <mapping class="org.hbp.mip.model.Query"/>
+        <mapping class="org.hbp.mip.model.Tag"/>
+        <mapping class="org.hbp.mip.model.User"/>
+        <mapping class="org.hbp.mip.model.Value"/>
+        <mapping class="org.hbp.mip.model.Variable"/>
+        <mapping class="org.hbp.mip.model.Filter"/>
+        <mapping class="org.hbp.mip.model.Group"/>
 
     </session-factory>
 </hibernate-configuration>
