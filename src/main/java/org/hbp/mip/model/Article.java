@@ -4,32 +4,37 @@
 
 package org.hbp.mip.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
+@Entity
 public class Article {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String status;
     private String title;
     private String slug;
     private String abst;
     private String content;
     private Date publishedAt;
-    private List<Tag> tags;
     private Date createdAt;
     private Date updatedAt;
-    private User createdBy;
+    /*private User createdBy;
     private User updatedBy;
+    private List<Tag> tags;*/
 
     public Article() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(long id) {
         this.id = id;
     }
 
@@ -81,14 +86,6 @@ public class Article {
         this.publishedAt = publishedAt;
     }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -105,7 +102,7 @@ public class Article {
         this.updatedAt = updatedAt;
     }
 
-    public User getCreatedBy() {
+    /*public User getCreatedBy() {
         return createdBy;
     }
 
@@ -121,10 +118,18 @@ public class Article {
         this.updatedBy = updatedBy;
     }
 
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
     public void addTag(Tag tag) {
         if(this.tags == null) {
             this.tags = new LinkedList<>();
         }
         this.tags.add(tag);
-    }
+    }*/
 }

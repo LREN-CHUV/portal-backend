@@ -5,18 +5,18 @@
 package org.hbp.mip.model;
 
 public class Value {
-    private int id;
+    private Long id;
     private String code;
     private String label;
 
     public Value() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

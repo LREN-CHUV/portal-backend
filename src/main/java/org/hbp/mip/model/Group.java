@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Group {
-    private int id;
+    private Long id;
     private String code;
     private String label;
     private List<Group> groups;
@@ -16,11 +16,11 @@ public class Group {
     public Group() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

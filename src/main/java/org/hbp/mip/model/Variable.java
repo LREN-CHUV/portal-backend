@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Variable {
-    private int id;
+    private Long id;
     private Group group;
     private String code;
     private String label;
@@ -23,11 +23,11 @@ public class Variable {
     public Variable() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

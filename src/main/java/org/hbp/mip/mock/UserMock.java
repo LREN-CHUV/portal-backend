@@ -8,7 +8,6 @@ import org.hbp.mip.model.User;
 
 public class UserMock extends User {
     public UserMock(int id) {
-        this.setId(id);
         switch (id) {
             case 1:
                 this.setFirstname("Linda");

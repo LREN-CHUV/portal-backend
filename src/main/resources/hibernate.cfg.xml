@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/mirco</property>
+        <property name="connection.username">mirco</property>
+        <property name="connection.password">pass</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="connection.pool_size">1</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
+        <property name="current_session_context_class">thread</property>
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <mapping class="org.hbp.mip.model.Article"/>
+
+    </session-factory>
+</hibernate-configuration>

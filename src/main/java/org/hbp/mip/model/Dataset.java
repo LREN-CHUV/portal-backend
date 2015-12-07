@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Dataset {
-    private int id;
+    private Long id;
     private String code;
     private Date date;
     private List<String> header;
@@ -19,11 +19,11 @@ public class Dataset {
     public Dataset() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

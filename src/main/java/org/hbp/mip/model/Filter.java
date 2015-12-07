@@ -5,18 +5,18 @@
 package org.hbp.mip.model;
 
 public class Filter {
-    private int id;
+    private Long id;
     private Variable variable;
     private String operator;
 
     public Filter() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class User {
-    private int id;
+    private Long id;
     private String fullname;
     private String username;
     private String firstname;
@@ -31,11 +31,11 @@ public class User {
     public User() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 

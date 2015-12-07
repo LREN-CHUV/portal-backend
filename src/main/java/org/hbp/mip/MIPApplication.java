@@ -20,20 +20,10 @@
  */
 package org.hbp.mip;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.*;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.hbp.mip.mock.ArticleMock;
 import org.hbp.mip.mock.ModelMock;
 import org.hbp.mip.model.*;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -62,6 +52,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.LinkedList;
+import java.util.List;
+
 @SpringBootApplication
 @RestController
 @EnableOAuth2Client
@@ -79,9 +80,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/articles", method = RequestMethod.GET)
     @ResponseBody
     public List<Article> getArticles() {
-        List<Article> articles = new LinkedList<>();
-        articles.add(new ArticleMock(1));
-        articles.add(new ArticleMock(2));
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        List articles = session.createQuery("from Article").list();
+        session.getTransaction().commit();
         return articles;
     }
 
@@ -114,6 +116,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/articles", method = RequestMethod.POST)
     @ResponseBody
     public Article postArticle(@RequestBody Article article) {
+        System.out.print(article.getTitle());
         return new ArticleMock(1);
     }
 
