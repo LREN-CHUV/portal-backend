@@ -60,7 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
@@ -102,8 +102,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/models", method = RequestMethod.GET)
     @ResponseBody
     public List<Model> getModels() {
-        List<Model> models = new LinkedList<>();
-        models.add(new ModelMock(1));
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        List models = session.createQuery("from Model").list();
+        session.getTransaction().commit();
         return models;
     }
 
@@ -116,8 +118,15 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/articles", method = RequestMethod.POST)
     @ResponseBody
     public Article postArticle(@RequestBody Article article) {
-        System.out.print(article.getTitle());
-        return new ArticleMock(1);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        article.setCreatedAt(new Date());
+        article.setPublishedAt(new Date());
+        article.setSlug(article.getTitle().toLowerCase());
+        article.setStatus("published");
+        session.save(article);
+        session.getTransaction().commit();
+        return article;
     }
 
     @RequestMapping(value = "/models", method = RequestMethod.POST)
@@ -168,7 +177,11 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/variables")
     @ResponseBody
     public List<Variable> getVariables(){
-        return null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        List variables = session.createQuery("from Variable").list();
+        session.getTransaction().commit();
+        return variables;
     }
 
     @RequestMapping(value = "/variables/{code}")

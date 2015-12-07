@@ -26,7 +26,7 @@ public class Article {
     private User createdBy;
     @ManyToOne
     private User updatedBy;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Tag> tags;
 
     public Article() {
