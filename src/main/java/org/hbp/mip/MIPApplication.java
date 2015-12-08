@@ -20,8 +20,6 @@
  */
 package org.hbp.mip;
 
-import org.hbp.mip.mock.ArticleMock;
-import org.hbp.mip.mock.ModelMock;
 import org.hbp.mip.model.*;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +80,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     public List<Article> getArticles() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        List articles = session.createQuery("from Article").list();
+        List<Article> articles = session.createQuery("from Article").list();
         session.getTransaction().commit();
         return articles;
     }
@@ -90,13 +88,25 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/articles/{slug}", method = RequestMethod.GET)
     @ResponseBody
     public Article getArticle(@PathVariable("slug") String slug) {
-        return new ArticleMock(1);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Article where slug= :slug");
+        query.setString("slug", slug);
+        Article article = (Article) query.uniqueResult();
+        session.getTransaction().commit();
+        return article;
     }
 
     @RequestMapping(value = "/datasets/{code}", method = RequestMethod.GET)
     @ResponseBody
-     public Dataset getDatasets(@PathVariable("code") String code) {
-        return null;
+    public Dataset getDatasets(@PathVariable("code") String code) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Dataset where code= :code");
+        query.setString("code", code);
+        Dataset ds = (Dataset) query.uniqueResult();
+        session.getTransaction().commit();
+        return ds;
     }
 
     @RequestMapping(value = "/models", method = RequestMethod.GET)
@@ -104,7 +114,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     public List<Model> getModels() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        List models = session.createQuery("from Model").list();
+        List<Model> models = session.createQuery("from Model").list();
         session.getTransaction().commit();
         return models;
     }
@@ -112,7 +122,13 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/models/{slug}", method = RequestMethod.GET)
     @ResponseBody
     public Model getModel(@PathVariable("slug") String slug) {
-        return new ModelMock(1);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
+        query.setString("slug", slug);
+        Model model = (Model) query.uniqueResult();
+        session.getTransaction().commit();
+        return model;
     }
 
     @RequestMapping(value = "/articles", method = RequestMethod.POST)
@@ -132,13 +148,25 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/models", method = RequestMethod.POST)
     @ResponseBody
     public Model postModel(@RequestBody Model model) {
-        return new ModelMock(1);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        model.setCreatedAt(new Date());
+        model.setSlug(model.getTitle().toLowerCase());
+        session.save(model);
+        session.getTransaction().commit();
+        return model;
     }
 
     @RequestMapping(value = "/models/{slug}/copies", method = RequestMethod.POST)
     @ResponseBody
     public Model postModelCopies(@PathVariable("slug") String slug) {
-        return new ModelMock(1);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
+        query.setString("slug", slug);
+        Model model = (Model) query.uniqueResult();
+        session.getTransaction().commit();
+        return model;
     }
 
     @RequestMapping(value = "/queries/requests", method = RequestMethod.POST)
