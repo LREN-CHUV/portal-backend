@@ -75,31 +75,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping("/user")
     @ResponseBody
     public Principal user(Principal principal) {
-        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
-        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
-        System.out.println("##############################");
-        System.out.println(userAuthentication.getDetails());
-        System.out.println("##############################");
-
         return principal;
-    }
-
-    private User principalToUser(Principal principal) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from User where username= :username");
-        query.setString("username", principal.getName());
-        User user = (User) query.uniqueResult();
-        session.getTransaction().commit();
-        if(user == null)
-        {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
-            session.beginTransaction();
-            user = new User(principal);
-            session.save(user);
-            session.getTransaction().commit();
-        }
-        return user;
     }
 
     @RequestMapping(value = "/articles", method = RequestMethod.GET)
@@ -161,7 +137,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/articles", method = RequestMethod.POST)
     @ResponseBody
     public Article postArticle(@RequestBody Article article, Principal principal) {
-        User user = principalToUser(principal);
+        User user = getUser(principal);
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         article.setCreatedAt(new Date());
@@ -325,6 +301,31 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
+    }
+
+    private String getUserInfos() {
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
+        System.out.println(userAuthentication.getDetails().toString());
+        return userAuthentication.getDetails().toString();
+    }
+
+    private User getUser(Principal principal) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from User where username= :username");
+        query.setString("username", principal.getName());
+        User user = (User) query.uniqueResult();
+        session.getTransaction().commit();
+        if(user == null)
+        {
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+            user = new User(getUserInfos());
+            session.save(user);
+            session.getTransaction().commit();
+        }
+        return user;
     }
 
 }

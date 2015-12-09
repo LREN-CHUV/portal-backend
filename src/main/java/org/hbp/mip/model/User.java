@@ -5,9 +5,10 @@
 package org.hbp.mip.model;
 
 import javax.persistence.*;
-import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "user_mip")
@@ -39,10 +40,39 @@ public class User {
     public User() {
     }
 
-    public User(Principal principal)
+    public User(String userInfo)
     {
-        this.username = principal.getName();
-        this.fullname = this.username;
+        Pattern p;
+        Matcher m;
+
+        p = Pattern.compile("username=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            this.username = m.group(1);
+        }
+
+        p = Pattern.compile("displayName=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            this.fullname = m.group(1);
+        }
+
+        p = Pattern.compile("givenName=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            this.firstname = m.group(1);
+        }
+
+        p = Pattern.compile("familyName=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            this.lastname = m.group(1);
+        }
+
     }
 
     public Long getId() {
