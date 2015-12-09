@@ -7,6 +7,7 @@ package org.hbp.mip.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "filter_mip")
 public class Filter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

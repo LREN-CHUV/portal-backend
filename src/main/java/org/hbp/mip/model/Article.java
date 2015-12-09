@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "article_mip")
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

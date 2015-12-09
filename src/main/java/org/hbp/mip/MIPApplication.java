@@ -75,6 +75,24 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return principal;
     }
 
+    private User principalToUser(Principal principal) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from User where username= :username");
+        query.setString("username", principal.getName());
+        User user = (User) query.uniqueResult();
+        session.getTransaction().commit();
+        if(user == null)
+        {
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+            user = new User(principal);
+            session.save(user);
+            session.getTransaction().commit();
+        }
+        return user;
+    }
+
     @RequestMapping(value = "/articles", method = RequestMethod.GET)
     @ResponseBody
     public List<Article> getArticles() {
@@ -133,13 +151,15 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(value = "/articles", method = RequestMethod.POST)
     @ResponseBody
-    public Article postArticle(@RequestBody Article article) {
+    public Article postArticle(@RequestBody Article article, Principal principal) {
+        User user = principalToUser(principal);
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         article.setCreatedAt(new Date());
         article.setPublishedAt(new Date());
         article.setSlug(article.getTitle().toLowerCase());
         article.setStatus("published");
+        article.setCreatedBy(user);
         session.save(article);
         session.getTransaction().commit();
         return article;

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "variable_mip")
 public class Variable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

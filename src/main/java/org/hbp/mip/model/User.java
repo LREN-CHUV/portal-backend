@@ -5,10 +5,12 @@
 package org.hbp.mip.model;
 
 import javax.persistence.*;
+import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "user_mip")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +24,7 @@ public class User {
     private String phone;
     private String birthday;
     private String gender;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> languages;
     private String city;
     private String country;
@@ -31,10 +33,16 @@ public class User {
     private boolean isActive;
     private String apikey;
     private String team;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
     public User() {
+    }
+
+    public User(Principal principal)
+    {
+        this.username = principal.getName();
+        this.fullname = this.username;
     }
 
     public Long getId() {

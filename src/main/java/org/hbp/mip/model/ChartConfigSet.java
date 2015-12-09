@@ -4,12 +4,10 @@
 
 package org.hbp.mip.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "chart_config_set_mip")
 public class ChartConfigSet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

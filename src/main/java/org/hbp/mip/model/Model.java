@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "model_mip")
 public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

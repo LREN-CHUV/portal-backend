@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "chart_mip")
 public class Chart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
