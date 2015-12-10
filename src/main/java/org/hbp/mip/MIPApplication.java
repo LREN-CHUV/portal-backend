@@ -20,6 +20,8 @@
  */
 package org.hbp.mip;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hbp.mip.model.*;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +78,19 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @RequestMapping("/user")
     @ResponseBody
-    public Principal user(Principal principal) {
+    public Principal user(Principal principal, HttpServletResponse response) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            String userJSON = mapper.writeValueAsString(getUser(principal));
+            Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON,"UTF-8"));
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return principal;
     }
 

@@ -96,6 +96,11 @@ public class User {
             }
         }
 
+        if(this.picture == null || this.picture.isEmpty())
+        {
+            this.picture = "images/users/default_user.png";
+        }
+
     }
 
     public Long getId() {
