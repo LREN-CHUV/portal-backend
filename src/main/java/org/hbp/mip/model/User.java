@@ -73,6 +73,29 @@ public class User {
             this.lastname = m.group(1);
         }
 
+        p = Pattern.compile("value=([\\w.]+@[\\w.]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            this.email = m.group(1);
+        }
+
+        p = Pattern.compile("title=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            System.out.println(m.group(1));
+            if(m.group(1).equals("Mr"))
+            {
+                this.gender = "Male";
+                System.out.println("->Male");
+            }
+            else
+            {
+                this.gender = "Female";
+                System.out.println("->Female");
+            }
+        }
+
     }
 
     public Long getId() {
