@@ -157,9 +157,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         article.setCreatedAt(new Date());
-        article.setPublishedAt(new Date());
+        if(article.getStatus().equals("published")) {
+            article.setPublishedAt(new Date());
+        }
         article.setSlug(article.getTitle().toLowerCase());
-        article.setStatus("published");
         article.setCreatedBy(user);
         session.save(article);
         session.getTransaction().commit();
@@ -220,7 +221,14 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/groups")
     @ResponseBody
     public Group getGroups(){
-        return null;
+        String rootCode = "root";
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Group where code= :code");
+        query.setString("code", rootCode);
+        Group group = (Group) query.uniqueResult();
+        session.getTransaction().commit();
+        return group;
     }
 
     @RequestMapping(value = "/variables")
@@ -228,7 +236,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     public List<Variable> getVariables(){
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        List variables = session.createQuery("from Variable").list();
+        List<Variable> variables = session.createQuery("from Variable").list();
         session.getTransaction().commit();
         return variables;
     }
@@ -236,13 +244,23 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(value = "/variables/{code}")
     @ResponseBody
     public Variable getVariable(@PathVariable("code") String code){
-        return null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Variable where code= :code");
+        query.setString("code", code);
+        Variable variable = (Variable) query.uniqueResult();
+        session.getTransaction().commit();
+        return variable;
     }
 
     @RequestMapping(value = "/variables/{code}/values")
     @ResponseBody
     public List<Value> getValues(@PathVariable("code") String code){
-        return null;
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        List<Value> values = session.createQuery("select values from Variable where code= :code").setString("code", code).list();
+        session.getTransaction().commit();
+        return values;
     }
 
     @Override

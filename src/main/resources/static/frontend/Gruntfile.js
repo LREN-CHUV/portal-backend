@@ -90,7 +90,7 @@ module.exports = function (grunt) {
       options: {
         port: 9002,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: '155.105.202.58',
+        hostname: '155.105.202.21',
         livereload: 35730
       },
       livereload: {
@@ -333,7 +333,7 @@ module.exports = function (grunt) {
           },
           dev: {
               constants: {
-                  backendUrl: 'http://155.105.202.58:8080',
+                  backendUrl: 'http://155.105.202.21:8080',
                   backendExportChartUrl: '<%= ngconstant.dev.constants.backendUrl %>/exportingChart.php',
                   dropboxAppkey: '7wew0rj0gh2qcik'
               }
