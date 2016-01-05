@@ -96,7 +96,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(value = "/articles", method = RequestMethod.GET)
     @ResponseBody
-    public List<Article> getArticles() {
+    public List<Article> getArticles(@RequestParam(name = "own", required = false) boolean own, @RequestParam(name = "team", required = false) int team, @RequestParam(name = "valid", required = false) boolean valid, @RequestParam(name = "status", required = false) String status) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         List<Article> articles = session.createQuery("from Article").list();
@@ -130,7 +130,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(value = "/models", method = RequestMethod.GET)
     @ResponseBody
-    public List<Model> getModels() {
+    public List<Model> getModels(@RequestParam(name = "limit", required = false) boolean limit, @RequestParam(name = "own", required = false) boolean own, @RequestParam(name = "team", required = false) int team, @RequestParam(name = "valid", required = false) boolean valid) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         List<Model> models = session.createQuery("from Model").list();

@@ -1,0 +1,407 @@
+swagger: '2.0'
+info:
+  title: 'MIP API'
+  description: 'Medical Informatics Platforme'
+  version: 1.0.0
+host: hbp-mip.chuv.ch
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /articles:
+    get:
+      summary: 'Get all articles'
+      tags:
+        - Articles
+      responses:
+        '200':
+          description: 'An array of articles'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Article'
+    post:
+      summary: 'Create an article'
+      tags:
+        - Articles
+      parameters:
+      - name: article
+        in: body
+        description: 'Article to create'
+        required: true
+        schema:
+          type: object
+          $ref: "#/definitions/Article"
+      responses:
+        '200':
+          description: 'Article created'
+  /models:
+    get:
+      summary: 'Get all models'
+      tags:
+        - Models
+      responses:
+        '200':
+          description: 'An array of models'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Model'
+    post:
+      summary: 'Create a model'
+      tags:
+        - Models
+      parameters:
+      - name: model
+        in: body
+        description: 'Model to create'
+        required: true
+        schema:
+          type: object
+          $ref: "#/definitions/Model"
+      responses:
+        '200':
+          description: 'Model created'
+definitions:
+  Article:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      status:
+        type: string
+        format: '{"draft":"Draft","published":"Published","closed":"Closed"}'
+        description: 'Status'
+      title:
+        type: string
+        description: Title
+      slug:
+        type: string
+        description: 'Short string identifier'
+      abstract:
+        type: string
+        description: 'Short introduction'
+      content:
+        type: string
+        description: 'Content'
+      publishedAt:
+        type: string
+        format: dateTime
+        description: 'Publication date'
+      createdAt:
+        type: string
+        format: dateTime
+        description: 'Creation date'
+      updatedAt:
+        type: string
+        format: dateTime
+        description: 'Update date'
+      createdBy:
+        $ref: "#/definitions/User"
+        description: 'Author'
+      updatedBy:
+        $ref: "#/definitions/User"
+        description: 'Updater'
+      tags:
+        type: array
+        items:
+          $ref: "#/definitions/Tag"
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      fullname:
+        type: string
+        description: 'Fullname'
+      username:
+        type: string
+        description: 'Username'
+      firstname:
+        type: string
+        description: 'Firstname'
+      lastname:
+        type: string
+        description: 'Lastname'
+      picture:
+        type: string
+        description: 'Path to a profile picture'
+      web:
+        type: string
+        description: 'Personnal web site URL'
+      phone:
+        type: string
+        description: 'Phone number'
+      birthday:
+        type: string
+        description: 'Birthday date'
+      gender:
+        type: string
+        description: 'Gender'
+      city:
+        type: string
+        description: 'City'
+      country:
+        type: string
+        description: 'Country'
+      password:
+        type: string
+        description: 'password'
+      email:
+        type: string
+        description: 'E-mail address'
+      apikey:
+        type: string
+        description: 'API key'
+      team:
+        type: string
+        description: 'Team'
+      isActive:
+        type: boolean
+        description: 'Is it active ?'
+      languages:
+        type: array
+        items:
+          type: string
+        description: 'Languages'
+      roles:
+        type: array
+        items:
+          type: string
+        description: 'Roles'
+  Tag:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      name:
+        type: string
+        description: 'Name'
+  Chart:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      chartType:
+        type: string
+        description: 'Chart type'
+      xAxis:
+        type: string
+        description: 'X axis label'
+      chartConfigSets:
+        type: array
+        items:
+          $ref: "#/definitions/ChartConfigSet"
+        description: 'Chart configuration'
+  ChartConfigSet:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      code:
+        type: string
+        description: 'Code'
+      label:
+        type: string
+        description: 'Label'
+      color:
+        type: string
+        description: 'Color'
+  Dataset:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      code:
+        type: string
+        description: 'Code'
+      date:
+        type: string
+        format: dateTime
+        description: 'Date'
+      header:
+        type: array
+        items:
+          type: string
+        description: 'Header'
+  Filter:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      variable:
+        type: object
+        $ref: "#/definitions/Variable"
+        description: 'Variable'
+      operator:
+        type: string
+        description: 'Operator'
+  Group:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      code:
+        type: string
+        description: 'Code'
+      label:
+        type: string
+        description: 'Label'
+      groups:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Group"
+        description: 'Groups'
+  Model:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      title:
+        type: string
+        description: 'Title'
+      slug:
+        type: string
+        description: 'slug'
+      description:
+        type: string
+        description: 'Description'
+      query:
+        type: object
+        $ref: "#/definitions/Query"
+        description: 'Query'
+      dataset:
+        type: object
+        $ref: "#/definitions/Dataset"
+        description: 'Dataset'
+      valid:
+        type: boolean
+        description: 'Is it valid ?'
+      chart:
+        type: object
+        $ref: "#/definitions/Chart"
+        description: 'Chart'
+      createdAt:
+        type: string
+        format: dateTime
+        description: 'Creation date'
+      updatedAt:
+        type: string
+        format: dateTime
+        description: 'Update date'
+      createdBy:
+        type: object
+        $ref: "#/definitions/User"
+        description: 'Author'
+      updatedBy:
+        type: object
+        $ref: "#/definitions/User"
+        description: 'Updater'
+  Query:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      variables:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Variable"
+        description: 'Variables'
+      covariables:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Variable"
+        description: 'Covariables'
+      grouping:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Variable"
+        description: 'Grouping'
+      filters:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Filter"
+        description: 'Filters'
+      request:
+        type: string
+        description: 'Request'
+  Value:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      code:
+        type: string
+        description: 'Code'
+      label:
+        type: string
+        description: 'Label'
+  Variable:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: 'Unique identifier'
+      group:
+        type: object
+        $ref: "#/definitions/Group"
+        description: 'Group'
+      code:
+        type: string
+        description: 'Code'
+      label:
+        type: string
+        description: 'Label'
+      type:
+        type: string
+        description: 'Type'
+      length:
+        type: integer
+        description: 'Length'
+      isVariable:
+        type: boolean
+        description: 'Is it a variable ?'
+      isGrouping:
+        type: boolean
+        description: 'Is it a grouping variable ?'
+      isVariable:
+        type: boolean
+        description: 'Is it a covariable ?'
+      isFilter:
+        type: boolean
+        description: 'Is it a filter ?'
+      values:
+        type: array
+        items:
+          type: object
+          $ref: "#/definitions/Value"
