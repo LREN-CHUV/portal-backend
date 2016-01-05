@@ -13,17 +13,19 @@ paths:
   /articles:
     get:
       summary: 'Get all articles'
+      operationId: 'get all articles'
       tags:
         - Articles
       responses:
         '200':
-          description: 'An array of articles'
+          description: 'Success'
           schema:
             type: array
             items:
               $ref: '#/definitions/Article'
     post:
       summary: 'Create an article'
+      operationId: 'add an article'
       tags:
         - Articles
       parameters:
@@ -37,20 +39,77 @@ paths:
       responses:
         '200':
           description: 'Article created'
+  /articles/{slug}:
+    get:
+      summary: 'Get an article'
+      operationId: 'get an article'
+      tags:
+        - Articles
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Found'
+          schema:
+            type: object
+            $ref: '#/definitions/Article'
+        '404':
+          description: 'Not found'
+    put:
+      summary: 'Update an article'
+      operationId: 'update an article'
+      tags:
+        - Articles
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+        - name: article
+          in: body
+          description: 'Article to update'
+          required: true
+          schema:
+            type: object
+            $ref: "#/definitions/Article"
+      responses:
+        '200':
+          description: 'Article updated'
+    delete:
+      summary: 'Delete an article'
+      operationId: 'delete an article'
+      tags:
+        - Articles
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Article deleted'
   /models:
     get:
       summary: 'Get all models'
+      operationId: 'get all models'
       tags:
         - Models
       responses:
         '200':
-          description: 'An array of models'
+          description: 'Success'
           schema:
             type: array
             items:
               $ref: '#/definitions/Model'
     post:
       summary: 'Create a model'
+      operationId: 'add a model'
       tags:
         - Models
       parameters:
@@ -64,6 +123,79 @@ paths:
       responses:
         '200':
           description: 'Model created'
+  /models/{slug}:
+    get:
+      summary: 'Get a model'
+      operationId: 'get a model'
+      tags:
+        - Models
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Found'
+          schema:
+            type: object
+            $ref: '#/definitions/Model'
+        '404':
+          description: 'Not found'
+    put:
+      summary: 'Update a model'
+      operationId: 'update a model'
+      tags:
+        - Models
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+        - name: model
+          in: body
+          description: 'Model to update'
+          required: true
+          schema:
+            type: object
+            $ref: "#/definitions/Model"
+      responses:
+        '200':
+          description: 'Model updated'
+    delete:
+      summary: 'Delete a model'
+      operationId: 'delete a model'
+      tags:
+        - Models
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Model deleted'
+  /datasets/{slug}:
+    get:
+      summary: 'Get a dataset'
+      operationId: 'get a dataset'
+      tags:
+        - Datasets
+      parameters:
+        - name: slug
+          in: path
+          description: 'slug'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            type: object
+            $ref: '#/definitions/Dataset'
 definitions:
   Article:
     type: object
