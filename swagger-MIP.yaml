@@ -22,6 +22,7 @@ paths:
           schema:
             type: array
             items:
+              type: object
               $ref: '#/definitions/Article'
     post:
       summary: 'Create an article'
@@ -101,11 +102,12 @@ paths:
       tags:
         - Models
       responses:
-        '200':
+        '200': 
           description: 'Success'
           schema:
             type: array
             items:
+              type: object
               $ref: '#/definitions/Model'
     post:
       summary: 'Create a model'
@@ -196,6 +198,75 @@ paths:
           schema:
             type: object
             $ref: '#/definitions/Dataset'
+  /groups:
+    get:
+      summary: 'Get the root group (containing all subgroups)'
+      operationId: 'get the root group'
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            type: object
+            $ref: '#/definitions/Group'
+  /variables:
+    get:
+      summary: 'Get all variables'
+      operationId: 'get all variables'
+      tags:
+        - Variables
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Variable'
+  /variables/{code}:
+    get:
+      summary: 'Get a variable'
+      operationId: 'get a variable'
+      tags:
+        - Variables
+      parameters:
+        - name: code
+          in: path
+          description: 'code'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Found'
+          schema:
+            type: object
+            $ref: '#/definitions/Variable'
+        '404':
+          description: 'Not found'
+  /variables/{code}/values:
+    get:
+      summary: 'Get all values from a variable'
+      operationId: 'get all values from a variable'
+      tags:
+        - Values
+        - Variables
+      parameters:
+        - name: code
+          in: path
+          description: 'code'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Found'
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Value'
+        '404':
+          description: 'Not found'
 definitions:
   Article:
     type: object
