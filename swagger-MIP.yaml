@@ -145,7 +145,7 @@ paths:
         type: boolean
         description: 'Only ask valid models'
       responses:
-        '200': 
+        '200':
           description: 'Success'
           schema:
             type: array
@@ -223,16 +223,16 @@ paths:
       responses:
         '200':
           description: 'Model deleted'
-  /datasets/{slug}:
+  /datasets/{code}:
     get:
       summary: 'Get a dataset'
       operationId: 'get a dataset'
       tags:
         - Datasets
       parameters:
-        - name: slug
+        - name: code
           in: path
-          description: 'slug'
+          description: 'code'
           required: true
           type: string
       responses:
