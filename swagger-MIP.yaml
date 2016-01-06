@@ -12,10 +12,32 @@ produces:
 paths:
   /articles:
     get:
-      summary: 'Get all articles'
-      operationId: 'get all articles'
+      summary: 'Get articles'
+      operationId: 'get articles'
       tags:
         - Articles
+      parameters:
+      - name: own
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask own articles'
+      - name: status
+        in: query
+        required: false
+        type: string
+        format: '{"draft","published","closed"}'
+        description: 'Only ask results matching status'
+      - name: team
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask articles from own team'
+      - name: valid
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask valid articles'
       responses:
         '200':
           description: 'Success'
@@ -97,10 +119,31 @@ paths:
           description: 'Article deleted'
   /models:
     get:
-      summary: 'Get all models'
-      operationId: 'get all models'
+      summary: 'Get models'
+      operationId: 'get models'
       tags:
         - Models
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        type: integer
+        description: 'Max number of results'
+      - name: own
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask own models'
+      - name: team
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask models from own team'
+      - name: valid
+        in: query
+        required: false
+        type: boolean
+        description: 'Only ask valid models'
       responses:
         '200': 
           description: 'Success'
@@ -246,8 +289,8 @@ paths:
           description: 'Not found'
   /variables/{code}/values:
     get:
-      summary: 'Get all values from a variable'
-      operationId: 'get all values from a variable'
+      summary: 'Get values from a variable'
+      operationId: 'get values from a variable'
       tags:
         - Values
         - Variables
@@ -257,6 +300,11 @@ paths:
           description: 'code'
           required: true
           type: string
+        - name: q
+          in: query
+          required: false
+          type: string
+          description: 'Pattern to match'
       responses:
         '200':
           description: 'Found'
@@ -277,7 +325,7 @@ definitions:
         description: 'Unique identifier'
       status:
         type: string
-        format: '{"draft":"Draft","published":"Published","closed":"Closed"}'
+        format: '{"draft","published","closed"}'
         description: 'Status'
       title:
         type: string
