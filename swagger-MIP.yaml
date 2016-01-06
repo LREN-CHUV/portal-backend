@@ -255,10 +255,42 @@ paths:
             $ref: '#/definitions/Group'
   /variables:
     get:
-      summary: 'Get all variables'
-      operationId: 'get all variables'
+      summary: 'Get variables'
+      operationId: 'get variables'
       tags:
         - Variables
+      parameters:
+      - name: group
+        in: query
+        required: false
+        type: string
+        description: 'List of groups formatted like : ("val1", "val2", ...)'
+      - name: subgroup
+        in: query
+        required: false
+        type: string
+        description: 'List of subgroups formatted like : ("val1", "val2", ...)'
+      - name: isVariable
+        in: query
+        required: false
+        type: string
+        description: 'Boolean value formatted like : ("0") or ("1") or ("false") or ("true")'
+      - name: isGrouping
+        in: query
+        required: false
+        type: string
+        description: 'Boolean value formatted like : ("0") or ("1") or ("false") or ("true")'
+      - name: isCovariable
+        in: query
+        required: false
+        type: string
+        description: 'Boolean value formatted like : ("0") or ("1") or ("false") or ("true")'
+      - name: isFilter
+        in: query
+        required: false
+        type: string
+        description: 'Boolean value formatted like : ("0") or ("1") or ("false") or ("true")'
+      
       responses:
         '200':
           description: 'Success'
@@ -276,7 +308,7 @@ paths:
       parameters:
         - name: code
           in: path
-          description: 'code'
+          description: 'code ( multiple codes are allowed, separeted by "," )'
           required: true
           type: string
       responses:
