@@ -130,7 +130,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(value = "/models", method = RequestMethod.GET)
     @ResponseBody
-    public List<Model> getModels(@RequestParam(name = "limit", required = false) boolean limit, @RequestParam(name = "own", required = false) boolean own, @RequestParam(name = "team", required = false) int team, @RequestParam(name = "valid", required = false) boolean valid) {
+    public List<Model> getModels() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         List<Model> models = session.createQuery("from Model").list();

@@ -4,124 +4,176 @@
 
 package org.hbp.mip.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
 @Table(name = "variable_mip")
+@ApiModel(description = "")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
 public class Variable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id = null;
     @ManyToOne
-    private Group group;
-    private String code;
-    private String label;
-    private String type;
-    private int length;
-    private boolean isVariable;
-    private boolean isGrouping;
-    private boolean isCovariable;
-    private boolean isFilter;
+    private Group group = null;
+    private String code = null;
+    private String label = null;
+    private String type = null;
+    private Integer length = null;
+    private Boolean isVariable = null;
+    private Boolean isGrouping = null;
+    private Boolean isFilter = null;
     @ManyToMany
-    private List<Value> values;
+    private List<Value> values = new LinkedList<Value>();
 
     public Variable() {
     }
 
+    /**
+     * Unique identifier
+     **/
+    @ApiModelProperty(value = "Unique identifier")
+    @JsonProperty("id")
     public Long getId() {
         return id;
     }
-
-    private void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Group
+     **/
+    @ApiModelProperty(value = "Group")
+    @JsonProperty("group")
     public Group getGroup() {
         return group;
     }
-
     public void setGroup(Group group) {
         this.group = group;
     }
 
+    /**
+     * Code
+     **/
+    @ApiModelProperty(value = "Code")
+    @JsonProperty("code")
     public String getCode() {
         return code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * Label
+     **/
+    @ApiModelProperty(value = "Label")
+    @JsonProperty("label")
     public String getLabel() {
         return label;
     }
-
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     * Type
+     **/
+    @ApiModelProperty(value = "Type")
+    @JsonProperty("type")
     public String getType() {
         return type;
     }
-
     public void setType(String type) {
         this.type = type;
     }
 
-    public int getLength() {
+    /**
+     * Length
+     **/
+    @ApiModelProperty(value = "Length")
+    @JsonProperty("length")
+    public Integer getLength() {
         return length;
     }
-
-    public void setLength(int length) {
+    public void setLength(Integer length) {
         this.length = length;
     }
 
-    public boolean isVariable() {
+    /**
+     * Is it a covariable ?
+     **/
+    @ApiModelProperty(value = "Is it a covariable ?")
+    @JsonProperty("isVariable")
+    public Boolean getIsVariable() {
         return isVariable;
     }
-
-    public void setIsVariable(boolean isVariable) {
+    public void setIsVariable(Boolean isVariable) {
         this.isVariable = isVariable;
     }
 
-    public boolean isGrouping() {
+    /**
+     * Is it a grouping variable ?
+     **/
+    @ApiModelProperty(value = "Is it a grouping variable ?")
+    @JsonProperty("isGrouping")
+    public Boolean getIsGrouping() {
         return isGrouping;
     }
-
-    public void setIsGrouping(boolean isGrouping) {
+    public void setIsGrouping(Boolean isGrouping) {
         this.isGrouping = isGrouping;
     }
 
-    public boolean isCovariable() {
-        return isCovariable;
-    }
-
-    public void setIsCovariable(boolean isCovariable) {
-        this.isCovariable = isCovariable;
-    }
-
-    public boolean isFilter() {
+    /**
+     * Is it a filter ?
+     **/
+    @ApiModelProperty(value = "Is it a filter ?")
+    @JsonProperty("isFilter")
+    public Boolean getIsFilter() {
         return isFilter;
     }
-
-    public void setIsFilter(boolean isFilter) {
+    public void setIsFilter(Boolean isFilter) {
         this.isFilter = isFilter;
     }
 
+    /**
+     **/
+    @ApiModelProperty(value = "")
+    @JsonProperty("values")
     public List<Value> getValues() {
         return values;
     }
-
     public void setValues(List<Value> values) {
         this.values = values;
     }
 
+    @Override
+    public String toString()  {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class Variable {\n");
+
+        sb.append("  id: ").append(id).append("\n");
+        sb.append("  group: ").append(group).append("\n");
+        sb.append("  code: ").append(code).append("\n");
+        sb.append("  label: ").append(label).append("\n");
+        sb.append("  type: ").append(type).append("\n");
+        sb.append("  length: ").append(length).append("\n");
+        sb.append("  isVariable: ").append(isVariable).append("\n");
+        sb.append("  isGrouping: ").append(isGrouping).append("\n");
+        sb.append("  isFilter: ").append(isFilter).append("\n");
+        sb.append("  values: ").append(values).append("\n");
+        sb.append("}\n");
+        return sb.toString();
+    }
+
     public void addValue(Value value) {
-        if(this.values == null) {
-            this.values = new LinkedList<>();
-        }
         this.values.add(value);
     }
 }

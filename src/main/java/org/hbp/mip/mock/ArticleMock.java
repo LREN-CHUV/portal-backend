@@ -21,7 +21,7 @@ public class ArticleMock extends Article {
                 /*this.setPublishedAt(currentDate);
                 this.setUpdatedAt(currentDate);
                 this.setTags(new LinkedList<>());*/
-                this.setAbst("This is a first test article.");
+                this.setAbstract("This is a first test article.");
                 this.setContent("<!DOCTYPE html><html><head></head><body><p>This is the content of my first test article.</p></body></html>");
                 /*this.setCreatedAt(currentDate);
                 this.setCreatedBy(currentUser);
@@ -34,7 +34,7 @@ public class ArticleMock extends Article {
                 /*this.setPublishedAt(currentDate);
                 this.setUpdatedAt(currentDate);
                 this.setTags(new LinkedList<>());*/
-                this.setAbst("This is a second test article.");
+                this.setAbstract("This is a second test article.");
                 this.setContent("<!DOCTYPE html><html><head></head><body><p>This is the content of my second test article.</p></body></html>");
                 /*this.setCreatedAt(currentDate);
                 this.setCreatedBy(currentUser);
