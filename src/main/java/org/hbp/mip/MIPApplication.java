@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -73,6 +74,7 @@ import java.security.Principal;
 @EnableOAuth2Client
 @Api(value = "/", description = "MIP API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
+@EnableSwagger2  // available at <BASE URL>/swagger-ui.html
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @Autowired
