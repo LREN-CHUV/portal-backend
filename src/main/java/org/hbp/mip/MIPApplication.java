@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -57,6 +58,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.Filter;
@@ -70,12 +77,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 
+
 @SpringBootApplication
 @RestController
 @EnableOAuth2Client
 @Api(value = "/", description = "MIP API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
 @EnableSwagger2  // available at <BASE URL>/swagger-ui.html
+@Configuration
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -107,6 +116,30 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             session.getTransaction().commit();
         }
         return user;
+    }
+
+    @Bean
+    public Docket documentation() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.hbp.mip.controllers"))
+                .build()
+                .pathMapping("/")
+                .apiInfo(metadata());
+    }
+
+    @Bean
+    public UiConfiguration uiConfig() {
+        return UiConfiguration.DEFAULT;
+    }
+
+    private ApiInfo metadata() {
+        return new ApiInfoBuilder()
+                .title("Medical Informatics Platform API")
+                .description("Serve the MIP Frontend")
+                .version("1.0")
+                .contact("mirco.nasuti@chuv.ch")
+                .build();
     }
 
     @RequestMapping("/user")
