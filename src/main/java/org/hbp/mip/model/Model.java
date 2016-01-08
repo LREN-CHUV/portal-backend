@@ -47,6 +47,7 @@ public class Model {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -59,6 +60,7 @@ public class Model {
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -71,6 +73,7 @@ public class Model {
     public String getSlug() {
         return slug;
     }
+
     public void setSlug(String slug) {
         this.slug = slug;
     }
@@ -83,6 +86,7 @@ public class Model {
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -95,6 +99,7 @@ public class Model {
     public Query getQuery() {
         return query;
     }
+
     public void setQuery(Query query) {
         this.query = query;
     }
@@ -107,6 +112,7 @@ public class Model {
     public Dataset getDataset() {
         return dataset;
     }
+
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
@@ -119,6 +125,7 @@ public class Model {
     public Boolean getValid() {
         return valid;
     }
+
     public void setValid(Boolean valid) {
         this.valid = valid;
     }
@@ -131,6 +138,7 @@ public class Model {
     public Chart getChart() {
         return chart;
     }
+
     public void setChart(Chart chart) {
         this.chart = chart;
     }
@@ -143,6 +151,7 @@ public class Model {
     public Date getCreatedAt() {
         return createdAt;
     }
+
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
@@ -155,6 +164,7 @@ public class Model {
     public Date getUpdatedAt() {
         return updatedAt;
     }
+
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -167,6 +177,7 @@ public class Model {
     public User getCreatedBy() {
         return createdBy;
     }
+
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
@@ -179,12 +190,13 @@ public class Model {
     public User getUpdatedBy() {
         return updatedBy;
     }
+
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Model {\n");
 

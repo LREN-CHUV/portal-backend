@@ -46,8 +46,7 @@ public class User {
     public User() {
     }
 
-    public User(String userInfo)
-    {
+    public User(String userInfo) {
         Pattern p;
         Matcher m;
 
@@ -90,20 +89,16 @@ public class User {
         m = p.matcher(userInfo);
         if (m.find()) {
             System.out.println(m.group(1));
-            if(m.group(1).equals("Mr"))
-            {
+            if (m.group(1).equals("Mr")) {
                 this.gender = "Male";
                 System.out.println("->Male");
-            }
-            else
-            {
+            } else {
                 this.gender = "Female";
                 System.out.println("->Female");
             }
         }
 
-        if(this.picture == null || this.picture.isEmpty())
-        {
+        if (this.picture == null || this.picture.isEmpty()) {
             this.picture = "images/users/default_user.png";
         }
 
@@ -117,6 +112,7 @@ public class User {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -129,6 +125,7 @@ public class User {
     public String getFullname() {
         return fullname;
     }
+
     public void setFullname(String fullname) {
         this.fullname = fullname;
     }
@@ -141,6 +138,7 @@ public class User {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -153,6 +151,7 @@ public class User {
     public String getFirstname() {
         return firstname;
     }
+
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
@@ -165,6 +164,7 @@ public class User {
     public String getLastname() {
         return lastname;
     }
+
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
@@ -177,6 +177,7 @@ public class User {
     public String getPicture() {
         return picture;
     }
+
     public void setPicture(String picture) {
         this.picture = picture;
     }
@@ -189,6 +190,7 @@ public class User {
     public String getWeb() {
         return web;
     }
+
     public void setWeb(String web) {
         this.web = web;
     }
@@ -201,6 +203,7 @@ public class User {
     public String getPhone() {
         return phone;
     }
+
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -213,6 +216,7 @@ public class User {
     public String getBirthday() {
         return birthday;
     }
+
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
@@ -225,6 +229,7 @@ public class User {
     public String getGender() {
         return gender;
     }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -237,6 +242,7 @@ public class User {
     public String getCity() {
         return city;
     }
+
     public void setCity(String city) {
         this.city = city;
     }
@@ -249,6 +255,7 @@ public class User {
     public String getCountry() {
         return country;
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
@@ -261,6 +268,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -273,6 +281,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -285,6 +294,7 @@ public class User {
     public String getApikey() {
         return apikey;
     }
+
     public void setApikey(String apikey) {
         this.apikey = apikey;
     }
@@ -297,6 +307,7 @@ public class User {
     public String getTeam() {
         return team;
     }
+
     public void setTeam(String team) {
         this.team = team;
     }
@@ -309,6 +320,7 @@ public class User {
     public Boolean getIsActive() {
         return isActive;
     }
+
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
@@ -321,6 +333,7 @@ public class User {
     public List<String> getLanguages() {
         return languages;
     }
+
     public void setLanguages(List<String> languages) {
         this.languages = languages;
     }
@@ -333,12 +346,13 @@ public class User {
     public List<String> getRoles() {
         return roles;
     }
+
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class User {\n");
 

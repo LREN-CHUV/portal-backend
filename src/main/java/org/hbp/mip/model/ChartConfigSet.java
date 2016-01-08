@@ -33,6 +33,7 @@ public class ChartConfigSet {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -45,6 +46,7 @@ public class ChartConfigSet {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -57,6 +59,7 @@ public class ChartConfigSet {
     public String getLabel() {
         return label;
     }
+
     public void setLabel(String label) {
         this.label = label;
     }
@@ -69,13 +72,14 @@ public class ChartConfigSet {
     public String getColor() {
         return color;
     }
+
     public void setColor(String color) {
         this.color = color;
     }
 
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class ChartConfigSet {\n");
 

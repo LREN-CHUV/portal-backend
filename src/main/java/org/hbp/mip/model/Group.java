@@ -36,6 +36,7 @@ public class Group {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -48,6 +49,7 @@ public class Group {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -60,6 +62,7 @@ public class Group {
     public String getLabel() {
         return label;
     }
+
     public void setLabel(String label) {
         this.label = label;
     }
@@ -72,12 +75,13 @@ public class Group {
     public List<Group> getGroups() {
         return groups;
     }
+
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Group {\n");
 

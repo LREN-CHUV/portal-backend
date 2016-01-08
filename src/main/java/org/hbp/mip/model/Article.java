@@ -47,6 +47,7 @@ public class Article {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -59,6 +60,7 @@ public class Article {
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -71,6 +73,7 @@ public class Article {
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -83,6 +86,7 @@ public class Article {
     public String getSlug() {
         return slug;
     }
+
     public void setSlug(String slug) {
         this.slug = slug;
     }
@@ -95,6 +99,7 @@ public class Article {
     public String getAbstract() {
         return _abstract;
     }
+
     public void setAbstract(String _abstract) {
         this._abstract = _abstract;
     }
@@ -107,6 +112,7 @@ public class Article {
     public String getContent() {
         return content;
     }
+
     public void setContent(String content) {
         this.content = content;
     }
@@ -119,6 +125,7 @@ public class Article {
     public Date getPublishedAt() {
         return publishedAt;
     }
+
     public void setPublishedAt(Date publishedAt) {
         this.publishedAt = publishedAt;
     }
@@ -131,6 +138,7 @@ public class Article {
     public Date getCreatedAt() {
         return createdAt;
     }
+
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
@@ -143,6 +151,7 @@ public class Article {
     public Date getUpdatedAt() {
         return updatedAt;
     }
+
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -155,6 +164,7 @@ public class Article {
     public User getCreatedBy() {
         return createdBy;
     }
+
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
@@ -167,6 +177,7 @@ public class Article {
     public User getUpdatedBy() {
         return updatedBy;
     }
+
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
     }
@@ -178,12 +189,13 @@ public class Article {
     public List<Tag> getTags() {
         return tags;
     }
+
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Article {\n");
 

@@ -31,6 +31,7 @@ public class Tag {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -43,12 +44,13 @@ public class Tag {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Tag {\n");
 

@@ -30,6 +30,7 @@ public class Value {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -43,6 +44,7 @@ public class Value {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -56,14 +58,14 @@ public class Value {
     public String getLabel() {
         return label;
     }
+
     public void setLabel(String label) {
         this.label = label;
     }
 
 
-
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Value {\n");
 

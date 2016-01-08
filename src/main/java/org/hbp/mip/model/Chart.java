@@ -36,6 +36,7 @@ public class Chart {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -48,6 +49,7 @@ public class Chart {
     public String getChartType() {
         return chartType;
     }
+
     public void setChartType(String chartType) {
         this.chartType = chartType;
     }
@@ -60,6 +62,7 @@ public class Chart {
     public String getXAxis() {
         return xAxis;
     }
+
     public void setXAxis(String xAxis) {
         this.xAxis = xAxis;
     }
@@ -72,12 +75,13 @@ public class Chart {
     public List<ChartConfigSet> getChartConfigSets() {
         return chartConfigSets;
     }
+
     public void setChartConfigSets(List<ChartConfigSet> chartConfigSets) {
         this.chartConfigSets = chartConfigSets;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Chart {\n");
 

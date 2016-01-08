@@ -43,6 +43,7 @@ public class Variable {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -55,6 +56,7 @@ public class Variable {
     public Group getGroup() {
         return group;
     }
+
     public void setGroup(Group group) {
         this.group = group;
     }
@@ -67,6 +69,7 @@ public class Variable {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -79,6 +82,7 @@ public class Variable {
     public String getLabel() {
         return label;
     }
+
     public void setLabel(String label) {
         this.label = label;
     }
@@ -91,6 +95,7 @@ public class Variable {
     public String getType() {
         return type;
     }
+
     public void setType(String type) {
         this.type = type;
     }
@@ -103,6 +108,7 @@ public class Variable {
     public Integer getLength() {
         return length;
     }
+
     public void setLength(Integer length) {
         this.length = length;
     }
@@ -115,6 +121,7 @@ public class Variable {
     public Boolean getIsVariable() {
         return isVariable;
     }
+
     public void setIsVariable(Boolean isVariable) {
         this.isVariable = isVariable;
     }
@@ -127,6 +134,7 @@ public class Variable {
     public Boolean getIsGrouping() {
         return isGrouping;
     }
+
     public void setIsGrouping(Boolean isGrouping) {
         this.isGrouping = isGrouping;
     }
@@ -139,6 +147,7 @@ public class Variable {
     public Boolean getIsFilter() {
         return isFilter;
     }
+
     public void setIsFilter(Boolean isFilter) {
         this.isFilter = isFilter;
     }
@@ -150,12 +159,13 @@ public class Variable {
     public List<Value> getValues() {
         return values;
     }
+
     public void setValues(List<Value> values) {
         this.values = values;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Variable {\n");
 

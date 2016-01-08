@@ -37,6 +37,7 @@ public class Dataset {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -49,6 +50,7 @@ public class Dataset {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -61,6 +63,7 @@ public class Dataset {
     public Date getDate() {
         return date;
     }
+
     public void setDate(Date date) {
         this.date = date;
     }
@@ -73,13 +76,14 @@ public class Dataset {
     public List<String> getHeader() {
         return header;
     }
+
     public void setHeader(List<String> header) {
         this.header = header;
     }
 
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Dataset {\n");
 

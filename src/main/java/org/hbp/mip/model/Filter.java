@@ -33,6 +33,7 @@ public class Filter {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -45,6 +46,7 @@ public class Filter {
     public Variable getVariable() {
         return variable;
     }
+
     public void setVariable(Variable variable) {
         this.variable = variable;
     }
@@ -57,12 +59,13 @@ public class Filter {
     public String getOperator() {
         return operator;
     }
+
     public void setOperator(String operator) {
         this.operator = operator;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Filter {\n");
 

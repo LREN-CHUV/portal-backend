@@ -41,6 +41,7 @@ public class Query {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -53,6 +54,7 @@ public class Query {
     public List<Variable> getVariables() {
         return variables;
     }
+
     public void setVariables(List<Variable> variables) {
         this.variables = variables;
     }
@@ -65,6 +67,7 @@ public class Query {
     public List<Variable> getCovariables() {
         return covariables;
     }
+
     public void setCovariables(List<Variable> covariables) {
         this.covariables = covariables;
     }
@@ -77,6 +80,7 @@ public class Query {
     public List<Variable> getGrouping() {
         return grouping;
     }
+
     public void setGrouping(List<Variable> grouping) {
         this.grouping = grouping;
     }
@@ -89,6 +93,7 @@ public class Query {
     public List<Filter> getFilters() {
         return filters;
     }
+
     public void setFilters(List<Filter> filters) {
         this.filters = filters;
     }
@@ -101,12 +106,13 @@ public class Query {
     public String getRequest() {
         return request;
     }
+
     public void setRequest(String request) {
         this.request = request;
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Query {\n");
 
