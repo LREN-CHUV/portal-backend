@@ -16,24 +16,14 @@
 <body ng-app="app" ng-controller="home as home">
 	<h1>Login</h1>
 	<div class="container" ng-show="!home.authenticated">
-		<div>
-		With hbp: <a href="/login/hbp">click here</a>
-		</div>
+		<!-- keep it empty -->
 	</div>
 	<div class="container" ng-show="home.authenticated">
-		Logged in as: <span ng-bind="home.user"></span>
-		<br />
-		E-mail: <span ng-bind="home.email"></span>
-		<br />
-		(Id, Contractor and so on are also available)
-		<hr />
-		<div>
-			<button ng-click="home.logout()" class="btn btn-primary">Logout</button>
-		</div>
-		<br />
-		<div>
-			<button onclick="location.href='/frontend/app/index.html#/home';" class="btn btn-primary">Continue to MIP</button>
-		</div>
+		<p>
+			Hello <span ng-bind="home.user"></span> !
+			<br />
+			You are being redirected to the Medical Informatics Platform... Please wait...
+		</p>
 	</div>
 	<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
 	<script type="text/javascript">
@@ -48,20 +38,12 @@
 						self.user = data.userAuthentication.details.displayName;
 						self.email = data.userAuthentication.details.emails[0].value;
 						self.authenticated = true;
+						window.location.href = "/frontend/app/index.html#/home";
 					}).error(function() {
 						self.user = "N/A";
 						self.email = "N/A";
 						self.authenticated = false;
 					});
-					self.logout = function() {
-						$http.post('logout', {}).success(function() {
-							self.authenticated = false;
-							$location.path("/");
-						}).error(function(data) {
-							console.log("Logout failed")
-							self.authenticated = false;
-						});
-					};
 				});
 	</script>
 </body>
