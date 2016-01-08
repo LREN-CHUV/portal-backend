@@ -1,7 +1,8 @@
-package org.hbp.mip;
+package org.hbp.mip.controllers;
 
 
 import io.swagger.annotations.*;
+import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
 import org.hibernate.Session;

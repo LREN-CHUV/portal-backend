@@ -1,4 +1,4 @@
-package org.hbp.mip;
+package org.hbp.mip.controllers;
 
 
 import io.swagger.annotations.*;

@@ -1,4 +1,4 @@
-package org.hbp.mip;
+package org.hbp.mip.controllers;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;

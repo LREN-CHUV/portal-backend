@@ -2,7 +2,7 @@
  * Created by mirco on 07.12.15.
  */
 
-package org.hbp.mip;
+package org.hbp.mip.controllers;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;

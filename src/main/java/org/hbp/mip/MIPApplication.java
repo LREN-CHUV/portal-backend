@@ -23,6 +23,7 @@ package org.hbp.mip;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.hbp.mip.controllers.HibernateUtil;
 import org.hbp.mip.model.User;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
