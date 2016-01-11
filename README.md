@@ -14,7 +14,7 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 ## TODO
 
 * Implement a script to populate the DB for testing purpose;
-* Clean swagger annotations;
-* Implementation missing API features (updates, deletes, special parameters);
+* Clean swagger annotations (ignore some parameters);
+* Implement missing API features (updates, deletes, special parameters);
 * Implement logout;
-* Adapt frontend (add introduction page, hide header/footer when not logged in).
+* Adapt frontend (add introduction page, hide header/footer when not logged in, remove mock authors).
