@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name = "chart_mip")
+@Table(name = "`chart`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
 public class Chart {
