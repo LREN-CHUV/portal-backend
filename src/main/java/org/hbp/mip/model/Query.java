@@ -4,6 +4,7 @@
 
 package org.hbp.mip.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,6 +17,7 @@ import java.util.List;
 @Table(name = "`query`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
+@JsonIgnoreProperties(value = { "id" })
 public class Query {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
