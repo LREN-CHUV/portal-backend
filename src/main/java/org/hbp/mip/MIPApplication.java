@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.hbp.mip.controllers.HibernateUtil;
 import org.hbp.mip.data.Database;
-import org.hbp.mip.model.Group;
 import org.hbp.mip.model.User;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +95,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Group where code= :code");
-        query.setString("code", "root");
-        Group group = (Group) query.uniqueResult();
+        org.hibernate.Query query = session.createQuery("select count(*) from Group");
+        Long count = (Long) query.uniqueResult();
         session.getTransaction().commit();
-        if (group == null)
+        if (count < 1)
         {
             Database.loadGroups();
         }
