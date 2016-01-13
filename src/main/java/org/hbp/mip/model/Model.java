@@ -21,7 +21,9 @@ public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+    @Column(unique = true)
     private String title = null;
+    @Column(unique = true)
     private String slug = null;
     private String description = null;
     @ManyToOne

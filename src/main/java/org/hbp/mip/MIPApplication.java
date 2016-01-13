@@ -103,6 +103,16 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             Database.loadGroups();
         }
 
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        query = session.createQuery("select count(*) from Variable");
+        count = (Long) query.uniqueResult();
+        session.getTransaction().commit();
+        if (count < 1)
+        {
+            Database.loadVariables();
+        }
+
         SpringApplication.run(MIPApplication.class, args);
     }
 

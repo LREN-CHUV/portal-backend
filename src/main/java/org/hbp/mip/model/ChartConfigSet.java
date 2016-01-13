@@ -20,6 +20,7 @@ public class ChartConfigSet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+    @Column(unique = true)
     private String code = null;
     private String label = null;
     private String color = null;

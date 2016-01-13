@@ -23,6 +23,7 @@ public class Dataset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+    @Column(unique = true)
     private String code = null;
     private Date date = null;
     @ElementCollection

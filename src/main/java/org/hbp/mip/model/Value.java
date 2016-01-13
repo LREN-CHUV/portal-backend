@@ -20,6 +20,7 @@ public class Value {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+    @Column(unique = true)
     private String code = null;
     private String label = null;
 

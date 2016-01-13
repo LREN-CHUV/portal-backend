@@ -1,89 +1,65 @@
 package org.hbp.mip.data;
 
+import com.google.gson.Gson;
 import org.hbp.mip.controllers.HibernateUtil;
 import org.hbp.mip.model.Group;
 import org.hibernate.Session;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by mirco on 11.01.16.
  */
 public class Database {
 
-    private static final String GROUPS_FILE = "data/groups.csv";
-    private static final String VARIABLES_FILE = "data/variables.csv";
-    private static final String SEPARATOR = ",";
-    private static final ClassLoader CL = Database.class.getClassLoader();
+    private static String GROUPS_SRC = "/home/mirco/Workspace/GitLab/mip/target/classes/data/groups.json";
+    private static String VARIABLES_SRC = "/home/mirco/Workspace/GitLab/mip/target/classes/data/variables.json";
 
     public static void loadGroups() {
+        // Read data from file
+        String inputFile = GROUPS_SRC;
+        File f = new File(inputFile);
+        FileReader fr;
+        BufferedReader br;
+        String data = "";
+        try {
+            fr = new FileReader(f);
+            br = new BufferedReader(fr);
+            data = new String(Files.readAllBytes(Paths.get(GROUPS_SRC)));
+            br.close();
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        String inputFile = "/home/mirco/Workspace/GitLab/mip/target/classes/data/groups.csv"; //CL.getResource(GROUPS_FILE).getFile();
+        // Parse JSON
+        Gson gson = new Gson();
+        Group rootGroup = gson.fromJson(data, Group.class);
 
-        List<Group> groups = new LinkedList<Group>();
+        // Insert into DB
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        session.save(rootGroup);
+        session.getTransaction().commit();
+    }
+
+    public static void loadVariables() {
+
+        String inputFile = VARIABLES_SRC;
 
         File f = new File(inputFile);
         FileReader fr;
         BufferedReader br;
 
         try {
-
             fr = new FileReader(f);
             br = new BufferedReader(fr);
-
-            int stackPtr = -1;
-            int oldIdx = -1;
-
-            Group root = new Group(); //root
-            root.setCode("root");
-            root.setLabel("root");
-
-            stackPtr++;
-            groups.add(root);
-
-            for (String line = br.readLine(); line != null; line = br.readLine()) {
-
-                String[] data = line.split(SEPARATOR);
-
-                int idx = data.length - 1;
-
-                String label = data[idx];
-                String code = label.replace(" ", "_");
-                Group g = new Group();
-                g.setLabel(label);
-                g.setCode(code);
-
-                if (idx > oldIdx && stackPtr > -1) {
-                    groups.get(stackPtr).addGroup(g);
-                } else if (idx < oldIdx) {
-                    stackPtr -= 2;
-                } else if (idx == oldIdx) {
-                    stackPtr--;
-                    groups.get(stackPtr).addGroup(g);
-                }
-
-                stackPtr++;
-                groups.add(g);
-
-                oldIdx = idx;
-
-            }
-
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            session.beginTransaction();
-            for (Group group : groups)
-            {
-                session.save(group);
-            }
-            session.getTransaction().commit();
 
             br.close();
             fr.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

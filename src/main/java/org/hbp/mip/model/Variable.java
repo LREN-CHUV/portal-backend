@@ -24,6 +24,7 @@ public class Variable {
     private Long id = null;
     @ManyToOne
     private Group group = null;
+    @Column(unique = true)
     private String code = null;
     private String label = null;
     private String type = null;

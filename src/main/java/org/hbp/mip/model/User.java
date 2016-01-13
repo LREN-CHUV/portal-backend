@@ -25,6 +25,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
     private String fullname = null;
+    @Column(unique = true)
     private String username = null;
     private String firstname = null;
     private String lastname = null;

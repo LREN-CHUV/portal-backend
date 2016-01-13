@@ -34,6 +34,7 @@ public class GroupsApi {
         query.setString("code", rootCode);
         Group group = (Group) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<Group>(HttpStatus.OK).ok(group);
     }
 

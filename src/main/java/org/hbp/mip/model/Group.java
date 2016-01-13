@@ -22,9 +22,10 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+    @Column(unique = true)
     private String code = null;
     private String label = null;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Group> groups = new LinkedList<Group>();
 
     public Group() {
@@ -98,4 +99,5 @@ public class Group {
     public void addGroup(Group group) {
         this.groups.add(group);
     }
+
 }

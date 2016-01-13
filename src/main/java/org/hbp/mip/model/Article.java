@@ -24,7 +24,9 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
     private String status = null;
+    @Column(unique = true)
     private String title = null;
+    @Column(unique = true)
     private String slug = null;
     private String _abstract = null;
     private String content = null;
