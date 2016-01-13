@@ -22,7 +22,7 @@ public class Variable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Group group = null;
     @Column(unique = true)
     private String code = null;
@@ -32,7 +32,7 @@ public class Variable {
     private Boolean isVariable = null;
     private Boolean isGrouping = null;
     private Boolean isFilter = null;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
 
     public Variable() {

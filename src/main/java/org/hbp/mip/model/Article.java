@@ -37,7 +37,7 @@ public class Article {
     private User createdBy = null;
     @ManyToOne
     private User updatedBy = null;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Tag> tags = new LinkedList<Tag>();
 
     public Article() {
