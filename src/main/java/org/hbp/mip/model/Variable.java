@@ -31,6 +31,7 @@ public class Variable {
     private Integer length = null;
     private Boolean isVariable = null;
     private Boolean isGrouping = null;
+    private Boolean isCovariable = null;
     private Boolean isFilter = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
@@ -143,6 +144,19 @@ public class Variable {
     }
 
     /**
+     * Is it a co-variable ?
+     **/
+    @ApiModelProperty(value = "Is it a co-variable ?")
+    @JsonProperty("isCovariable")
+    public Boolean getIsCovariable() {
+        return isCovariable;
+    }
+
+    public void setIsCovariable(Boolean isCovariable) {
+        this.isCovariable = isCovariable;
+    }
+
+    /**
      * Is it a filter ?
      **/
     @ApiModelProperty(value = "Is it a filter ?")
@@ -180,6 +194,7 @@ public class Variable {
         sb.append("  length: ").append(length).append("\n");
         sb.append("  isVariable: ").append(isVariable).append("\n");
         sb.append("  isGrouping: ").append(isGrouping).append("\n");
+        sb.append("  isGrouping: ").append(isCovariable).append("\n");
         sb.append("  isFilter: ").append(isFilter).append("\n");
         sb.append("  values: ").append(values).append("\n");
         sb.append("}\n");
