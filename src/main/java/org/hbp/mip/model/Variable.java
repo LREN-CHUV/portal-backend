@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "`variable`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "id" })
+@JsonIgnoreProperties(value = { "id", "idxPathGrp" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
     @Id
@@ -40,6 +40,7 @@ public class Variable {
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
+    private Integer idxPathGrp = null;  // Trick attribut used to know which of group.getGroups() is the path group
 
     public Variable() {
     }
@@ -223,6 +224,19 @@ public class Variable {
 
     public void setUnits(String units) {
         this.units = units;
+    }
+
+    /**
+     * Subgroup index for variable path
+     **/
+    @ApiModelProperty(value = "Subgroup index for variable path")
+    @JsonProperty("idxPathGrp")
+    public Integer getIdxPathGrp() {
+        return idxPathGrp;
+    }
+
+    public void setIdxPathGrp(Integer idxPathGrp) {
+        this.idxPathGrp = idxPathGrp;
     }
 
     @Override

@@ -63,23 +63,46 @@ public class Database {
             Group g = v.getGroup();
             if(g != null)
             {
+                String pathGrp = null;
+                List<Group> subGroups = g.getGroups();  // Should only contain one group
+
+                // Get code of path sub-group and link current variable group to matching one from DB
+                if(subGroups != null && !subGroups.isEmpty())
+                {
+                    pathGrp = subGroups.get(0).getCode();
+                }
                 v.setGroup(readGroupFromDB(g.getCode()));
+
+                // Search index of the path sub-group and set it for the current variable
+                int i = 0;
+                for(Group subGrp : v.getGroup().getGroups())
+                {
+                    if(pathGrp.equals(subGrp.getCode()))
+                    {
+                        v.setIdxPathGrp(i);
+                    }
+                    i++;
+                }
             }
+
+            // Save values if do not exist
             List<Value> newValues = new LinkedList<>();
             for(Value val : v.getValues())
             {
+                // Check existence in the DB
                 Value existingVal = readValueFromDB(val.getCode());
                 if(existingVal == null)
                 {
+                    // Save if does not exist
                     Session session = HibernateUtil.getSessionFactory().getCurrentSession();
                     session.beginTransaction();
                     session.save(val);
                     session.getTransaction().commit();
                     existingVal = val;
                 }
-                newValues.add(existingVal);
+                newValues.add(existingVal);  // Set reference
             }
-            v.setValues(newValues);
+            v.setValues(newValues);  // Set reference
         }
 
         // Insert into DB

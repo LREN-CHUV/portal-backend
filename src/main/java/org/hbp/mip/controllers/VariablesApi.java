@@ -6,6 +6,7 @@ package org.hbp.mip.controllers;
 
 
 import io.swagger.annotations.*;
+import org.hbp.mip.model.Group;
 import org.hbp.mip.model.Value;
 import org.hbp.mip.model.Variable;
 import org.hibernate.Session;
@@ -39,10 +40,37 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isGrouping", required = false) String isGrouping,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isCovariable", required = false) String isCovariable,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter) throws NotFoundException {
+
+        // Get variales from DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         List<Variable> variables = session.createQuery("from Variable").list();
         session.getTransaction().commit();
+
+        // Remove non-path-groups from sub-groups list
+        for(Variable v : variables)
+        {
+            Group g = v.getGroup();
+            if(g != null)
+            {
+                Integer idxPathGrp = v.getIdxPathGrp();
+                String code = g.getCode();
+
+                // Get group hierarchy matching code from DB
+                session = HibernateUtil.getSessionFactory().getCurrentSession();
+                session.beginTransaction();
+                org.hibernate.Query query = session.createQuery("from Group where code= :code");
+                query.setString("code", code);
+                Group grpDB = (Group) query.uniqueResult();
+                session.getTransaction().commit();
+
+                if(grpDB != null && grpDB.getGroups() != null && !grpDB.getGroups().isEmpty() && idxPathGrp != null)
+                {
+                    grpDB.setGroups(grpDB.getGroups().subList(idxPathGrp, idxPathGrp+1));
+                    v.setGroup(grpDB);
+                }
+            }
+        }
         return new ResponseEntity<List<Variable>>(HttpStatus.OK).ok(variables);
     }
 

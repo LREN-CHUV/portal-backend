@@ -27,7 +27,7 @@ public class Group {
     @Column(unique = true)
     private String code = null;
     private String label = null;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Group> groups = new LinkedList<Group>();
 
     public Group() {
