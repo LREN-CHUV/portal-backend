@@ -32,7 +32,7 @@ public class Database {
             e.printStackTrace();
         }
 
-        // Parse JSON
+        // Deserialize JSON
         Gson gson = new Gson();
         Group rootGroup = gson.fromJson(data, Group.class);
 
@@ -52,9 +52,9 @@ public class Database {
             e.printStackTrace();
         }
 
-        // Parse JSON
+        // Deserialize JSON
         Gson gson = new Gson();
-        Type listVariablesType = new TypeToken<LinkedList<Variable>>(){}.getType();
+        Type listVariablesType = new TypeToken<List<Variable>>(){}.getType();
         List<Variable> variables = gson.fromJson(data, listVariablesType);
 
         // Sync groups and values with DB

@@ -6,6 +6,7 @@ package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -18,21 +19,25 @@ import java.util.List;
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
 @JsonIgnoreProperties(value = { "id" })
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Group group = null;
     @Column(unique = true)
     private String code = null;
     private String label = null;
     private String type = null;
     private Integer length = null;
+    private Double minValue = null;
+    private Double maxValue = null;
+    private String units = null;
     private Boolean isVariable = null;
     private Boolean isGrouping = null;
     private Boolean isCovariable = null;
     private Boolean isFilter = null;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
 
@@ -179,6 +184,45 @@ public class Variable {
 
     public void setValues(List<Value> values) {
         this.values = values;
+    }
+
+    /**
+     * Minimum value (only for numbers)
+     **/
+    @ApiModelProperty(value = "Minimum value (only for numbers)")
+    @JsonProperty("minValue")
+    public Double getMinValue() {
+        return minValue;
+    }
+
+    public void setMinValue(Double minValue) {
+        this.minValue = minValue;
+    }
+
+    /**
+     * Maximum value (only for numbers)
+     **/
+    @ApiModelProperty(value = "Maximum value (only for numbers)")
+    @JsonProperty("maxValue")
+    public Double getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(Double maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    /**
+     * Units
+     **/
+    @ApiModelProperty(value = "Units")
+    @JsonProperty("units")
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
     }
 
     @Override
