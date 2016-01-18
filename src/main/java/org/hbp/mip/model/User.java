@@ -22,11 +22,8 @@ import java.util.regex.Pattern;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    private String fullname = null;
-    @Column(unique = true)
     private String username = null;
+    private String fullname = null;
     private String firstname = null;
     private String lastname = null;
     private String picture = null;
@@ -105,19 +102,6 @@ public class User {
             this.picture = "images/users/default_user.png";
         }
 
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -359,7 +343,6 @@ public class User {
         StringBuilder sb = new StringBuilder();
         sb.append("class User {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  fullname: ").append(fullname).append("\n");
         sb.append("  username: ").append(username).append("\n");
         sb.append("  firstname: ").append(firstname).append("\n");

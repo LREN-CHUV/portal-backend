@@ -21,41 +21,24 @@ import java.util.Date;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    @Column(unique = true)
-    private String title = null;
-    @Column(unique = true)
     private String slug = null;
+    private String title = null;
     private String description = null;
-    @ManyToOne
-    private Query query = null;
-    @ManyToOne
-    private Dataset dataset = null;
     private Boolean valid = null;
-    @ManyToOne
-    private Chart chart = null;
     private Date createdAt = null;
     private Date updatedAt = null;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private Query query = null;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private Dataset dataset = null;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private Chart chart = null;
     @ManyToOne
     private User createdBy = null;
     @ManyToOne
     private User updatedBy = null;
 
     public Model() {
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -206,7 +189,6 @@ public class Model {
         StringBuilder sb = new StringBuilder();
         sb.append("class Model {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  title: ").append(title).append("\n");
         sb.append("  slug: ").append(slug).append("\n");
         sb.append("  description: ").append(description).append("\n");

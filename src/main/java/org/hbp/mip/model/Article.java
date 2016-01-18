@@ -23,13 +23,9 @@ import java.util.List;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Article {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    private String status = null;
-    @Column(unique = true)
-    private String title = null;
-    @Column(unique = true)
     private String slug = null;
+    private String title = null;
+    private String status = null;
     private String _abstract = null;
     private String content = null;
     private Date publishedAt = null;
@@ -39,23 +35,10 @@ public class Article {
     private User createdBy = null;
     @ManyToOne
     private User updatedBy = null;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<Tag> tags = new LinkedList<Tag>();
 
     public Article() {
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -205,7 +188,6 @@ public class Article {
         StringBuilder sb = new StringBuilder();
         sb.append("class Article {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  status: ").append(status).append("\n");
         sb.append("  title: ").append(title).append("\n");
         sb.append("  slug: ").append(slug).append("\n");

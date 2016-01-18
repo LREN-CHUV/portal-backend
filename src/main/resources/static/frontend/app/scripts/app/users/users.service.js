@@ -34,8 +34,8 @@ angular.module('chuvApp.users')
           );
       },
 
-      get: function (id) {
-        $http.get("/users/"+id).success(function(data) {
+      get: function (username) {
+        $http.get("/users/"+username).success(function(data) {
           return data;
         }).error(function() {
           return null;
@@ -50,13 +50,8 @@ angular.module('chuvApp.users')
         return user
       },
 
-      remove: function (id) {
-        for (var idx in datas) {
-          if (datas.hasOwnProperty(idx) && datas[idx].id == id) {
-            datas.splice(idx, 1);
-            return;
-          }
-        }
+      remove: function (username) {
+        return;
       }
 
     };

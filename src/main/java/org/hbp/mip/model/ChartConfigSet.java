@@ -20,27 +20,11 @@ import javax.persistence.*;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ChartConfigSet {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    @Column(unique = true)
     private String code = null;
     private String label = null;
     private String color = null;
 
     public ChartConfigSet() {
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -88,7 +72,6 @@ public class ChartConfigSet {
         StringBuilder sb = new StringBuilder();
         sb.append("class ChartConfigSet {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  code: ").append(code).append("\n");
         sb.append("  label: ").append(label).append("\n");
         sb.append("  color: ").append(color).append("\n");

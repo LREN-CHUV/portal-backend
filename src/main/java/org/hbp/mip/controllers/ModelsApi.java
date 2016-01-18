@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Model;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,29 @@ public class ModelsApi {
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask valid models") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
+
+        String queryString = "from Model m, User u where m.createdBy=u.id";
+
+        if(own != null)
+        {
+            if(own)
+            {
+                queryString += " and u.username= :username";
+            }
+            else
+            {
+                queryString += " and u.username!= :username";
+            }
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        List<Model> models = session.createQuery("from Model").list();
+        Query query = session.createQuery(queryString);
+        if(own != null)
+        {
+            query.setString("username", "nasuti");
+        }
+        List<Model> models = query.list();
         session.getTransaction().commit();
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }

@@ -21,10 +21,8 @@ import java.util.List;
 @JsonIgnoreProperties(value = { "id", "idxPathGrp" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    @Column(unique = true)
     private String code = null;
     private String label = null;
     private String type = null;
@@ -43,19 +41,6 @@ public class Variable {
     private Integer idxPathGrp = null;  // Trick attribut used to know which of group.getGroups() is the path group
 
     public Variable() {
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -244,7 +229,6 @@ public class Variable {
         StringBuilder sb = new StringBuilder();
         sb.append("class Variable {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  group: ").append(group).append("\n");
         sb.append("  code: ").append(code).append("\n");
         sb.append("  label: ").append(label).append("\n");

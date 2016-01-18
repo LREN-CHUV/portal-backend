@@ -5,10 +5,10 @@
             </span>
             <h3 class="search-title"><a ui-sref="models-edit({ slug: model.slug })">{{model.title}}</a></h3>
             <div class="author-box">
-              <a href="{{'#/users/' + model.createdBy.id }}" class="avatar">
+              <a href="{{'#/users/' + model.createdBy.username }}" class="avatar">
                 <img ng-src="{{model.createdBy.picture}}" alt="" class="avatar" />
               </a>
-              by <a href="{{'#/users/' + model.createdBy.id }}">{{model.createdBy.fullname}}</a><br />
+              by <a href="{{'#/users/' + model.createdBy.username }}">{{model.createdBy.fullname}}</a><br />
               <span class="time">{{model.createdAt | fromNow}}</span>
             </div>
         </li>

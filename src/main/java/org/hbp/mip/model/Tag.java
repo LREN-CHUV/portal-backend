@@ -20,9 +20,6 @@ import javax.persistence.*;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Tag {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    @Column(unique = true)
     private String name = null;
 
     public Tag() {
@@ -31,7 +28,7 @@ public class Tag {
     /**
      * Unique identifier
      **/
-    @ApiModelProperty(value = "Unique identifier")
+    /*@ApiModelProperty(value = "Unique identifier")
     @JsonProperty("id")
     public Long getId() {
         return id;
@@ -39,7 +36,7 @@ public class Tag {
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
     /**
      * Name
@@ -59,7 +56,7 @@ public class Tag {
         StringBuilder sb = new StringBuilder();
         sb.append("class Tag {\n");
 
-        sb.append("  id: ").append(id).append("\n");
+        //sb.append("  id: ").append(id).append("\n");
         sb.append("  name: ").append(name).append("\n");
         sb.append("}\n");
         return sb.toString();

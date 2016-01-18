@@ -23,28 +23,12 @@ import java.util.List;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Dataset {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = null;
-    @Column(unique = true)
     private String code = null;
     private Date date = null;
     @ElementCollection
     private List<String> header = new LinkedList<String>();
 
     public Dataset() {
-    }
-
-    /**
-     * Unique identifier
-     **/
-    @ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     /**
@@ -92,7 +76,6 @@ public class Dataset {
         StringBuilder sb = new StringBuilder();
         sb.append("class Dataset {\n");
 
-        sb.append("  id: ").append(id).append("\n");
         sb.append("  code: ").append(code).append("\n");
         sb.append("  date: ").append(date).append("\n");
         sb.append("  header: ").append(header).append("\n");

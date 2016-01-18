@@ -25,10 +25,10 @@
                             </div>
 
                             <div class="author-box">
-                              <a ng-href="#/users/{{item.data.createdBy.id}}" class="avatar">
+                              <a ng-href="#/users/{{item.data.createdBy.username}}" class="avatar">
                                 <img ng-src="{{item.data.createdBy.picture}}" alt="" class="avatar" />
                               </a>
-                              by <a ng-href="#/users/{{item.data.createdBy.id}}">{{item.data.createdBy.fullname}}</a><br />
+                              by <a ng-href="#/users/{{item.data.createdBy.username}}">{{item.data.createdBy.fullname}}</a><br />
                               <span class="time">{{item.data.createdAt | fromNow}}</span>
                             </div>
 

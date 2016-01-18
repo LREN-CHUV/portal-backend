@@ -26,13 +26,13 @@ public class UsersApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{id}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{username}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<User> getAUser(
-            @ApiParam(value = "id", required = true) @PathVariable("id") Long id) throws NotFoundException {
+            @ApiParam(value = "username", required = true) @PathVariable("username") String username) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from User where id= :id");
-        query.setLong("id", id);
+        org.hibernate.Query query = session.createQuery("from User where username= :username");
+        query.setString("username", username);
         User user = (User) query.uniqueResult();
         session.getTransaction().commit();
         return new ResponseEntity<User>(HttpStatus.OK).ok(user);

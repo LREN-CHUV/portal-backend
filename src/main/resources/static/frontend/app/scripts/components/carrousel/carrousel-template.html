@@ -24,10 +24,10 @@
                         <carrousel-chart model="item"></carrousel-chart>
                     </span>
                     <div class="author-box">
-                      <a href="{{'#/users/' + item.createdBy.id }}" class="avatar">
+                      <a href="{{'#/users/' + item.createdBy.username }}" class="avatar">
                         <img ng-src="{{item.createdBy.picture}}" alt="" class="avatar" />
                       </a>
-                      by <a href="{{'#/users/' + item.createdBy.id }}">{{item.createdBy.fullname}}</a><br />
+                      by <a href="{{'#/users/' + item.createdBy.username }}">{{item.createdBy.fullname}}</a><br />
                       <span class="time">{{item.createdAt | fromNow}}</span>
                     </div>
                 </li>
