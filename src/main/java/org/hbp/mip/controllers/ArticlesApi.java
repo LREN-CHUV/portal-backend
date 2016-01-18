@@ -9,6 +9,7 @@ import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +38,23 @@ public class ArticlesApi {
             @ApiParam(value = "Only ask results matching status") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask valid articles") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
+
+        String queryString = "from Article";
+        if(status != null)
+        {
+            queryString += " where status= :status";
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        List<Article> articles = session.createQuery("from Article").list();
+        Query query = session.createQuery(queryString);
+
+        if(status != null)
+        {
+            query.setString("status", status);
+        }
+
+        List<Article> articles = query.list();
         session.getTransaction().commit();
         return new ResponseEntity<List<Article>>(HttpStatus.OK).ok(articles);
     }
