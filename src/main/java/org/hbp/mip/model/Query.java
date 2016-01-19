@@ -25,13 +25,13 @@ public class Query {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
     private String request = null;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Variable> variables = new LinkedList<Variable>();
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Variable> covariables = new LinkedList<Variable>();
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Variable> grouping = new LinkedList<Variable>();
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Filter> filters = new LinkedList<Filter>();
 
     public Query() {

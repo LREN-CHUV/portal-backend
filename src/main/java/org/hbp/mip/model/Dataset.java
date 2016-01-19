@@ -4,7 +4,6 @@
 
 package org.hbp.mip.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
@@ -19,13 +18,12 @@ import java.util.List;
 @Table(name = "`dataset`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "id" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Dataset {
     @Id
     private String code = null;
     private Date date = null;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> header = new LinkedList<String>();
 
     public Dataset() {

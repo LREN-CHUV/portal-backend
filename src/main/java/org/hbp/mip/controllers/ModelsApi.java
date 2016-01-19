@@ -6,14 +6,17 @@ package org.hbp.mip.controllers;
 
 
 import io.swagger.annotations.*;
+import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Model;
-import org.hibernate.Query;
+import org.hbp.mip.model.Query;
+import org.hbp.mip.model.User;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +55,7 @@ public class ModelsApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        Query query = session.createQuery(queryString);
+        org.hibernate.Query query = session.createQuery(queryString);
         if(own != null)
         {
             query.setString("username", "nasuti");
@@ -68,13 +71,29 @@ public class ModelsApi {
             @ApiResponse(code = 200, message = "Model created")})
     @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<Void> addAModel(
-            @RequestBody @ApiParam(value = "Model to create", required = true) Model model) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Model to create", required = true) Model model, Principal principal) throws NotFoundException {
+        User user = MIPApplication.getUser(principal);
+
+        model.setSlug(model.getTitle().toLowerCase());
+        model.setValid(true);
+        model.setCreatedBy(user);
+        model.setCreatedAt(new Date());
+        Query q = new Query();
+        Query qIn = model.getQuery();
+        q.setRequest(qIn.getRequest());
+        //q.setVariables(qIn.getVariables());
+        q.setCovariables(qIn.getCovariables());
+        q.setGrouping(qIn.getGrouping());
+        q.setFilters(qIn.getFilters());
+        model.setQuery(q);
+
+        System.out.println(model);
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        model.setCreatedAt(new Date());
-        model.setSlug(model.getTitle().toLowerCase());
         session.save(model);
         session.getTransaction().commit();
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

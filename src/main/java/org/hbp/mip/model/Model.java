@@ -4,7 +4,6 @@
 
 package org.hbp.mip.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
@@ -17,7 +16,6 @@ import java.util.Date;
 @Table(name = "`model`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "id" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Model {
     @Id
@@ -27,11 +25,11 @@ public class Model {
     private Boolean valid = null;
     private Date createdAt = null;
     private Date updatedAt = null;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Query query = null;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Dataset dataset = null;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Chart chart = null;
     @ManyToOne
     private User createdBy = null;

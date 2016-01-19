@@ -4,7 +4,6 @@
 
 package org.hbp.mip.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
@@ -18,7 +17,6 @@ import java.util.List;
 @Table(name = "`group`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "id" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Group {
     @Id

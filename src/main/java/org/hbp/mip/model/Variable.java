@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "`variable`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "id", "idxPathGrp" })
+@JsonIgnoreProperties(value = { "idxPathGrp" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
 
@@ -38,7 +38,7 @@ public class Variable {
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
-    private Integer idxPathGrp = null;  // Trick attribut used to know which of group.getGroups() is the path group
+    private Integer idxPathGrp = null;  // Tricky attribut used to know which of group.getGroups() is the path group
 
     public Variable() {
     }

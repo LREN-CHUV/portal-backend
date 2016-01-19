@@ -26,7 +26,7 @@ public class Chart {
     private Long id = null;
     private String chartType = null;
     private String xAxis = null;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ChartConfigSet> chartConfigSets = new LinkedList<ChartConfigSet>();
 
     public Chart() {
