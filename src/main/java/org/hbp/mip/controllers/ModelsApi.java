@@ -39,7 +39,7 @@ public class ModelsApi {
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask valid models") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
 
-        String queryString = "from Model m, User u where m.createdBy=u.id";
+        String queryString = "select m from Model m, User u where m.createdBy=u.id";
 
         if(own != null)
         {
