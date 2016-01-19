@@ -37,7 +37,10 @@ public class ModelsApi {
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
-            @ApiParam(value = "Only ask valid models") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
+            @ApiParam(value = "Only ask valid models") @RequestParam(value = "valid", required = false) Boolean valid,
+            Principal principal) throws NotFoundException {
+
+        User user = MIPApplication.getUser(principal);
 
         String queryString = "select m from Model m, User u where m.createdBy=u.id";
 
@@ -58,7 +61,7 @@ public class ModelsApi {
         org.hibernate.Query query = session.createQuery(queryString);
         if(own != null)
         {
-            query.setString("username", "nasuti");
+            query.setString("username", user.getUsername());
         }
         List<Model> models = query.list();
         session.getTransaction().commit();
