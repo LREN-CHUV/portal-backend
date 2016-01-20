@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
 if groups $USER | grep &>/dev/null '\bdocker\b'; then
-  DOCKER="docker"
+  DOCKER_COMPOSE="docker-compose"
 else
-  DOCKER="sudo docker"
+  DOCKER_COMPOSE="sudo docker-compose"
 fi
 
-$DOCKER run -p 8080:8080 -d portal-backend
+$DOCKER_COMPOSE up

@@ -6,9 +6,9 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/mirco</property>
-        <property name="connection.username">mirco</property>
-        <property name="connection.password">pass</property>
+        <property name="connection.url">jdbc:postgresql://portaldb:5432/postgres</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">test</property>
         <property name="hibernate.format_sql">true</property>
         <property name="connection.pool_size">1</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
