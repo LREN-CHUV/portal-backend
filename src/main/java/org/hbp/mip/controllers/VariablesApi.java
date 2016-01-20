@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -47,33 +48,29 @@ public class VariablesApi {
         List<Variable> variables = session.createQuery("from Variable").list();
         session.getTransaction().commit();
 
-        // Remove non-path-groups from sub-groups list
         for(Variable v : variables)
         {
-            Group g = v.getGroup();
-            if(g != null)
-            {
-                Integer idxPathGrp = v.getIdxPathGrp();
-                String code = g.getCode();
-
-                // Get group hierarchy matching code from DB
+            Group g = null;
+            Group fils = null;
+            for(int i=v.getGrpPath().size()-1; i >= 0; i--) {
                 session = HibernateUtil.getSessionFactory().getCurrentSession();
                 session.beginTransaction();
                 org.hibernate.Query query = session.createQuery("from Group where code= :code");
-                query.setString("code", code);
-                Group grpDB = (Group) query.uniqueResult();
+                query.setString("code", v.getGrpPath().get(i));
+                g = (Group) query.uniqueResult();
                 session.getTransaction().commit();
-
-                if(grpDB != null && grpDB.getGroups() != null && !grpDB.getGroups().isEmpty() && idxPathGrp != null)
+                g.setGroups(new LinkedList<>());
+                if(fils != null)
                 {
-                    grpDB.setGroups(grpDB.getGroups().subList(idxPathGrp, idxPathGrp+1));
-                    v.setGroup(grpDB);
+                    g.addGroup(fils);
                 }
+                fils = g.clone();
             }
+            v.setGroup(fils);
         }
+
         return new ResponseEntity<List<Variable>>(HttpStatus.OK).ok(variables);
     }
-
 
     @ApiOperation(value = "Get a variable", notes = "", response = Variable.class)
     @ApiResponses(value = {

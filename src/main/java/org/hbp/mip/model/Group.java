@@ -83,4 +83,13 @@ public class Group {
         this.groups.add(group);
     }
 
+    public Group clone()
+    {
+        Group g = new Group();
+        g.setCode(this.getCode());
+        g.setLabel(this.getLabel());
+        g.setGroups(this.getGroups());
+        return g;
+    }
+
 }

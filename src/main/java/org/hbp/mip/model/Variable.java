@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "`variable`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "idxPathGrp" })
+@JsonIgnoreProperties(value = { "grpPath" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
 
@@ -34,11 +34,12 @@ public class Variable {
     private Boolean isGrouping = null;
     private Boolean isCovariable = null;
     private Boolean isFilter = null;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> grpPath = new LinkedList<>();
     @ManyToOne(fetch = FetchType.EAGER)
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
-    private Integer idxPathGrp = null;  // Tricky attribut used to know which of group.getGroups() is the path group
 
     public Variable() {
     }
@@ -212,16 +213,16 @@ public class Variable {
     }
 
     /**
-     * Subgroup index for variable path
+     * Group path
      **/
-    @ApiModelProperty(value = "Subgroup index for variable path")
-    @JsonProperty("idxPathGrp")
-    public Integer getIdxPathGrp() {
-        return idxPathGrp;
+    @ApiModelProperty(value = "Group path")
+    @JsonProperty("grpPath")
+    public List<String> getGrpPath() {
+        return grpPath;
     }
 
-    public void setIdxPathGrp(Integer idxPathGrp) {
-        this.idxPathGrp = idxPathGrp;
+    public void setGrpPath(List<String> grpPath) {
+        this.grpPath = grpPath;
     }
 
     @Override
