@@ -1,0 +1,3 @@
+[submodule "src/test/db"]
+	path = src/test/db
+	url = ssh://git@lab01560.intranet.chuv:2222/mip-portal/portal-db.git
