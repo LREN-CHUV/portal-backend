@@ -15,6 +15,7 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 * Externalize configuration (DB parameters, security enabled/disabled, ...)
 * Sync backend with hand written Swagger specs (see Maintenance section below);
 * Implement logout;
+* Add some details to the group and variable models like descriptions;
 * Update frontend (add introduction page, hide header/footer when not logged in, remove mock authors).
 
 ### Maintenance
