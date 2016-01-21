@@ -124,7 +124,7 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @ApiParam(value = "Model to update", required = true) Model model) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Model to update", required = true) Model model) throws NotFoundException {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

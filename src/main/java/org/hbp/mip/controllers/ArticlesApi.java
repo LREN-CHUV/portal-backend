@@ -35,7 +35,7 @@ public class ArticlesApi {
     @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<Article>> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask results matching status") @RequestParam(value = "status", required = false) String status,
+            @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask valid articles") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
 

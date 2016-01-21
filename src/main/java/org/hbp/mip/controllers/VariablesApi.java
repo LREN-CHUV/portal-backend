@@ -78,7 +78,7 @@ public class VariablesApi {
             @ApiResponse(code = 404, message = "Not found")})
     @RequestMapping(value = "/{code}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Variable> getAVariable(
-            @ApiParam(value = "code ( multiple codes are allowed, separeted by \",\" )", required = true) @PathVariable("code") String code) throws NotFoundException {
+            @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from Variable where code= :code");

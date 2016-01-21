@@ -4,8 +4,7 @@ This is the MIP implementation.
 
 ## Usage
 
-Run `mvn clean`, `mvn package` and `java -jar target/*.jar` to compile and run a demo.
-To use it, you need to configure some URLs and register an openid client on the HBP platform.
+Build the project with `./build` and run it with `./run`.
 
 ## API Documentation using Swagger (Springfox)
 
@@ -13,8 +12,8 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## TODO
 
-* "Dockerize" the project;
-* Sync backend with hand written Swagger specs;
+* Externalize configuration (DB parameters, security enabled/disabled, ...)
+* Sync backend with hand written Swagger specs (see Maintenance section below);
 * Implement logout;
 * Update frontend (add introduction page, hide header/footer when not logged in, remove mock authors).
 
