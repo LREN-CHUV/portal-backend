@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "`variable`")
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@JsonIgnoreProperties(value = { "grpPath" })
+@JsonIgnoreProperties(value = { "grpPath", "queries" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Variable {
 
@@ -40,6 +40,8 @@ public class Variable {
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Value> values = new LinkedList<Value>();
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "variables")
+    private List<Query> queries = new LinkedList<>();
 
     public Variable() {
     }
@@ -223,6 +225,14 @@ public class Variable {
 
     public void setGrpPath(List<String> grpPath) {
         this.grpPath = grpPath;
+    }
+
+    public List<Query> getQueries() {
+        return queries;
+    }
+
+    public void setQueries(List<Query> queries) {
+        this.queries = queries;
     }
 
     @Override

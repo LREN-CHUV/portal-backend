@@ -66,7 +66,7 @@ angular.module('chuvApp.models').controller('ModelController',['$scope','$transl
          * @returns {boolean}
          */
         $scope.isMine = function (obj) {
-            return obj.id == null || obj.createdBy.id == User.current().id;
+            return obj.username == null || obj.createdBy.username == User.current().username;
         };
 
         /**
@@ -225,7 +225,7 @@ angular.module('chuvApp.models').controller('ModelsController', ['$scope', '$tra
          * @returns {boolean}
          */
         $scope.isMine = function (obj) {
-            return obj.createdBy.id == User.current().id;
+            return obj.createdBy.username == User.current().username;
         };
 
         Model.getList(params).then(function (response) {

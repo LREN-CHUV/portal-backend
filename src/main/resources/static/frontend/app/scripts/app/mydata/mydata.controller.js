@@ -94,7 +94,7 @@ angular.module('chuvApp.mydata').controller('MyDataController', ['$scope', '$tra
         * @returns {boolean}
         */
        $scope.isMine = function(obj) {
-         return obj.createdBy.id == User.current().id;
+         return obj.createdBy.username == User.current().username;
        };
 
        $scope.refresh = function(){

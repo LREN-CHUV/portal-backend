@@ -168,7 +168,7 @@ angular.module('chuvApp.articles').controller('ArticlesController', ['$scope','A
      * @returns {boolean}
      */
     $scope.isMine = function(obj) {
-      return User.hasCurrent() ? obj.createdBy.id == User.current().id : false;
+      return User.hasCurrent() ? obj.createdBy.username == User.current().username : false;
     };
 
     $scope.isAuthorized = function(article){

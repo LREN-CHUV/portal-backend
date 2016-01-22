@@ -26,10 +26,22 @@ public class Query {
     private Long id = null;
     private String request = null;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "query_variable", joinColumns = {
+            @JoinColumn(name = "id", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "code",
+                    nullable = false, updatable = false) })
     private List<Variable> variables = new LinkedList<Variable>();
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "query_covariable", joinColumns = {
+            @JoinColumn(name = "id", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "code",
+                    nullable = false, updatable = false) })
     private List<Variable> covariables = new LinkedList<Variable>();
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "query_grouping", joinColumns = {
+            @JoinColumn(name = "id", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "code",
+                    nullable = false, updatable = false) })
     private List<Variable> grouping = new LinkedList<Variable>();
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Filter> filters = new LinkedList<Filter>();
@@ -67,7 +79,7 @@ public class Query {
      * Covariables
      **/
     @ApiModelProperty(value = "Covariables")
-    @JsonProperty("covariables")
+    @JsonProperty("coVariables")
     public List<Variable> getCovariables() {
         return covariables;
     }
@@ -80,7 +92,7 @@ public class Query {
      * Grouping
      **/
     @ApiModelProperty(value = "Grouping")
-    @JsonProperty("grouping")
+    @JsonProperty("groupings")
     public List<Variable> getGrouping() {
         return grouping;
     }

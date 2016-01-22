@@ -8,7 +8,6 @@ package org.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Model;
-import org.hbp.mip.model.Query;
 import org.hbp.mip.model.User;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
@@ -81,14 +80,6 @@ public class ModelsApi {
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
-        Query q = new Query();
-        Query qIn = model.getQuery();
-        q.setRequest(qIn.getRequest());
-        //q.setVariables(qIn.getVariables());
-        q.setCovariables(qIn.getCovariables());
-        q.setGrouping(qIn.getGrouping());
-        q.setFilters(qIn.getFilters());
-        model.setQuery(q);
 
         System.out.println(model);
 
