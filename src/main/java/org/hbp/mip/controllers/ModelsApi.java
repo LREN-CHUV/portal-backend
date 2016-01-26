@@ -115,8 +115,14 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model) throws NotFoundException {
-        // do some magic!
+            @RequestBody @ApiParam(value = "Model to update", required = true) Model model, Principal principal) throws NotFoundException {
+        User user = MIPApplication.getUser(principal);
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        session.update(model);
+        session.getTransaction().commit();
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
