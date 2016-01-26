@@ -104,8 +104,14 @@ public class ArticlesApi {
     @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @ApiParam(value = "Article to update", required = true) Article article) throws NotFoundException {
-        // do some magic!
+            @RequestBody @ApiParam(value = "Article to update", required = true) Article article, Principal principal) throws NotFoundException {
+        User user = MIPApplication.getUser(principal);
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        session.update(article);
+        session.getTransaction().commit();
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
