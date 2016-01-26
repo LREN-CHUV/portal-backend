@@ -12,6 +12,7 @@ portal-backend:
   build: .
   volumes:
     - ./src/test/docker/:/opt/portal/config/
+    - ./target/:/opt/portal/lib/
   links:
     - portaldb
   ports:
