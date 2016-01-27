@@ -33,7 +33,7 @@ public class VariablesApi {
     @ApiOperation(value = "Get variables", notes = "", response = Variable.class, responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<List<Variable>> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
             @ApiParam(value = "List of subgroups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "subgroup", required = false) String subgroup,
@@ -76,7 +76,7 @@ public class VariablesApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{code}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{code}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<Variable> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -93,7 +93,7 @@ public class VariablesApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{code}/values", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{code}/values", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<List<Value>> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q) throws NotFoundException {

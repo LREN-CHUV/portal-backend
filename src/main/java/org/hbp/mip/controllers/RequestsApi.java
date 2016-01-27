@@ -11,10 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -26,20 +22,36 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class RequestsApi {
 
-    private static String RESPONSE_SRC = "/home/mirco/Workspace/GitLab/mip/target/classes/data/requestExample.json";
-
     @ApiOperation(value = "", notes = "", response = Group.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success")})
     @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<String> postRequests() throws NotFoundException {
-        // Read data from file
-        String response = "";
-        try {
-            response = new String(Files.readAllBytes(Paths.get(RESPONSE_SRC)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Mock data
+        String response =
+                "{\n" +
+                "    \"code\": \"ib8ehpl4ic8cc0oc480w84w00cg4g0\",\n" +
+                "    \"date\": \"2016-01-18T13:56:14+0100\",\n" +
+                "    \"header\": [\n" +
+                "        \"MidTemp\"\n" +
+                "    ],\n" +
+                "    \"data\": {\n" +
+                "        \"MidTemp\": [\n" +
+                "            18422,\n" +
+                "            16972,\n" +
+                "            17330,\n" +
+                "            16398,\n" +
+                "            21614,\n" +
+                "            21386,\n" +
+                "            20474,\n" +
+                "            19867,\n" +
+                "            20398,\n" +
+                "            19741,\n" +
+                "            18595,\n" +
+                "            18018\n" +
+                "        ]\n" +
+                "    }\n" +
+                "}\n";
         return new ResponseEntity<Group>(HttpStatus.OK).ok(response);
     }
 

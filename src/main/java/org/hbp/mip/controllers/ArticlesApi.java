@@ -63,7 +63,7 @@ public class ArticlesApi {
     @ApiOperation(value = "Create an article", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Article created")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.POST)
+    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
             @RequestBody @ApiParam(value = "Article to create", required = true) Article article, Principal principal) throws NotFoundException {
         User user = MIPApplication.getUser(principal);
@@ -85,7 +85,7 @@ public class ArticlesApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -101,7 +101,7 @@ public class ArticlesApi {
     @ApiOperation(value = "Update an article", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Article updated")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.PUT)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Article to update", required = true) Article article, Principal principal) throws NotFoundException {
@@ -119,7 +119,7 @@ public class ArticlesApi {
     @ApiOperation(value = "Delete an article", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Article deleted")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
         // do some magic!

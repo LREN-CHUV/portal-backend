@@ -27,7 +27,7 @@ public class DatasetsApi {
     @ApiOperation(value = "Get a dataset", notes = "", response = Dataset.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "/{code}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{code}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<Dataset> getADataset(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

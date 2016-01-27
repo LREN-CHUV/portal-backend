@@ -71,7 +71,7 @@ public class ModelsApi {
     @ApiOperation(value = "Create a model", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Model created")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.POST)
+    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.POST)
     public ResponseEntity<Void> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model, Principal principal) throws NotFoundException {
         User user = MIPApplication.getUser(principal);
@@ -111,7 +111,7 @@ public class ModelsApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -127,7 +127,7 @@ public class ModelsApi {
     @ApiOperation(value = "Update a model", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Model updated")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.PUT)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model, Principal principal) throws NotFoundException {
@@ -145,7 +145,7 @@ public class ModelsApi {
     @ApiOperation(value = "Delete a model", notes = "", response = Void.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Model deleted")})
-    @RequestMapping(value = "/{slug}", produces = {"application/json"}, method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
         // do some magic!

@@ -26,7 +26,7 @@ public class UsersApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Found"),
             @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{username}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/{username}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<User> getAUser(
             @ApiParam(value = "username", required = true) @PathVariable("username") String username) throws NotFoundException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

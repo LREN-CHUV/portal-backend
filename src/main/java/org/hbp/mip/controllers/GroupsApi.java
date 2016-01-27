@@ -25,7 +25,7 @@ public class GroupsApi {
     @ApiOperation(value = "Get the root group (containing all subgroups)", notes = "", response = Group.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
     public ResponseEntity<Group> getTheRootGroup() throws NotFoundException {
         String rootCode = "root";
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
