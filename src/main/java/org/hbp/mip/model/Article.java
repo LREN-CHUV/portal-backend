@@ -25,6 +25,7 @@ public class Article {
     private String title = null;
     private String status = null;
     private String _abstract = null;
+    @Column(columnDefinition = "text")
     private String content = null;
     private Date publishedAt = null;
     private Date createdAt = null;

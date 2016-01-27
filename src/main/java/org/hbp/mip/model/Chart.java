@@ -26,6 +26,9 @@ public class Chart {
     private Long id = null;
     private String chartType = null;
     private String xAxis = null;
+    // TODO: Should I use @Lob ?
+    @Column(columnDefinition = "text")
+    private String svg = null;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ChartConfigSet> chartConfigSets = new LinkedList<ChartConfigSet>();
 
@@ -71,6 +74,14 @@ public class Chart {
         this.xAxis = xAxis;
     }
 
+    public String getSvg() {
+        return svg;
+    }
+
+    public void setSvg(String svg) {
+        this.svg = svg;
+    }
+
     /**
      * Chart configuration
      **/
@@ -92,6 +103,7 @@ public class Chart {
         sb.append("  id: ").append(id).append("\n");
         sb.append("  chartType: ").append(chartType).append("\n");
         sb.append("  xAxis: ").append(xAxis).append("\n");
+        sb.append("  svg: ").append(svg).append("\n");
         sb.append("  chartConfigSets: ").append(chartConfigSets).append("\n");
         sb.append("}\n");
         return sb.toString();

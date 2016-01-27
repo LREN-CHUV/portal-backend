@@ -91,6 +91,21 @@ public class ModelsApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get SVG", notes = "", response = Model.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Found"),
+            @ApiResponse(code = 404, message = "Not found")})
+    @RequestMapping(value = "/{slug}.svg", produces = {"image/svg+xml"}, method = RequestMethod.GET)
+    public ResponseEntity<String> getSVG(
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
+        query.setString("slug", slug);
+        Model model = (Model) query.uniqueResult();
+        session.getTransaction().commit();
+        return new ResponseEntity<String>(HttpStatus.OK).ok(model.getChart().getSvg());
+    }
 
     @ApiOperation(value = "Get a model", notes = "", response = Model.class)
     @ApiResponses(value = {
