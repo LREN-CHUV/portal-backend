@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.hbp.mip.controllers.HibernateUtil;
-import org.hbp.mip.data.Database;
 import org.hbp.mip.model.User;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,27 +91,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     OAuth2ClientContext oauth2ClientContext;
 
     public static void main(String[] args) {
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("select count(*) from Group");
-        Long count = (Long) query.uniqueResult();
-        session.getTransaction().commit();
-        if (count < 1)
-        {
-            Database.loadGroups();
-        }
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        query = session.createQuery("select count(*) from Variable");
-        count = (Long) query.uniqueResult();
-        session.getTransaction().commit();
-        if (count < 1)
-        {
-            Database.loadVariables();
-        }
-
         SpringApplication.run(MIPApplication.class, args);
     }
 
