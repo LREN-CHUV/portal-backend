@@ -6,7 +6,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:55432/postgres</property>
+        <property name="connection.url">jdbc:postgresql://portaldb:5432/postgres</property>
         <property name="connection.username">postgres</property>
         <property name="connection.password">test</property>
         <property name="hibernate.format_sql">true</property>
