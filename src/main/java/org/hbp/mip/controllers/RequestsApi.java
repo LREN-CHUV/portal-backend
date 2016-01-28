@@ -19,14 +19,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 @RequestMapping(value = "/queries/requests", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/queries/requests", description = "the groups API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class RequestsApi {
 
-    @ApiOperation(value = "", notes = "", response = Group.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.POST)
+    @ApiOperation(value = "Send a request", response = Group.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> postRequests() throws NotFoundException {
+
         // Mock data
         String response =
                 "{\n" +
@@ -52,6 +51,7 @@ public class RequestsApi {
                 "        ]\n" +
                 "    }\n" +
                 "}\n";
+
         return new ResponseEntity<Group>(HttpStatus.OK).ok(response);
     }
 

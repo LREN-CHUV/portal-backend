@@ -18,16 +18,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 @RequestMapping(value = "/groups", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/groups", description = "the groups API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class GroupsApi {
 
 
-    @ApiOperation(value = "Get the root group (containing all subgroups)", notes = "", response = Group.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+    @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Group> getTheRootGroup() throws NotFoundException {
+
+        // Set up root group
         String rootCode = "root";
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from Group where code= :code");

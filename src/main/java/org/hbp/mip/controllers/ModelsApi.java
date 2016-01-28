@@ -9,6 +9,7 @@ import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Model;
 import org.hbp.mip.model.User;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,61 +29,77 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ModelsApi {
 
 
-    @ApiOperation(value = "Get models", notes = "", response = Model.class, responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.GET)
+    @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Model>> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
-            @ApiParam(value = "Only ask valid models") @RequestParam(value = "valid", required = false) Boolean valid,
-            Principal principal) throws NotFoundException {
+            Principal principal
+    ) throws NotFoundException {
 
+        // Get current user
         User user = MIPApplication.getUser(principal);
 
+        // Prepare HQL query from Model and User tables
         String queryString = "select m from Model m, User u where m.createdBy=u.id";
-
-        if(own != null)
+        if(own != null && own)
         {
-            if(own)
+            queryString += " and u.username= :username";
+        }
+        else
+        {
+            if(team != null && team)
             {
-                queryString += " and u.username= :username";
-            }
-            else
-            {
-                queryString += " and u.username!= :username";
+                queryString += " and u.team= :team";
             }
         }
 
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery(queryString);
-        if(own != null)
+        Query query = session.createQuery(queryString);
+        if(own != null && own)
         {
             query.setString("username", user.getUsername());
         }
+        else
+        {
+            if(team != null && team)
+            {
+                query.setString("team", user.getTeam());
+            }
+        }
+        if(limit != null)
+        {
+            query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
+        }
         List<Model> models = query.list();
         session.getTransaction().commit();
+
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }
 
 
-    @ApiOperation(value = "Create a model", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Model created")})
-    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.POST)
+    @ApiOperation(value = "Create a model", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model created") })
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAModel(
-            @RequestBody @ApiParam(value = "Model to create", required = true) Model model, Principal principal) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Model to create", required = true) Model model,
+            Principal principal
+    ) throws NotFoundException {
+
+        // Get current user
         User user = MIPApplication.getUser(principal);
 
+        // Set up model
         model.setSlug(model.getTitle().toLowerCase());
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
 
-        System.out.println(model);
-
+        // Save model into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.save(model);
@@ -91,48 +108,56 @@ public class ModelsApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get SVG", notes = "", response = Model.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Found"),
-            @ApiResponse(code = 404, message = "Not found")})
+    @ApiOperation(value = "Get SVG", response = Model.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{slug}.svg", produces = {"image/svg+xml"}, method = RequestMethod.GET)
     public ResponseEntity<String> getSVG(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
+    ) throws NotFoundException {
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
         query.setString("slug", slug);
         Model model = (Model) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<String>(HttpStatus.OK).ok(model.getChart().getSvg());
     }
 
-    @ApiOperation(value = "Get a model", notes = "", response = Model.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Found"),
-            @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+    @ApiOperation(value = "Get a model", response = Model.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
+    ) throws NotFoundException {
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
         query.setString("slug", slug);
         Model model = (Model) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
 
 
-    @ApiOperation(value = "Update a model", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Model updated")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.PUT)
+    @ApiOperation(value = "Update a model", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model updated") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model, Principal principal) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Model to update", required = true) Model model,
+            Principal principal
+    ) throws NotFoundException {
+
+        // Get current user
         User user = MIPApplication.getUser(principal);
 
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.update(model);
@@ -142,13 +167,15 @@ public class ModelsApi {
     }
 
 
-    @ApiOperation(value = "Delete a model", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Model deleted")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete a model", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model deleted") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAModel(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
-        // do some magic!
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
+    ) throws NotFoundException {
+
+        // TODO : Implement delete method
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

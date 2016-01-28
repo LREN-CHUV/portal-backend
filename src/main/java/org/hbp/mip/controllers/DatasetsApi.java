@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +21,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 @RequestMapping(value = "/datasets", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/datasets", description = "the datasets API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class DatasetsApi {
 
 
-    @ApiOperation(value = "Get a dataset", notes = "", response = Dataset.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "/{code}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+    @ApiOperation(value = "Get a dataset", response = Dataset.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Dataset> getADataset(
-            @ApiParam(value = "code", required = true) @PathVariable("code") String code) throws NotFoundException {
+            @ApiParam(value = "code", required = true) @PathVariable("code") String code
+    ) throws NotFoundException {
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Dataset where code= :code");
+        Query query = session.createQuery("from Dataset where code= :code");
         query.setString("code", code);
         Dataset dataset = (Dataset) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
     }
 

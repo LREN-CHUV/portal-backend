@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.hbp.mip.controllers.HibernateUtil;
 import org.hbp.mip.model.User;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -82,8 +83,7 @@ import java.security.Principal;
 @RestController
 @EnableOAuth2Client
 @Api(value = "/", description = "MIP API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-06T09:32:22.266Z")
-@EnableSwagger2  // available at <BASE URL>/swagger-ui.html
+@EnableSwagger2
 @Configuration
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
@@ -104,7 +104,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     public static User getUser(Principal principal) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from User where username= :username");
+        Query query = session.createQuery("from User where username= :username");
         query.setString("username", principal.getName());
         User user = (User) query.uniqueResult();
         session.getTransaction().commit();
@@ -112,6 +112,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
             user = new User(getUserInfos());
+            user.setTeam("Default");
             session.save(user);
             session.getTransaction().commit();
         }

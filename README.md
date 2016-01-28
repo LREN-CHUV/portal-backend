@@ -12,11 +12,22 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## TODO
 
-* Externalize configuration (DB parameters, security enabled/disabled, ...)
+* Externalize configuration (DB parameters, security enabled/disabled, ...);
 * Sync backend with hand written Swagger specs (see Maintenance section below);
 * Implement logout;
 * Add some details to the group and variable models like descriptions;
-* Update frontend (add introduction page, hide header/footer when not logged in, remove mock authors).
+* Update frontend (add introduction page, hide header/footer when not logged in, remove mock authors, real stats like users count);
+* Fix bugs;
+* Add SoapUI tests.
+
+## BUGS
+
+* When adding a model to an article, the data table should be attached to the SVG plot;
+* MyData and MyCommunity does not show articles when adding a model;
+* Opening an existing model should auto-populate drop-down fields and execute query;
+* `See more` buttons do not work (homepage), neither `Articles` and `Models` from the profile page;
+* The '3 own models' tiles does not show on the homepage.
+
 
 ### Maintenance
 

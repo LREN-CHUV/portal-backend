@@ -19,22 +19,23 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 @RequestMapping(value = "/users", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/users", description = "the users API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class UsersApi {
 
-    @ApiOperation(value = "Get a user", notes = "", response = User.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Found"),
-            @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{username}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+    @ApiOperation(value = "Get a user", response = User.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
+    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public ResponseEntity<User> getAUser(
-            @ApiParam(value = "username", required = true) @PathVariable("username") String username) throws NotFoundException {
+            @ApiParam(value = "username", required = true) @PathVariable("username") String username
+    ) throws NotFoundException {
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from User where username= :username");
         query.setString("username", username);
         User user = (User) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<User>(HttpStatus.OK).ok(user);
     }
 }

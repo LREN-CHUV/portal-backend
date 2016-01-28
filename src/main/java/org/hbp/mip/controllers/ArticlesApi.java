@@ -25,88 +25,128 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Controller
 @RequestMapping(value = "/articles", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/articles", description = "the articles API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ArticlesApi {
 
 
-    @ApiOperation(value = "Get articles", notes = "", response = Article.class, responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success")})
-    @RequestMapping(value = "", produces = {"application/json"}, method = RequestMethod.GET)
+    @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Article>> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team,
-            @ApiParam(value = "Only ask valid articles") @RequestParam(value = "valid", required = false) Boolean valid) throws NotFoundException {
+            Principal principal
+    ) throws NotFoundException {
 
-        String queryString = "from Article";
+        // Get current user
+        User user = MIPApplication.getUser(principal);
+
+        // Prepare HQL query using Article and User tables
+        String queryString = "SELECT a FROM Article a, User u where a.createdBy=u.id";
         if(status != null)
         {
-            queryString += " where status= :status";
+            queryString += " and status= :status";
         }
 
+        if(own != null && own)
+        {
+            queryString += " and u.username= :username";
+        }
+        else
+        {
+            if(team != null && team)
+            {
+                queryString += " and u.team= :team";
+            }
+        }
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         Query query = session.createQuery(queryString);
-
         if(status != null)
         {
             query.setString("status", status);
         }
-
+        if(own != null && own)
+        {
+            query.setString("username", user.getUsername());
+        }
+        else
+        {
+            if(team != null && team)
+            {
+                query.setString("team", user.getTeam());
+            }
+        }
         List<Article> articles = query.list();
         session.getTransaction().commit();
+
         return new ResponseEntity<List<Article>>(HttpStatus.OK).ok(articles);
     }
 
 
-    @ApiOperation(value = "Create an article", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Article created")})
-    @RequestMapping(value = "", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.POST)
+    @ApiOperation(value = "Create an article", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article created") })
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
-            @RequestBody @ApiParam(value = "Article to create", required = true) Article article, Principal principal) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Article to create", required = true) Article article,
+            Principal principal
+    ) throws NotFoundException {
+
+        // Get current user
         User user = MIPApplication.getUser(principal);
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+
+        // Set up article to save
         article.setCreatedAt(new Date());
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
         }
-        article.setSlug(article.getTitle().toLowerCase());
+        article.setSlug(article.getTitle().toLowerCase().replaceAll(" ","_"));
         article.setCreatedBy(user);
+
+        // Save article into DB
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
         session.save(article);
         session.getTransaction().commit();
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
 
-    @ApiOperation(value = "Get an article", notes = "", response = Article.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Found"),
-            @ApiResponse(code = 404, message = "Not found")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.GET)
+    @ApiOperation(value = "Get an article", response = Article.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
+    ) throws NotFoundException {
+
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Article where slug= :slug");
+        Query query = session.createQuery("from Article where slug= :slug");
         query.setString("slug", slug);
         Article article = (Article) query.uniqueResult();
         session.getTransaction().commit();
+
         return new ResponseEntity<Article>(HttpStatus.OK).ok(article);
     }
 
 
-    @ApiOperation(value = "Update an article", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Article updated")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.PUT)
+    @ApiOperation(value = "Update an article", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article updated") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Article to update", required = true) Article article, Principal principal) throws NotFoundException {
+            @RequestBody @ApiParam(value = "Article to update", required = true) Article article,
+            Principal principal
+    ) throws NotFoundException {
+
+        // Get current user
         User user = MIPApplication.getUser(principal);
 
+        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.update(article);
@@ -116,13 +156,15 @@ public class ArticlesApi {
     }
 
 
-    @ApiOperation(value = "Delete an article", notes = "", response = Void.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Article deleted")})
-    @RequestMapping(value = "/{slug}", produces = { APPLICATION_JSON_VALUE }, method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete an article", response = Void.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article deleted") })
+    @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAnArticle(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug) throws NotFoundException {
-        // do some magic!
+            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
+    ) throws NotFoundException {
+
+        // TODO : Implement delete method
+
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
