@@ -10,9 +10,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "`dataset`")
@@ -24,6 +22,8 @@ public class Dataset {
     private Date date = null;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> header = new LinkedList<String>();
+    @Transient
+    private Map<String, List<Object>> data = new HashMap<>();
 
     public Dataset() {
     }
@@ -67,6 +67,13 @@ public class Dataset {
         this.header = header;
     }
 
+    public Map<String, List<Object>> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, List<Object>> data) {
+        this.data = data;
+    }
 
     @Override
     public String toString() {
@@ -76,6 +83,7 @@ public class Dataset {
         sb.append("  code: ").append(code).append("\n");
         sb.append("  date: ").append(date).append("\n");
         sb.append("  header: ").append(header).append("\n");
+        sb.append("  data: ").append(data).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

@@ -17,8 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -140,6 +139,23 @@ public class ModelsApi {
         query.setString("slug", slug);
         Model model = (Model) query.uniqueResult();
         session.getTransaction().commit();
+
+        // Inject mock data
+        List<Object> values = new LinkedList<>();
+        values.add(18422);
+        values.add(16972);
+        values.add(17330);
+        values.add(16398);
+        values.add(21614);
+        values.add(21386);
+        values.add(20474);
+        values.add(19867);
+        values.add(20398);
+        values.add(19741);
+        values.add(18595);
+        values.add(18018);
+        model.getDataset().getData().put("MidTemp", values);
+        model.getDataset().getHeader().add("MidTemp");
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
