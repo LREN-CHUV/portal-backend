@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "`filter`")
@@ -24,6 +26,8 @@ public class Filter {
     @ManyToOne
     private Variable variable = null;
     private String operator = null;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> values = new LinkedList<>();
 
     public Filter() {
     }
@@ -65,6 +69,14 @@ public class Filter {
 
     public void setOperator(String operator) {
         this.operator = operator;
+    }
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 
     @Override
