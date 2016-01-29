@@ -22,9 +22,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## BUGS
 
-* When adding a model to an article, the data table should be attached to the SVG plot;
-* MyData and MyCommunity does not show articles when adding a model;
-* Opening an existing model should auto-populate drop-down fields and execute query;
 * `See more` buttons do not work (homepage), neither `Articles` and `Models` from the profile page;
 * The '3 own models' tiles does not show on the homepage.
 
