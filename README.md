@@ -20,12 +20,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 * Fix bugs;
 * Add SoapUI tests.
 
-## BUGS
-
-* `See more` buttons do not work (homepage), neither `Articles` and `Models` from the profile page;
-* The '3 own models' tiles does not show on the homepage.
-
-
 ### Maintenance
 
 * To keep an updated API documentation, the developers should keep synchronized both the auto-generated swagger file (from Java annotations) with the hand written one. You can follow this method to get a YAML description from the Java-annotated code:
