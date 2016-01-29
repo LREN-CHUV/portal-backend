@@ -97,7 +97,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     public static String getUserInfos() {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
         Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
-        System.out.println(userAuthentication.getDetails().toString());
         return userAuthentication.getDetails().toString();
     }
 
@@ -112,7 +111,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             session.beginTransaction();
             user = new User(getUserInfos());
-            user.setTeam("Default");
+            user.setTeam("CHUV");
             session.save(user);
             session.getTransaction().commit();
         }
