@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;

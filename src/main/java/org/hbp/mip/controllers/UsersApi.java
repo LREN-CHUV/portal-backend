@@ -2,6 +2,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.User;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -9,6 +9,7 @@ import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
