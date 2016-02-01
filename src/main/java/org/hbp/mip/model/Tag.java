@@ -25,19 +25,6 @@ public class Tag {
     }
 
     /**
-     * Unique identifier
-     **/
-    /*@ApiModelProperty(value = "Unique identifier")
-    @JsonProperty("id")
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }*/
-
-    /**
      * Name
      **/
     @ApiModelProperty(value = "Name")

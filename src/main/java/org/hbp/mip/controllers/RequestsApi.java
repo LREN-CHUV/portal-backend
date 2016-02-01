@@ -21,8 +21,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/queries/requests", description = "the requests API")
 public class RequestsApi {
 
-    private final String VALUES_FILE = "/home/mirco/Workspace/GitLab/portal-backend/src/main/resources/data/values.csv";
-
     @ApiOperation(value = "Send a request", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
@@ -30,7 +28,7 @@ public class RequestsApi {
             @RequestBody @ApiParam(value = "Query to process", required = true) Query query
     ) throws NotFoundException {
 
-        Dataset dataset = CSVUtil.parseValues(VALUES_FILE, query);
+        Dataset dataset = CSVUtil.parseValues("data/values.csv", query);
 
         return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
     }

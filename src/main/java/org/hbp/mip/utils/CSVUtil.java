@@ -21,10 +21,9 @@ public class CSVUtil {
 
     public static Dataset parseValues(String filename, Query query)
     {
+        List<String[]> rows = getFilteredRows(filename, query.getFilters());
+
         Dataset result = new Dataset();
-        File file = new File(filename);
-        List<String[]> rows = getFilteredRows(file, query.getFilters());
-        System.out.println("nb of filtered rows : "+rows.size());
         String code = GenerateDSCode(query);
         Date date = new Date();
         List<String> header = new LinkedList<>();
@@ -38,11 +37,13 @@ public class CSVUtil {
         header.addAll(variables.stream().map(Variable::getCode).collect(Collectors.toList()));
 
         try {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+            InputStream is = Dataset.class.getClassLoader().getResourceAsStream(filename);
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
             String[] firstRow = br.readLine().split(SEPARATOR, -1);
             br.close();
-            fr.close();
+            isr.close();
+            is.close();
 
             for (Variable v : variables) {
                 String type = getTypeFromDB(v);
@@ -119,9 +120,9 @@ public class CSVUtil {
                     }
                 }
                 // TODO : Remove this limit -> only to avoid bug with Virtua's front-end
-                if(l.size() > 100)
+                if(l.size() > 50)
                 {
-                    l = l.subList(0, 99);
+                    l = l.subList(0, 49);
                 }
                 data.put(c, l);
                 System.out.println("Adding "+l.size()+" values to "+c);
@@ -137,11 +138,12 @@ public class CSVUtil {
         return result;
     }
 
-    private static List<String[]> getFilteredRows(File file, List<Filter> filters) {
+    private static List<String[]> getFilteredRows(String filename, List<Filter> filters) {
         List<String[]> filteredRows = new LinkedList<>();
         try {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+            InputStream is = Dataset.class.getClassLoader().getResourceAsStream(filename);
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
             String[] firstRow = br.readLine().split(SEPARATOR, -1);  // 1st row -> headers
             for (String line = br.readLine(); line != null; line = br.readLine()) {
                 String[] row = line.split(SEPARATOR, -1);
@@ -150,7 +152,8 @@ public class CSVUtil {
                 }
             }
             br.close();
-            fr.close();
+            isr.close();
+            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -304,6 +307,10 @@ public class CSVUtil {
         String type = (String) q.uniqueResult();
         session.getTransaction().commit();
 
+        if(type == null)
+        {
+            type = "unknown";
+        }
         return type;
     }
 

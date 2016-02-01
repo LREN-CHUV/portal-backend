@@ -24,26 +24,26 @@ public class Query {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
     private String request = null;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "query_variable", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
                     nullable = false, updatable = false) })
-    private List<Variable> variables = new LinkedList<Variable>();
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Variable> variables = new LinkedList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "query_covariable", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
                     nullable = false, updatable = false) })
-    private List<Variable> covariables = new LinkedList<Variable>();
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Variable> covariables = new LinkedList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "query_grouping", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
                     nullable = false, updatable = false) })
-    private List<Variable> grouping = new LinkedList<Variable>();
+    private List<Variable> grouping = new LinkedList<>();
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Filter> filters = new LinkedList<Filter>();
+    private List<Filter> filters = new LinkedList<>();
 
     public Query() {
     }

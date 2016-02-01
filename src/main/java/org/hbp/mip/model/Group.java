@@ -21,7 +21,7 @@ public class Group {
     @Id
     private String code = null;
     private String label = null;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Group> groups = new LinkedList<Group>();
 
     public Group() {

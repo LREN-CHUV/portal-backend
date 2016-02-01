@@ -18,7 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -157,6 +159,9 @@ public class ModelsApi {
         values.add(18018);
         model.getDataset().getData().put("MidTemp", values);
         model.getDataset().getHeader().add("MidTemp");
+
+        System.out.println("queryID" + model.getQuery().getId());
+        System.out.println("dataset id" + model.getDataset().getCode());
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }

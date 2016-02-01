@@ -38,7 +38,7 @@ public class Variable {
     @ManyToOne(fetch = FetchType.EAGER)
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Value> values = new LinkedList<Value>();
+    private List<Value> values = new LinkedList<>();
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "variables")
     private List<Query> queries = new LinkedList<>();
 

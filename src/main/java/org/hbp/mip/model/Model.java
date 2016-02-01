@@ -8,8 +8,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
@@ -24,11 +28,14 @@ public class Model {
     private Boolean valid = null;
     private Date createdAt = null;
     private Date updatedAt = null;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
     private Query query = null;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
     private Dataset dataset = null;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
     private Chart chart = null;
     @ManyToOne
     private User createdBy = null;
