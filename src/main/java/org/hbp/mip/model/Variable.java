@@ -111,9 +111,9 @@ public class Variable {
     }
 
     /**
-     * Is it a covariable ?
+     * Is it a variable ?
      **/
-    @ApiModelProperty(value = "Is it a covariable ?")
+    @ApiModelProperty(value = "Is it a variable ?")
     @JsonProperty("isVariable")
     public Boolean getIsVariable() {
         return isVariable;

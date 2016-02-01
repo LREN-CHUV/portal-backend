@@ -51,7 +51,7 @@ public class VariablesApi {
         // Get groups matching grpPath
         for(Variable v : variables)
         {
-            Group g = null;
+            Group g;
             Group child = null;
             for(int i=v.getGrpPath().size()-1; i >= 0; i--) {
                 session = HibernateUtil.getSessionFactory().getCurrentSession();

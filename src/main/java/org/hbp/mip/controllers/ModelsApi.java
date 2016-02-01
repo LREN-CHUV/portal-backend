@@ -7,8 +7,11 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
+import org.hbp.mip.model.Dataset;
 import org.hbp.mip.model.Model;
 import org.hbp.mip.model.User;
+import org.hbp.mip.model.Variable;
+import org.hbp.mip.utils.CSVUtil;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -30,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
 
+    private static final String DATA_FILE = "data/values.csv";
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -144,7 +148,7 @@ public class ModelsApi {
         session.getTransaction().commit();
 
         // Inject mock data
-        List<Object> values = new LinkedList<>();
+        /*List<Object> values = new LinkedList<>();
         values.add(18422);
         values.add(16972);
         values.add(17330);
@@ -158,10 +162,58 @@ public class ModelsApi {
         values.add(18595);
         values.add(18018);
         model.getDataset().getData().put("MidTemp", values);
-        model.getDataset().getHeader().add("MidTemp");
+        model.getDataset().getHeader().add("MidTemp");*/
 
-        System.out.println("queryID" + model.getQuery().getId());
-        System.out.println("dataset id" + model.getDataset().getCode());
+        /*session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        query = session.createQuery("from Dataset where code= :code");
+        query.setString("code", model.getDataset().getCode());
+        Dataset dataset = (Dataset) query.uniqueResult();
+        session.getTransaction().commit();
+
+        System.out.println("keyset : "+dataset.getData().keySet());*/
+
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        query = session.createQuery("from Query where id= :id");
+        query.setLong("id", model.getQuery().getId());
+        org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
+        session.getTransaction().commit();
+
+        List<Variable> vars = new LinkedList<>();
+        for(Variable var : q.getVariables())
+        {
+            Variable v = new Variable();
+            v.setCode(var.getCode());
+            vars.add(v);
+        }
+
+        List<Variable> covs = new LinkedList<>();
+        for(Variable cov : q.getCovariables())
+        {
+            Variable v = new Variable();
+            v.setCode(cov.getCode());
+            covs.add(v);
+        }
+
+        List<Variable> grps = new LinkedList<>();
+        for(Variable grp : q.getGrouping())
+        {
+            Variable v = new Variable();
+            v.setCode(grp.getCode());
+            grps.add(v);
+        }
+
+        org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
+        myQuery.setId(q.getId());
+        myQuery.setVariables(vars);
+        myQuery.setCovariables(covs);
+        myQuery.setGrouping(grps);
+
+        model.setQuery(myQuery);
+
+        Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
+        model.setDataset(ds);
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
