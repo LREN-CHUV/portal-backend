@@ -7,10 +7,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
-import org.hbp.mip.model.Dataset;
-import org.hbp.mip.model.Model;
-import org.hbp.mip.model.User;
-import org.hbp.mip.model.Variable;
+import org.hbp.mip.model.*;
 import org.hbp.mip.utils.CSVUtil;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
@@ -204,11 +201,23 @@ public class ModelsApi {
             grps.add(v);
         }
 
+        List<Filter> fltrs = new LinkedList<>();
+        for(Filter fltr : q.getFilters())
+        {
+            Filter f = new Filter();
+            f.setId(fltr.getId());
+            f.setOperator(fltr.getOperator());
+            f.setValues(fltr.getValues());
+            f.setVariable(fltr.getVariable());
+            fltrs.add(f);
+        }
+
         org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
         myQuery.setId(q.getId());
         myQuery.setVariables(vars);
         myQuery.setCovariables(covs);
         myQuery.setGrouping(grps);
+        myQuery.setFilters(fltrs);
 
         model.setQuery(myQuery);
 
