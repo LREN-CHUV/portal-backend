@@ -14,9 +14,8 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 * Fix bugs;
 * Externalize configuration (DB parameters, security enabled/disabled, ...);
-* Decide if an update on a model should affect the articles including it;
 * Add author's view if needed;
-* Implement delete methods if  needed;
+* Implement delete methods if needed;
 * Implement logout;
 * Add introduction page;
 * Update front-end behavior when not logged in;
@@ -28,7 +27,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 ## BUGS
 
 * In the profile view, we shouldn't see the '+' between firstname and lastname;
-* In the profile view links to own articles and so on, are not implemented;
 * Export PDF;
 
 
