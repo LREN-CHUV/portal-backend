@@ -27,7 +27,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## BUGS
 
-* When updating an article from the 'recent articles' list, bug with 'publish' state;
 * When updating a model the SVG is not updated (SVG updates when opening article editor);
 * In the profile view, we shouldn't see the '+' between firstname and lastname;
 * In the profile view links to own articles and so on, are not implemented;
