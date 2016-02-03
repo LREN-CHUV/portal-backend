@@ -167,8 +167,8 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/frontend/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
-                .and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
-                .and().logout().logoutSuccessUrl("/").permitAll()
+                .and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login/hbp"))
+                .and().logout().logoutSuccessUrl("/login/hbp").permitAll()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository())
                 .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
