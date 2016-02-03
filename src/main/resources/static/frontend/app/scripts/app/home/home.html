@@ -1,4 +1,9 @@
-<div class="container-fluid intro-container" ng-show="isNewVisitor()">
+<div id="accessDeniedPage" ng-show="!isLoggedIn()">
+  <h1>Are you lost ?</h1>
+  <p>Click  <a href="http://155.105.202.24:8080/frontend/app/index.html#/login">here</a> </p>
+</div>
+
+<div class="container-fluid intro-container" ng-show="isNewVisitor() && isLoggedIn()">
     <a href="" ng-click="closePanel($event)" class="trigger-close-intro">
         <i class="ti ti-close"></i>
     </a>
@@ -25,7 +30,7 @@
     </a>
 </div>
 
-<div class="container-fluid mt" ng-show="!isNewVisitor()">
+<div class="container-fluid mt" ng-show="!isNewVisitor() && isLoggedIn()">
 <!--<div class="container-fluid mt">-->
     <div class="row">
         <div class="col-md-3">

@@ -1,4 +1,9 @@
-<div class="container-fluid mt">
+<div id="accessDeniedPage" ng-show="!isLoggedIn()">
+  <h1>Are you lost ?</h1>
+  <p>Click  <a href="http://155.105.202.24:8080/frontend/app/index.html#/login">here</a> </p>
+</div>
+
+<div class="container-fluid mt" ng-show="isLoggedIn()">
     <div class="row">
 
     </div>

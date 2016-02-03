@@ -109,4 +109,11 @@ angular
             }
             return true;
         };
+
+        /**
+         * Check if user seems to be logged in
+         */
+         $rootScope.isLoggedIn = function() {
+          return User.hasCurrent();
+         };
     }]);
