@@ -144,32 +144,6 @@ public class ModelsApi {
         Model model = (Model) query.uniqueResult();
         session.getTransaction().commit();
 
-        // Inject mock data
-        /*List<Object> values = new LinkedList<>();
-        values.add(18422);
-        values.add(16972);
-        values.add(17330);
-        values.add(16398);
-        values.add(21614);
-        values.add(21386);
-        values.add(20474);
-        values.add(19867);
-        values.add(20398);
-        values.add(19741);
-        values.add(18595);
-        values.add(18018);
-        model.getDataset().getData().put("MidTemp", values);
-        model.getDataset().getHeader().add("MidTemp");*/
-
-        /*session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        query = session.createQuery("from Dataset where code= :code");
-        query.setString("code", model.getDataset().getCode());
-        Dataset dataset = (Dataset) query.uniqueResult();
-        session.getTransaction().commit();
-
-        System.out.println("keyset : "+dataset.getData().keySet());*/
-
         session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         query = session.createQuery("from Query where id= :id");

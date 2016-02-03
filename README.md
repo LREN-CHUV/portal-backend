@@ -12,13 +12,30 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## TODO
 
-* Externalize configuration (DB parameters, security enabled/disabled, ...);
-* Sync backend with hand written Swagger specs (see Maintenance section below);
-* Implement logout;
-* Add some details to the group and variable models like descriptions;
-* Update frontend (add introduction page, hide header/footer when not logged in, remove mock authors, real stats like users count);
 * Fix bugs;
-* Add SoapUI tests.
+* Externalize configuration (DB parameters, security enabled/disabled, ...);
+* Decide if an update on a model should affect the articles including it;
+* Add author's view if needed;
+* Implement delete methods if  needed;
+* Implement logout;
+* Add introduction page;
+* Update front-end behavior when not logged in;
+* Clean code (both back-end front-end);
+* Sync with original Swagger description;
+* Implement SoapUI tests;
+* Make user tests with multiple users.
+
+## BUGS
+
+* Copy a model;
+* When updating an article from the 'recent articles' list, bug with 'publish' state;
+* When updating a model the SVG is not updated (SVG updates when opening article editor);
+* Dynamic stats (users, articles, ...);
+* In the profile view, we shouldn't see the '+' between firstname and lastname;
+* In the profile view links to own articles and so on, are not implemented;
+* Export PDF;
+
+
 
 ### Maintenance
 
