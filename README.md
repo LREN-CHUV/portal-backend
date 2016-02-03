@@ -27,7 +27,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## BUGS
 
-* Copy a model;
 * When updating an article from the 'recent articles' list, bug with 'publish' state;
 * When updating a model the SVG is not updated (SVG updates when opening article editor);
 * Dynamic stats (users, articles, ...);
