@@ -13,23 +13,21 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 ## TODO
 
 * Fix bugs;
-* Externalize configuration (DB parameters, security enabled/disabled, ...);
+* Add introduction page;
 * Add author's view if needed;
 * Implement delete methods if needed;
-* Implement logout;
-* Add introduction page;
-* Update front-end behavior when not logged in;
+* Externalize configuration (DB parameters, security enabled/disabled, ...);
+* Implement SoapUI tests;
 * Clean code (both back-end front-end);
 * Sync with original Swagger description;
-* Implement SoapUI tests;
 * Make user tests with multiple users.
 
 ## BUGS
 
+* Freeze when accessing not allowed URL (should redirect to login page);
+* Logout does not work;
 * In the profile view, we shouldn't see the '+' between firstname and lastname;
 * Export PDF;
-
-
 
 ### Maintenance
 
