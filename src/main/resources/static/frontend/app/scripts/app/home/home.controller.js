@@ -1,20 +1,20 @@
 /**
  * Created by Michael DESIGAUD on 11/08/2015.
  */
-angular.module('chuvApp.home').controller('HomeController',['$scope','$translatePartialLoader','$translate','WidgetService','$rootScope','User','$cookies','Model','ChartUtil','$q',
-  function($scope,$translatePartialLoader,$translate,WidgetService,$rootScope,User,$cookies,Model,ChartUtil,$q){
+angular.module('chuvApp.home').controller('HomeController',['$scope','$translatePartialLoader','$translate','WidgetService','$rootScope','User','$cookies','Model','ChartUtil','$q','$http', 'backendUrl',
+  function($scope,$translatePartialLoader,$translate,WidgetService,$rootScope,User,$cookies,Model,ChartUtil,$q,$http, backendUrl){
 
     $translatePartialLoader.addPart('home');
     $translatePartialLoader.addPart('articles');
     $translatePartialLoader.addPart('requests');
     $translate.refresh();
 
-    $scope.datas = {
-      scientists: 14,
-      articles: 73,
-      patients: 3721,
-      teams: 126
-    };
+    /*$scope.datas = {
+      scientists: 0,
+      articles: 0,
+      patients: 0,
+      teams: 0
+    };*/
 
     $scope.models = [];
 
@@ -22,6 +22,11 @@ angular.module('chuvApp.home').controller('HomeController',['$scope','$translate
      * Search articles with current selected filters
      */
     $scope.init = function () {
+        $http.get(backendUrl+"/stats").success(
+          function (response) {
+            $scope.datas = response;
+          }
+        );
         var introTxtSelector = '.intro-txt';
         $scope.tlIntro = new TimelineMax({ paused : true });
         $scope.tlIntro .to($('.intro'), 0.6, { y : '-100%', scale : .4, autoAlpha : 0, ease : Power4.easeIn })
@@ -112,6 +117,8 @@ angular.module('chuvApp.home').controller('HomeController',['$scope','$translate
     $scope.hideIntro = function() {
       $cookies.put('intro-' + User.current().username, "hide");
     };
+
+
 
     // Init the controller values
     $scope.init();
