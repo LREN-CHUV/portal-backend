@@ -1,8 +1,8 @@
 /**
  * Created by Michael DESIGAUD on 11/08/2015.
  */
-angular.module('chuvApp.header').controller('HeaderController', ['$scope', '$translate', '$translatePartialLoader', '$state', 'tmhDynamicLocale', 'User','$rootScope',
-  function ($scope, $translate, $translatePartialLoader, $state, tmhDynamicLocale, User,$rootScope) {
+angular.module('chuvApp.header').controller('HeaderController', ['$scope', '$translate', '$translatePartialLoader', '$state', 'tmhDynamicLocale', 'User','$rootScope','$http',
+  function ($scope, $translate, $translatePartialLoader, $state, tmhDynamicLocale, User,$rootScope, $http) {
 
     $translatePartialLoader.addPart('header');
     $translate.refresh();
@@ -33,6 +33,7 @@ angular.module('chuvApp.header').controller('HeaderController', ['$scope', '$tra
     };
 
    $scope.logout = function(){
+       $http.get("/logout");
        User.removeCurrent();
        $state.go('login');
        $rootScope.user = null;

@@ -24,7 +24,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## BUGS
 
-* Logout does not work;
 * In the profile view, we shouldn't see the '+' between firstname and lastname;
 * Export PDF;
 

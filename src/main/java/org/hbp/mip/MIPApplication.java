@@ -151,6 +151,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             String userJSON = mapper.writeValueAsString(getUser(principal));
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
             cookie.setPath("/");
+            cookie.setMaxAge(3600);
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -158,6 +159,15 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             e.printStackTrace();
         }
         return principal;
+    }
+
+    @RequestMapping("/logout")
+    public void logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("user", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
     @Override
