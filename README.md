@@ -13,7 +13,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 ## TODO
 
 * Fix bugs;
-* Add introduction page;
 * Add author's view if needed;
 * Implement delete methods if needed;
 * Externalize configuration (DB parameters, security enabled/disabled, ...);

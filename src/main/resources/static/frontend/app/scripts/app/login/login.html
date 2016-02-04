@@ -1,25 +1,67 @@
-<div class="container login-form">
+<div class="panelCenter">
   <a href="#" class="login-logo"><img masked-image src="images/logo-big.png"></a>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="block-header block-login">
-        <h3>&nbsp;</h3>
-        <h2>Login to HBP</h2>
+</div>
 
-        <button type="button" ng-click='go()' class="btn-round">
-              <span>
-                <span>{{'login.title' | translate }}</span>
-                <i class="ti ti-arrow-down"></i>
-              </span>
-        </button>
+<div class="panelTop">
+  <p>
+    Today, clinicians and researchers lack the data and tools to understand the causes of brain diseases and to develop new treatments. The Medical Informatics Platform will allow them to study disease mechanisms systematically, by analysing research and clinical data (genes, gene expression, imaging features etc.). The ability to analyse very large and diverse populations will enable them to identify biological signatures (groups of features in the clinical data) associated with specific kinds of lesion and specific defects of cognition and behaviour.
+    <br />
+    <br />
+    Medical Informatics Platform will provide the technical capabilities to federate imaging and other clinical data currently locked in hospital and research archives and databases, while guaranteeing strong protection for sensitive patient information. The Medical Informatics Platform consists of an innovative data management system that will allow researchers to access and analyse large amounts of anonymised clinical data from hospital, research, and pharmaceutical clinical trial databases.
+    <br />
+    <br />
+    The system integrates heterogeneous data formats seamlessly and federates data sources into a harmonized virtual database with a customized interface for navigation and data mining. The patterns discovered in the data ("biological signatures" which uniquely identify diseases) will generate new hypotheses about brain diseases for investigation and will lead to their novel classification, the latter based on biological, physiological and anatomical features in addition to the classical patterns of phenomenology expressed in symptoms, signs and syndromes.
+  </p>
+</div>
 
-        <a href="" class="forgot-pass">{{'login.forgot-password' | translate }}</a>
-        </form>
-        <ul>
-          <li>the human brain</li>
-          <li>project</li>
-        </ul>
-      </div>
-    </div>
+<!--
+<div class="panelLeft">
+  <button type="button" class="btn-round" ng-click="explore()" ng-hide="true">
+    <span>
+      <span>{{'login.explore' | translate }}</span>
+      <i class="ti ti-arrow-down"></i>
+    </span>
+  </button>
+</div>
+-->
+
+<div class="panelCenter">
+  <button type="button" class="btn-round" ng-click="go()">
+    <span>
+      <span class="/run"></span>
+      <span>{{'login.title' | translate }}</span>
+      <i class="ti ti-arrow-down"></i>
+    </span>
+  </button>
+</div>
+
+<br />
+<br />
+
+<div class="panelLeft">
+  <img id="stackImg" src="images/stack/{{stackSrc}}" width="1121" height="944" alt="Stack" usemap="#stackmap">
+  <map name="stackmap">
+    <area shape="poly" coords="414,182,525,246,637,181,637,171,525,107,413,171" ng-click="showStackInfo('Body')" href="javascript:void(0);" />
+    <area shape="poly" coords="415,259,524,324,637,259,637,249,581,217,525,249,468,217,414,249"  ng-click="showStackInfo('Whole Brain')" href="javascript:void(0);" />
+    <area shape="poly" coords="414,337,524,401,637,336,637,326,581,294,524,328,469,295,414,326"  ng-click="showStackInfo('Brain Regions')" href="javascript:void(0);" />
+    <area shape="poly" coords="412,412,524,478,635,414,635,404,581,371,526,405,469,372,412,404"  ng-click="showStackInfo('Microcircuits')" href="javascript:void(0);" />
+    <area shape="poly" coords="412,489,524,555,635,491,635,481,581,448,526,482,469,449,412,481"  ng-click="showStackInfo('Cells')" href="javascript:void(0);"/>
+    <area shape="poly" coords="412,566,524,632,635,568,635,558,581,525,526,559,469,526,412,558"  ng-click="showStackInfo('Synapses')" href="javascript:void(0);"/>
+    <area shape="poly" coords="413,644,525,710,636,646,636,636,582,603,525,636,470,604,413,636"  ng-click="showStackInfo('Chromosomes')" href="javascript:void(0);"/>
+    <area shape="poly" coords="413,723,525,789,636,725,636,715,582,682,524,714,471,682,413,715"  ng-click="showStackInfo('Proteins')" href="javascript:void(0);"/>
+  </map>
+</div>
+
+<div class="panelRight">
+  <div id="description">
+    <h2>{{currentDescription.title}}</h2>
+    <p class="stackDescription" ng-bind-html="currentDescription.content"></p>
   </div>
 </div>
+
+<script>
+// This is a workaround to execute imageMapResize after full loading
+setTimeout(function() {
+    imageMapResize();
+}, 200);
+</script>

@@ -27,3 +27,39 @@ h6.copyright {
 .list-graphs li a .ti.ti-custom-bar-chart.graph-plot {
   background: url("../../images/pictos-graph-2.png") -248px 0;
 }
+
+.panelLeft {
+	width: 60%;
+	float: left;
+	text-align:center;
+	border-radius: 25px;
+	padding: 20px;
+}
+
+.panelRight {
+	width: 40%;
+	float: left;
+	text-align:center;
+	border-radius: 25px;
+	padding: 20px;
+}
+
+.panelCenter {
+  text-align:center;
+}
+
+.panelTop {
+  width: 60%;
+  margin: auto;
+  text-align: justify;
+}
+
+.centeredTitle {
+  text-align:center;
+}
+
+#stackImg {
+    width: 100%;
+    border-radius: 25px;
+    padding: 20px;
+}
