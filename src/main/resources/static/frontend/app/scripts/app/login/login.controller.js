@@ -1,8 +1,8 @@
 /**
  * Created by Michael DESIGAUD on 10/09/2015.
  */
-angular.module('chuvApp.login').controller('LoginController', ['$scope', '$translatePartialLoader', '$translate', '$rootScope', '$state', 'User',
-    function ($scope, $translatePartialLoader, $translate, $rootScope, $state, User) {
+angular.module('chuvApp.login').controller('LoginController', ['$scope', '$translatePartialLoader', '$translate', '$rootScope', '$state', 'User', 'backendUrl',
+    function ($scope, $translatePartialLoader, $translate, $rootScope, $state, User, backendUrl) {
       $translatePartialLoader.addPart('login');
       $translate.refresh();
 
@@ -20,6 +20,10 @@ angular.module('chuvApp.login').controller('LoginController', ['$scope', '$trans
                   alert("bad credentials");
               }
         });
+      };
+
+      $scope.go = function () {
+        window.location.href = backendUrl + '/login/hbp';
       };
     }]
 );
