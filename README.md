@@ -12,17 +12,16 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## TODO
 
-* Fix bugs;
-* Implement delete methods if needed;
-* Externalize configuration (DB parameters, security enabled/disabled, ...);
 * Implement SoapUI tests;
 * Clean code (both back-end front-end);
 * Sync with original Swagger description;
-* Make user tests with multiple users.
+* Externalize configuration (DB parameters, security enabled/disabled, ...);
+* Make user tests with multiple users;
+* Fix bugs.
 
 ## BUGS
 
-* Export PDF;
+* Export PDF does not work;
 
 ### Maintenance
 
