@@ -13,7 +13,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 ## TODO
 
 * Fix bugs;
-* Add author's view if needed;
 * Implement delete methods if needed;
 * Externalize configuration (DB parameters, security enabled/disabled, ...);
 * Implement SoapUI tests;
@@ -23,7 +22,6 @@ The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON versi
 
 ## BUGS
 
-* In the profile view, we shouldn't see the '+' between firstname and lastname;
 * Export PDF;
 
 ### Maintenance

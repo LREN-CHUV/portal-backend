@@ -12,7 +12,7 @@ angular.module('chuvApp.users',
   .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
       .state('user-show', {
-        url: '/users/:login',
+        url: '/users/:username',
         templateUrl: 'scripts/app/profile/profile.html',
         controller: 'UserController'
       })
