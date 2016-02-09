@@ -1,7 +1,0 @@
-{
-    "login.username":"Utilisateur",
-    "login.at-least-characters":"Au moins {{number}} caractères",
-    "login.password":"Mot de passe",
-    "login.title":"Identifiant",
-    "login.forgot-password":"J'ai oublié mon mot de passe"
-}
