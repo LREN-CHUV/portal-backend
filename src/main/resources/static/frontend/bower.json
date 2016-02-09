@@ -29,6 +29,7 @@
     "angular-bootstrap-colorpicker": "3.0.18",
     "angular-gridster": "~0.13.5",
     "javascript-detect-element-resize": "~0.5.3",
+    "d3": "3.5.6",
     "less": "~2.5.1",
     "gsap": ">1.0",
     "iCheck": "1.0.2",

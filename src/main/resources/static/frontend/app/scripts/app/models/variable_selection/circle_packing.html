@@ -1,0 +1,16 @@
+<div class="panel">
+  <div class="panel-heading">
+    <h2>
+      <input placeholder="Explore variables"
+             typeahead="variable as (variable.label || '') for variable in allVariables | filter:$viewValue | limitTo:8"
+             ng-model="search.value">
+      <span ng-if="search_history.length">History: </span>
+      <a ng-repeat="variable in search_history"
+         ng-bind="variable.label"
+         class="btn btn-sm btn-sm btn-default"
+         style="margin-top: -3px"
+         ng-click="search.value = variable"></a>
+    </h2>
+  </div>
+  <div class="panel-body" style="padding: 0;"></div>
+</div>

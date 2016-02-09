@@ -61,13 +61,17 @@ module.exports = function(config) {
             'app/bower_components/jquery.ui/ui/jquery.ui.mouse.js',
             'app/bower_components/jquery.ui/ui/jquery.ui.sortable.js',
             'app/bower_components/angular-utf8-base64/angular-utf8-base64.min.js',
+            'app/bower_components/d3/d3.js',
             // endbower
             //Always load modules first
             'app/scripts/app/app.js',
             'app/scripts/**/*module.js',
             'app/scripts/**/*.js',
             //Load tests
-            'app/tests/**/*.js'
+            'app/tests/**/*.js',
+
+            // load templates for preprocessing
+            'app/scripts/**/*.html'
         ],
 
         // list of files / patterns to exclude
@@ -76,7 +80,14 @@ module.exports = function(config) {
         ],
 
         preprocessors: {
-            'app/views/**/!(*test).js': 'coverage'
+            'app/views/**/!(*test).js': 'coverage',
+            'app/**/*.html': 'ng-html2js'
+        },
+
+        ngHtml2JsPreprocessor: {
+            stripPrefix: 'app/',
+
+            moduleName: 'karmaTemplates'
         },
 
         // web server port
@@ -109,7 +120,8 @@ module.exports = function(config) {
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-junit-reporter',
-            'karma-coverage'
+            'karma-coverage',
+            'karma-ng-html2js-preprocessor'
         ],
 
         // Continuous Integration mode

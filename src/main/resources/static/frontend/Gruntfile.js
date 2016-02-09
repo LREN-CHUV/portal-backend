@@ -268,12 +268,14 @@ module.exports = function (grunt) {
 
     imagemin: {
       dist: {
+        dynamic: {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
           src: '{,*/}*.{png,jpg,jpeg,gif}',
           dest: '<%= yeoman.dist %>/images'
         }]
+      }
       }
     },
 
@@ -352,6 +354,20 @@ module.exports = function (grunt) {
                 dropboxAppkey: '7wew0rj0gh2qcik'
               }
           },
+          docker_dev: {
+              constants: {
+                backendUrl: 'http://backend',
+                backendExportChartUrl: '<%= ngconstant.demo.constants.backendUrl %>/exportingChart.php',
+                dropboxAppkey: '7wew0rj0gh2qcik'
+              }
+          },
+          as_dev: {
+              constants: {
+                backendUrl: 'https://hbp-dev-backend.ahead-solutions.ch',
+                backendExportChartUrl: '<%= ngconstant.demo.constants.backendUrl %>/exportingChart.php',
+                dropboxAppkey: '7wew0rj0gh2qcik'
+              }
+          },
           prod: {
               constants: {
                 backendUrl: 'http://hbp-mip.chuv.ch/services/backend',
@@ -423,6 +439,32 @@ module.exports = function (grunt) {
         }
       },
       prod: {
+        files: {
+          '<%= yeoman.dist %>/': '<%= yeoman.dist %>/index.html'
+        },
+        options: {
+          replacements: [
+            {
+              pattern: "%DropBoxAppKey%",
+              replacement: "<%= ngconstant.prod.constants.dropboxAppkey %>"
+            }
+          ]
+        }
+      },
+      docker_dev: {
+        files: {
+          '<%= yeoman.dist %>/': '<%= yeoman.dist %>/index.html'
+        },
+        options: {
+          replacements: [
+            {
+              pattern: "%DropBoxAppKey%",
+              replacement: "<%= ngconstant.prod.constants.dropboxAppkey %>"
+            }
+          ]
+        }
+      },
+      as_dev: {
         files: {
           '<%= yeoman.dist %>/': '<%= yeoman.dist %>/index.html'
         },

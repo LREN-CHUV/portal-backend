@@ -1,0 +1,88 @@
+<div class="panel">
+
+  <div class="panel-heading">
+    <h2 ng-if="!focused_variable">Select variable</h2>
+    <h2 ng-if="focused_variable">
+      <span ng-bind="focused_variable.label"></span
+      ><span ng-if="!has_error && focused_variable_loaded">: {{ measurement_count }} Measurements</span>
+    </h2>
+  </div>
+
+  <div class="panel-body">
+    <div ng-if="!focused_variable">
+      [tree]
+    </div>
+
+    <div ng-if="focused_variable">
+      <div ng-if="has_error">
+        <h2>No data found</h2>
+      </div>
+      <div ng-if="!has_error">
+
+        <div ng-if="focused_variable_loaded">
+          <tabset>
+            <tab ng-repeat="statistic in stats"
+                 select="show_stats_after_timeout()"
+                 heading="{{ statistic.dataType == 'SummaryStatistics' ? 'Summary' : statistic.label }}">
+              <div ng-if="statistic.dataType !== 'SummaryStatistics'">
+                <highchart config="statistic.hc_config" ng-if="show"></highchart>
+                <div style="height: 350px" ng-if="!show"></div>
+              </div>
+              <div ng-if="statistic.dataType === 'SummaryStatistics'">
+                <table class="table table-striped">
+                  <tr>
+                    <th>Measurement count</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Average</th>
+                    <th>Standard dev.</th>
+                  </tr>
+                  <tr>
+                    <td ng-bind="statistic.count | number"></td>
+                    <td ng-bind="statistic.min | number"></td>
+                    <td ng-bind="statistic.max | number"></td>
+                    <td ng-bind="statistic.average | number"></td>
+                    <td ng-bind="statistic.std | number"></td>
+                  </tr>
+                </table>
+              </div>
+            </tab>
+          </tabset>
+
+          <variable-description text="variable_description"></variable-description>
+
+        </div>
+        <div ng-if="!focused_variable_loaded">
+          <h2>{{ focused_variable.label }}:</h2>
+          <h2 class="text-center"><span class="fa fa-spin fa-spinner"></span> Loading the variable's data</h2>
+        </div>
+
+        <div>
+          <button ng-click="use_variable_as('variable')"
+             ng-if="focused_variable.isVariable"
+             ng-bind="variable_is_used_as('variable') ? 'Remove as Variable' : 'Use as Variable'"
+             ng-style="{backgroundColor: colors.variable}"
+             class="btn"></button>
+          <button ng-click="use_variable_as('grouping')"
+             ng-if="focused_variable.isGrouping"
+             ng-bind="variable_is_used_as('grouping') ? 'Remove as Grouping' : 'Use as Grouping'"
+             ng-style="{backgroundColor: colors.grouping}"
+             class="btn"></button>
+          <button ng-click="use_variable_as('covariable')"
+             ng-if="focused_variable.isCovariable"
+             ng-bind="variable_is_used_as('covariable') ? 'Remove as Covariable' : 'Use as Covariable'"
+             ng-style="{backgroundColor: colors.covariable}"
+             class="btn"></button>
+          <button ng-click="use_variable_as('filter')"
+             ng-if="focused_variable.isFilter"
+             ng-bind="variable_is_used_as('filter') ? 'Remove as Filter' : 'Use as Filter'"
+             ng-style="{backgroundColor: colors.filter}"
+             class="btn"></button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

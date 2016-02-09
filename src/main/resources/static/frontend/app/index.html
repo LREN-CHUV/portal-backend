@@ -50,15 +50,12 @@
 <!-- Add your site or application content here -->
 <header id="topnav" class="navbar navbar-default navbar-fixed-top fixed" change-on-scroll role="banner"
         ng-include="'scripts/app/header/header.html'" ng-controller="HeaderController" ng-show="!isNewVisitor()"></header>
-
 <div id="wrapper">
     <div id="layout-static">
         <div class="static-content-wrapper">
-
             <div class="static-content">
                 <div class="page-content" ui-view class="mainview-animation animated"></div>
             </div>
-
             <footer id="footer" role="contentinfo" ng-cloak ng-show="!isNewVisitor()">
                 <div class="clearfix container-fluid">
                     <div class="row">
@@ -71,7 +68,6 @@
                     </div>
                 </div>
             </footer>
-
         </div>
     </div>
 </div>
@@ -130,6 +126,7 @@
 <script src="bower_components/jquery.ui/ui/jquery.ui.sortable.js"></script>
 <script src="bower_components/angular-utf8-base64/angular-utf8-base64.min.js"></script>
 <script src="bower_components/image-map-resizer/js/imageMapResizer.min.js"></script>
+<script src="bower_components/d3/d3.js"></script>
 <!-- endbower -->
 <script type='text/javascript' src='styles/plugins/wijets/wijets.js'></script>
 <!-- endbuild -->
@@ -174,6 +171,8 @@
 <script src="scripts/app/models/model.router.js"></script>
 <script src="scripts/app/models/model.controller.js"></script>
 <script src="scripts/app/models/model.service.js"></script>
+
+<script src="scripts/app/models/variable_selection/variable_selection.directives.js"></script>
 <script src="scripts/app/models/criteria/criteria.controller.js"></script>
 <script src="scripts/app/models/chart/chart.controller.js"></script>
 <script src="scripts/app/models/configuration/configuration.controller.js"></script>
