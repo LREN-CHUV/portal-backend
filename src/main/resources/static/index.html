@@ -38,7 +38,7 @@
 						self.user = data.userAuthentication.details.displayName;
 						self.email = data.userAuthentication.details.emails[0].value;
 						self.authenticated = true;
-						window.location.href = "/frontend/app/index.html#/home";
+						window.location.href = "http://frontend/#/home";
 					}).error(function() {
 						self.user = "N/A";
 						self.email = "N/A";
