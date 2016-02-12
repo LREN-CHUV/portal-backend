@@ -23,8 +23,8 @@ package org.hbp.mip;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hbp.mip.model.User;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +58,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.util.WebUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -77,7 +80,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
-
 
 @SpringBootApplication
 @RestController
@@ -161,14 +163,14 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return principal;
     }
 
-    @RequestMapping("/logout")
+    /*@RequestMapping("/logout")
     public void logout(HttpServletResponse response) {
 
         Cookie cookie = new Cookie("user", null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-    }
+    }*/
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -228,6 +230,12 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                         response.addCookie(cookie);
                     }
                 }
+
+                /*response.addHeader("Access-Control-Allow-Origin", "*");
+                response.addHeader("Access-Control-Allow-Headers","*");
+                response.addHeader("Access-Control-Allow-Methods","GET, POST, PUT, OPTIONS");
+                response.addHeader("Access-Control-Allow-Credentials","true");*/
+
                 filterChain.doFilter(request, response);
             }
         };
@@ -237,6 +245,16 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://frontend");
+            }
+        };
     }
 
 }

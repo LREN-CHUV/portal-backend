@@ -14,7 +14,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -23,7 +22,7 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Controller
+@RestController
 @RequestMapping(value = "/articles", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {

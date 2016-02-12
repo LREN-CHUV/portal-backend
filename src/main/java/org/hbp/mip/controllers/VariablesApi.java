@@ -13,18 +13,14 @@ import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Controller
+@RestController
 @RequestMapping(value = "/variables", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/variables", description = "the variables API")
 public class VariablesApi {

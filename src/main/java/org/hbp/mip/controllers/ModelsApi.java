@@ -14,7 +14,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -25,7 +24,7 @@ import java.util.Random;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Controller
+@RestController
 @RequestMapping(value = "/models", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/models", description = "the models API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")

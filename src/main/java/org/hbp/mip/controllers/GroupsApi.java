@@ -10,13 +10,13 @@ import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Controller
+@RestController
 @RequestMapping(value = "/groups", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/groups", description = "the groups API")
 public class GroupsApi {
