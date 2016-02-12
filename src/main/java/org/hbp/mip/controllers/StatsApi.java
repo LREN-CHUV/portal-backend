@@ -25,7 +25,7 @@ public class StatsApi {
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<GeneralStats> getGeneralStatistics() throws NotFoundException {
+    public ResponseEntity<GeneralStats> getGeneralStatistics()  {
         GeneralStats stats = new GeneralStats();
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -50,7 +50,7 @@ public class StatsApi {
     @RequestMapping(value = "/{code}", produces = { "application/json" }, method = RequestMethod.GET)
     public ResponseEntity<List<Statistics>> getTheStatisticsForAGroupOrAVariable(
             @ApiParam(value = "code of the group or variable",required=true ) @PathVariable("code") String code
-    ) throws NotFoundException {
+    )  {
         // TODO: Implement this method
         return new ResponseEntity<List<Statistics>>(HttpStatus.OK);
     }

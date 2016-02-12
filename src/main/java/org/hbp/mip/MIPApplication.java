@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.hbp.mip.model.User;
+import org.hbp.mip.utils.CORSFilter;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -35,7 +36,6 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -48,6 +48,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -55,12 +56,8 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.util.WebUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -84,9 +81,8 @@ import java.security.Principal;
 @SpringBootApplication
 @RestController
 @EnableOAuth2Client
-@Api(value = "/", description = "MIP API")
 @EnableSwagger2
-@Configuration
+@Api(value = "/", description = "MIP API")
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -145,7 +141,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     }
 
     @RequestMapping("/user")
-    @ResponseBody
     public Principal user(Principal principal, HttpServletResponse response) {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -163,18 +158,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return principal;
     }
 
-    /*@RequestMapping("/logout")
-    public void logout(HttpServletResponse response) {
-
-        Cookie cookie = new Cookie("user", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }*/
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
+        http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
         http.antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers("/", "/frontend/**", "/webjars/**").permitAll()
@@ -230,12 +217,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                         response.addCookie(cookie);
                     }
                 }
-
-                /*response.addHeader("Access-Control-Allow-Origin", "*");
-                response.addHeader("Access-Control-Allow-Headers","*");
-                response.addHeader("Access-Control-Allow-Methods","GET, POST, PUT, OPTIONS");
-                response.addHeader("Access-Control-Allow-Credentials","true");*/
-
                 filterChain.doFilter(request, response);
             }
         };
@@ -245,16 +226,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://frontend");
-            }
-        };
     }
 
 }

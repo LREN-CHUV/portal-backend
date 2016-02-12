@@ -36,7 +36,7 @@ public class ArticlesApi {
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team,
             Principal principal
-    ) throws NotFoundException {
+    ) {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -92,7 +92,7 @@ public class ArticlesApi {
     public ResponseEntity<Void> addAnArticle(
             @RequestBody @ApiParam(value = "Article to create", required = true) Article article,
             Principal principal
-    ) throws NotFoundException {
+    ) {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -120,7 +120,7 @@ public class ArticlesApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) throws NotFoundException {
+    ) {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -141,7 +141,7 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Article to update", required = true) Article article,
             Principal principal
-    ) throws NotFoundException {
+    ) {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -161,7 +161,7 @@ public class ArticlesApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) throws NotFoundException {
+    ) {
 
         // TODO : Implement delete method
 

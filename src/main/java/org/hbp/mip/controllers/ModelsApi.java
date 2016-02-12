@@ -40,7 +40,7 @@ public class ModelsApi {
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             Principal principal
-    ) throws NotFoundException {
+    )  {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -91,7 +91,7 @@ public class ModelsApi {
     public ResponseEntity<Void> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model,
             Principal principal
-    ) throws NotFoundException {
+    )  {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -116,7 +116,7 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}.svg", produces = {"image/svg+xml"}, method = RequestMethod.GET)
     public ResponseEntity<String> getSVG(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -134,7 +134,7 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -207,7 +207,7 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model,
             Principal principal
-    ) throws NotFoundException {
+    )  {
 
         // Get current user
         User user = MIPApplication.getUser(principal);
@@ -228,7 +228,7 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model,
             Principal principal
-    ) throws NotFoundException {
+    )  {
         // Get current user
         User user = MIPApplication.getUser(principal);
 
@@ -265,7 +265,7 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) throws NotFoundException {
+    )  {
 
         // TODO : Implement delete method
 

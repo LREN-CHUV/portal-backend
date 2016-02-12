@@ -27,7 +27,7 @@ public class UsersApi {
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public ResponseEntity<User> getAUser(
             @ApiParam(value = "username", required = true) @PathVariable("username") String username
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

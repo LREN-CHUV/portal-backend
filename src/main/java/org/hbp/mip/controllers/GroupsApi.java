@@ -25,7 +25,7 @@ public class GroupsApi {
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<Group> getTheRootGroup() throws NotFoundException {
+    public ResponseEntity<Group> getTheRootGroup()  {
 
         // Set up root group
         String rootCode = "root";

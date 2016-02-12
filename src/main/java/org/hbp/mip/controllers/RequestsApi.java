@@ -28,7 +28,7 @@ public class RequestsApi {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Dataset> postRequests(
             @RequestBody @ApiParam(value = "Query to process", required = true) Query query
-    ) throws NotFoundException {
+    )  {
 
         Dataset dataset = CSVUtil.parseValues(DATA_FILE, query);
 

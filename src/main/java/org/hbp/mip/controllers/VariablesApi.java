@@ -36,7 +36,7 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isGrouping", required = false) String isGrouping,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isCovariable", required = false) String isCovariable,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter
-    ) throws NotFoundException {
+    )  {
 
         // Get variales from DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -74,7 +74,7 @@ public class VariablesApi {
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Variable> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -94,7 +94,7 @@ public class VariablesApi {
     public ResponseEntity<List<Value>> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

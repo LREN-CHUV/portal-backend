@@ -30,7 +30,7 @@ public class DatasetsApi {
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Dataset> getADataset(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code
-    ) throws NotFoundException {
+    )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
