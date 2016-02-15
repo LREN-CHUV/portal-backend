@@ -1,9 +1,0 @@
-portal-backend:
-  build: Dockerfile
-  image: portal-backend
-  pre:
-    - echo "Build portal-backend"
-    - docker-compose up -d portaldb
-    - mvn package
-  post:
-    - echo "Finished building portal-backend"

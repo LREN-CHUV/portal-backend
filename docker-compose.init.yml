@@ -1,3 +1,4 @@
+# Build the application and regenerate the Hibernate mapping
 
 portaldb:
   image: postgres:9.4.5
@@ -10,10 +11,9 @@ portaldb:
     POSTGRES_PASSWORD: test
 
 portal-backend:
-  build: .src/docker/build
+  build: .
   volumes:
-    - ./src/test/docker/:/opt/portal/config/
-    - ./target/:/opt/portal/lib/
+    - ./:/portal/
   links:
     - portaldb
   ports:
