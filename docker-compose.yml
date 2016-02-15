@@ -10,7 +10,7 @@ portaldb:
     POSTGRES_PASSWORD: test
 
 portal-backend:
-  build: .src/docker/build
+  build: ./src/docker/build
   volumes:
     - ./src/test/docker/:/opt/portal/config/
     - ./target/:/opt/portal/lib/

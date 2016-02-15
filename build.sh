@@ -5,7 +5,8 @@ else
   DOCKER_COMPOSE="sudo docker-compose"
 fi
 
-[ -e .m2 ] || ln -s .m2 ~/.m2
+# Create a symlink to the local Maven repository
+[ -L .m2 ] || ln -s -t . ~/.m2
 
 $DOCKER_COMPOSE --file=docker-compose.init.yml --project-name=portal-backend-init up
 
