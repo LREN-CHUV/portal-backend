@@ -1,3 +1,13 @@
+# Configuration for the portal running inside a Docker container for development
+
+connection:
+  url: "jdbc:postgresql://portaldb:5432/postgres"
+  username: "postgres"
+  password: "test"
+
+security:
+  enabled: false
+
 hbp:
   client:
     clientId: 996f97c5-a3ca-460e-b18b-00df3e2be89a
@@ -19,4 +29,8 @@ spring:
     chain:
       enabled: true
 
+server:
+  contextPath: /services
+  port: 8080
+  use-forward-headers: true
 
