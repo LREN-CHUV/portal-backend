@@ -5,6 +5,10 @@ FROM maven:3-jdk-8
 
 COPY ./src/docker/init/build-in-docker.sh /build-in-docker.sh
 
-VOLUME /portal/
+CMD mkdir /opt/portal/
+
+VOLUME /opt/portal/
+
+WORKDIR /opt/portal/
 
 CMD ["/build-in-docker.sh"]
