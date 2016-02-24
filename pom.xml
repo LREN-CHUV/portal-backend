@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hbp.mip</groupId>
-    <artifactId>mip</artifactId>
+    <artifactId>backend-services</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>mip</name>
-    <description>Medical Informatics Platform</description>
+    <name>backend-services</name>
+    <description>Medical Informatics Platform : backend restful services</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,6 +22,31 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<connection.driver_class>org.h2.Driver</connection.driver_class>
+				<connection.url>jdbc:h2:mem:test</connection.url>
+				<connection.username>root</connection.username>
+				<connection.password>root</connection.password>
+				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+				<schema.deploy>true</schema.deploy>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<connection.driver_class>org.postgresql.Driver</connection.driver_class>
+				<connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
+				<connection.username>postgres</connection.username>
+				<connection.password>test</connection.password>
+				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+				<schema.deploy>false</schema.deploy>
+			</properties>
+		</profile>
+	</profiles>
 
     <dependencies>
         <dependency>
@@ -102,7 +127,17 @@
     </dependencies>
 
     <build>
-        <finalName>mip</finalName>
+    	<resources>
+    		<resource>
+	    		<directory>src/main/resources</directory>
+	    		<includes><include>**/*.xml</include></includes>
+	    		<filtering>true</filtering>
+    		</resource>
+    		<resource>
+	    		<directory>src/main/resources</directory>
+	    		<includes><include>**/*.csv</include></includes>
+    		</resource>
+    	</resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -115,6 +150,9 @@
                 <executions>
                     <execution>
                         <phase>compile</phase>
+                        <configuration>
+                        	<skip>${schema.deploy}</skip>
+                        </configuration>
                         <goals>
                             <goal>export</goal>
                         </goals>
