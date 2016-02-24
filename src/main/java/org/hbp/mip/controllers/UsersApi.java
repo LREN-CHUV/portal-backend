@@ -31,11 +31,20 @@ public class UsersApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from User where username= :username");
-        query.setString("username", username);
-        User user = (User) query.uniqueResult();
-        session.getTransaction().commit();
+        User user = null;
+        try{
+            session.beginTransaction();
+            org.hibernate.Query query = session.createQuery("from User where username= :username");
+            query.setString("username", username);
+            user = (User) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         return new ResponseEntity<User>(HttpStatus.OK).ok(user);
     }

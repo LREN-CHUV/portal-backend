@@ -4,6 +4,7 @@
 
 package org.hbp.mip.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -16,11 +17,14 @@ import java.util.List;
 @Entity
 @Table(name = "`group`")
 @ApiModel(description = "")
+@JsonIgnoreProperties(value = { "parent" })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Group {
     @Id
     private String code = null;
     private String label = null;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Group parent = null;
     @OneToMany(fetch = FetchType.EAGER)
     private List<Group> groups = new LinkedList<Group>();
 
@@ -53,6 +57,16 @@ public class Group {
         this.label = label;
     }
 
+    public Group getParent() {
+        return parent;
+    }
+
+    @ApiModelProperty(value = "Parent")
+    @JsonProperty("parent")
+    public void setParent(Group parent) {
+        this.parent = parent;
+    }
+
     /**
      * Groups
      **/
@@ -73,6 +87,7 @@ public class Group {
 
         sb.append("  code: ").append(code).append("\n");
         sb.append("  label: ").append(label).append("\n");
+        sb.append("  parent: ").append(parent).append("\n");
         sb.append("  groups: ").append(groups).append("\n");
         sb.append("}\n");
         return sb.toString();
@@ -87,6 +102,7 @@ public class Group {
         Group g = new Group();
         g.setCode(this.getCode());
         g.setLabel(this.getLabel());
+        g.setParent(this.getParent());
         g.setGroups(this.getGroups());
         return g;
     }

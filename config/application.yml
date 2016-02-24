@@ -33,4 +33,6 @@ server:
   contextPath: /services
   port: 8080
   use-forward-headers: true
+  session:
+    timeout: 2592000
 

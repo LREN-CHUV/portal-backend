@@ -28,15 +28,27 @@ public class StatsApi {
     public ResponseEntity<GeneralStats> getGeneralStatistics()  {
         GeneralStats stats = new GeneralStats();
 
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query countUsersQuery = session.createQuery("SELECT COUNT(*) FROM User");
-        Query countArticlesQuery = session.createQuery("SELECT COUNT(*) FROM Article");
-        Query countVariablesQuery = session.createQuery("SELECT COUNT(*) FROM Variable");
-        Long nbUsers = (Long) countUsersQuery.uniqueResult();
-        Long nbArticles = (Long) countArticlesQuery.uniqueResult();
-        Long nbVariables = (Long) countVariablesQuery.uniqueResult();
-        session.getTransaction().commit();
+        Long nbUsers = 0L;
+        Long nbArticles = 0L;
+        Long nbVariables = 0L;
+        try{
+            session.beginTransaction();
+            Query countUsersQuery = session.createQuery("SELECT COUNT(*) FROM User");
+            Query countArticlesQuery = session.createQuery("SELECT COUNT(*) FROM Article");
+            Query countVariablesQuery = session.createQuery("SELECT COUNT(*) FROM Variable");
+            nbUsers = (Long) countUsersQuery.uniqueResult();
+            nbArticles = (Long) countArticlesQuery.uniqueResult();
+            nbVariables = (Long) countVariablesQuery.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         stats.setUsers(nbUsers);
         stats.setArticles(nbArticles);

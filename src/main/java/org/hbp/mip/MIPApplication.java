@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -149,7 +150,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             String userJSON = mapper.writeValueAsString(getUser(principal));
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
             cookie.setPath("/");
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(2592000);
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -167,7 +168,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/frontend/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
-                .and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login/hbp"))
+                .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint("/login/hbp"))
                 .and().logout().logoutSuccessUrl("/login/hbp").permitAll()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository())
                 .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
@@ -186,7 +187,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter() {
         OAuth2ClientAuthenticationProcessingFilter hbpFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/hbp");
         OAuth2RestTemplate hbpTemplate = new OAuth2RestTemplate(hbp(), oauth2ClientContext);
-        hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("http://localhost:7800/#/home"));
+        hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("http://frontend/#/home"));
         hbpFilter.setRestTemplate(hbpTemplate);
         hbpFilter.setTokenServices(new UserInfoTokenServices(hbpResource().getUserInfoUri(), hbp().getClientId()));
         return hbpFilter;
@@ -230,4 +231,16 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return repository;
     }
 
+}
+
+class CustomLoginUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+
+    public CustomLoginUrlAuthenticationEntryPoint(String url) {
+        super(url);
+    }
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -60,27 +61,36 @@ public class ArticlesApi {
             }
         }
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query query = session.createQuery(queryString);
-        if(status != null)
-        {
-            query.setString("status", status);
-        }
-        if(own != null && own)
-        {
-            query.setString("username", user.getUsername());
-        }
-        else
-        {
-            if(team != null && team)
+        List<Article> articles = new LinkedList<>();
+        // Query DB
+        try{
+            session.beginTransaction();
+            Query query = session.createQuery(queryString);
+            if(status != null)
             {
-                query.setString("team", user.getTeam());
+                query.setString("status", status);
             }
-        }
-        List<Article> articles = query.list();
-        session.getTransaction().commit();
+            if(own != null && own)
+            {
+                query.setString("username", user.getUsername());
+            }
+            else
+            {
+                if(team != null && team)
+                {
+                    query.setString("team", user.getTeam());
+                }
+            }
+            articles = query.list();
+            session.getTransaction().commit();
+
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<List<Article>>(HttpStatus.OK).ok(articles);
     }
@@ -107,9 +117,16 @@ public class ArticlesApi {
 
         // Save article into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(article);
-        session.getTransaction().commit();
+        try{
+            session.beginTransaction();
+            session.save(article);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -124,11 +141,19 @@ public class ArticlesApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query query = session.createQuery("from Article where slug= :slug");
-        query.setString("slug", slug);
-        Article article = (Article) query.uniqueResult();
-        session.getTransaction().commit();
+        Article article = null;
+        try{
+            session.beginTransaction();
+            Query query = session.createQuery("from Article where slug= :slug");
+            query.setString("slug", slug);
+            article = (Article) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Article>(HttpStatus.OK).ok(article);
     }
@@ -148,9 +173,16 @@ public class ArticlesApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.update(article);
-        session.getTransaction().commit();
+        try{
+            session.beginTransaction();
+            session.update(article);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
