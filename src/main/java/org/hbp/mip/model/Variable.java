@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "`variable`")
 @ApiModel(description = "")
-@JsonIgnoreProperties(value = { "grpPath", "queries" })
+@JsonIgnoreProperties(value = { "queries" })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Variable {
 
@@ -33,8 +33,6 @@ public class Variable {
     private Boolean isGrouping = null;
     private Boolean isCovariable = null;
     private Boolean isFilter = null;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> grpPath = new LinkedList<>();
     @ManyToOne(fetch = FetchType.EAGER)
     private Group group = null;
     @ManyToMany(fetch = FetchType.EAGER)
@@ -211,19 +209,6 @@ public class Variable {
 
     public void setUnits(String units) {
         this.units = units;
-    }
-
-    /**
-     * Group path
-     **/
-    @ApiModelProperty(value = "Group path")
-    @JsonProperty("grpPath")
-    public List<String> getGrpPath() {
-        return grpPath;
-    }
-
-    public void setGrpPath(List<String> grpPath) {
-        this.grpPath = grpPath;
     }
 
     public List<Query> getQueries() {

@@ -61,25 +61,33 @@ public class ModelsApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query query = session.createQuery(queryString);
-        if(own != null && own)
-        {
-            query.setString("username", user.getUsername());
-        }
-        else
-        {
-            if(team != null && team)
+        List<Model> models = new LinkedList<>();
+        try{
+            session.beginTransaction();
+            Query query = session.createQuery(queryString);
+            if(own != null && own)
             {
-                query.setString("team", user.getTeam());
+                query.setString("username", user.getUsername());
             }
-        }
-        if(limit != null)
+            else
+            {
+                if(team != null && team)
+                {
+                    query.setString("team", user.getTeam());
+                }
+            }
+            if(limit != null)
+            {
+                query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
+            }
+            models = query.list();
+            session.getTransaction().commit();
+        } catch (Exception e)
         {
-            query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
-        }
-        List<Model> models = query.list();
-        session.getTransaction().commit();
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }
@@ -104,9 +112,16 @@ public class ModelsApi {
 
         // Save model into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(model);
-        session.getTransaction().commit();
+        try{
+            session.beginTransaction();
+            session.save(model);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -120,11 +135,19 @@ public class ModelsApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
-        query.setString("slug", slug);
-        Model model = (Model) query.uniqueResult();
-        session.getTransaction().commit();
+        Model model = null;
+        try{
+            session.beginTransaction();
+            org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
+            query.setString("slug", slug);
+            model = (Model) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<String>(HttpStatus.OK).ok(model.getChart().getSvg());
     }
@@ -146,54 +169,61 @@ public class ModelsApi {
 
         if(model != null) {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
-            session.beginTransaction();
-            query = session.createQuery("from Query where id= :id");
-            query.setLong("id", model.getQuery().getId());
-            org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
-            session.getTransaction().commit();
+            try{
+                session.beginTransaction();
+                query = session.createQuery("from Query where id= :id");
+                query.setLong("id", model.getQuery().getId());
+                org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
+                session.getTransaction().commit();
 
-            List<Variable> vars = new LinkedList<>();
-            for (Variable var : q.getVariables()) {
-                Variable v = new Variable();
-                v.setCode(var.getCode());
-                vars.add(v);
-            }
+                List<Variable> vars = new LinkedList<>();
+                for (Variable var : q.getVariables()) {
+                    Variable v = new Variable();
+                    v.setCode(var.getCode());
+                    vars.add(v);
+                }
 
-            List<Variable> covs = new LinkedList<>();
-            for (Variable cov : q.getCovariables()) {
-                Variable v = new Variable();
-                v.setCode(cov.getCode());
-                covs.add(v);
-            }
+                List<Variable> covs = new LinkedList<>();
+                for (Variable cov : q.getCovariables()) {
+                    Variable v = new Variable();
+                    v.setCode(cov.getCode());
+                    covs.add(v);
+                }
 
-            List<Variable> grps = new LinkedList<>();
-            for (Variable grp : q.getGrouping()) {
-                Variable v = new Variable();
-                v.setCode(grp.getCode());
-                grps.add(v);
-            }
+                List<Variable> grps = new LinkedList<>();
+                for (Variable grp : q.getGrouping()) {
+                    Variable v = new Variable();
+                    v.setCode(grp.getCode());
+                    grps.add(v);
+                }
 
-            List<Filter> fltrs = new LinkedList<>();
-            for (Filter fltr : q.getFilters()) {
-                Filter f = new Filter();
-                f.setId(fltr.getId());
-                f.setOperator(fltr.getOperator());
-                f.setValues(fltr.getValues());
-                f.setVariable(fltr.getVariable());
-                fltrs.add(f);
-            }
+                List<Filter> fltrs = new LinkedList<>();
+                for (Filter fltr : q.getFilters()) {
+                    Filter f = new Filter();
+                    f.setId(fltr.getId());
+                    f.setOperator(fltr.getOperator());
+                    f.setValues(fltr.getValues());
+                    f.setVariable(fltr.getVariable());
+                    fltrs.add(f);
+                }
 
-            org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
-            myQuery.setId(q.getId());
-            myQuery.setVariables(vars);
-            myQuery.setCovariables(covs);
-            myQuery.setGrouping(grps);
-            myQuery.setFilters(fltrs);
+                org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
+                myQuery.setId(q.getId());
+                myQuery.setVariables(vars);
+                myQuery.setCovariables(covs);
+                myQuery.setGrouping(grps);
+                myQuery.setFilters(fltrs);
 
-            model.setQuery(myQuery);
+                model.setQuery(myQuery);
 
-            Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
-            model.setDataset(ds);
+                Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
+                model.setDataset(ds);
+            } catch (Exception e)
+            {
+                if(session.getTransaction() != null)
+                {
+                    session.getTransaction().rollback();
+                }            }
         }
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
@@ -214,9 +244,16 @@ public class ModelsApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.update(model);
-        session.getTransaction().commit();
+        try{
+            session.beginTransaction();
+            session.update(model);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -242,9 +279,17 @@ public class ModelsApi {
 
         // Save model into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(model);
-        session.getTransaction().commit();
+        try{
+            session.beginTransaction();
+            session.save(model);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }

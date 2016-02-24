@@ -34,11 +34,19 @@ public class DatasetsApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query query = session.createQuery("from Dataset where code= :code");
-        query.setString("code", code);
-        Dataset dataset = (Dataset) query.uniqueResult();
-        session.getTransaction().commit();
+        Dataset dataset = null;
+        try{
+            session.beginTransaction();
+            Query query = session.createQuery("from Dataset where code= :code");
+            query.setString("code", code);
+            dataset = (Dataset) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
     }

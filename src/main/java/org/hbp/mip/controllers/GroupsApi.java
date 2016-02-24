@@ -32,11 +32,19 @@ public class GroupsApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Group where code= :code");
-        query.setString("code", rootCode);
-        Group group = (Group) query.uniqueResult();
-        session.getTransaction().commit();
+        Group group = null;
+        try{
+            session.beginTransaction();
+            org.hibernate.Query query = session.createQuery("from Group where code= :code");
+            query.setString("code", rootCode);
+            group = (Group) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<Group>(HttpStatus.OK).ok(group);
     }

@@ -6,7 +6,6 @@ package org.hbp.mip.controllers;
 
 
 import io.swagger.annotations.*;
-import org.hbp.mip.model.Group;
 import org.hbp.mip.model.Value;
 import org.hbp.mip.model.Variable;
 import org.hbp.mip.utils.HibernateUtil;
@@ -38,33 +37,19 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter
     )  {
 
-        // Get variales from DB
+        // Get variables from DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        List<Variable> variables = session.createQuery("from Variable").list();
-        session.getTransaction().commit();
-
-        // Get groups matching grpPath
-        for(Variable v : variables)
+        List<Variable> variables = new LinkedList<>();
+        try{
+            session.beginTransaction();
+            variables = session.createQuery("from Variable").list();
+            session.getTransaction().commit();
+        } catch (Exception e)
         {
-            Group g;
-            Group child = null;
-            for(int i=v.getGrpPath().size()-1; i >= 0; i--) {
-                session = HibernateUtil.getSessionFactory().getCurrentSession();
-                session.beginTransaction();
-                org.hibernate.Query query = session.createQuery("from Group where code= :code");
-                query.setString("code", v.getGrpPath().get(i));
-                g = (Group) query.uniqueResult();
-                session.getTransaction().commit();
-                g.setGroups(new LinkedList<>());
-                if(child != null)
-                {
-                    g.addGroup(child);
-                }
-                child = g.clone();
-            }
-            v.setGroup(child);
-        }
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }        }
 
         return new ResponseEntity<List<Variable>>(HttpStatus.OK).ok(variables);
     }
@@ -78,11 +63,20 @@ public class VariablesApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Variable where code= :code");
-        query.setString("code", code);
-        Variable variable = (Variable) query.uniqueResult();
-        session.getTransaction().commit();
+        Variable variable = null;
+        try{
+            session.beginTransaction();
+            org.hibernate.Query query = session.createQuery("from Variable where code= :code");
+            query.setString("code", code);
+            variable = (Variable) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         return new ResponseEntity<Variable>(HttpStatus.OK).ok(variable);
     }
@@ -98,9 +92,18 @@ public class VariablesApi {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        List<Value> values = session.createQuery("select values from Variable where code= :code").setString("code", code).list();
-        session.getTransaction().commit();
+        List<Value> values = new LinkedList<>();
+        try{
+            session.beginTransaction();
+            values = session.createQuery("select values from Variable where code= :code").setString("code", code).list();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         return new ResponseEntity<List<Value>>(HttpStatus.OK).ok(values);
     }
