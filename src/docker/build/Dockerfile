@@ -7,6 +7,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize
 RUN tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.2.0.tar.gz
 
 COPY mip.sh /opt/portal/
+COPY mip.jar /opt/portal/lib/
 RUN chmod +x /opt/portal/mip.sh
 EXPOSE 8080
 
