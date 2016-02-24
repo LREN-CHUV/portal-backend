@@ -182,7 +182,8 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

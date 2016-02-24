@@ -41,6 +41,7 @@ public class Model {
     private User createdBy = null;
     @ManyToOne
     private User updatedBy = null;
+    private String textQuery = null;
 
     public Model() {
     }
@@ -188,6 +189,19 @@ public class Model {
         this.updatedBy = updatedBy;
     }
 
+    /**
+     * Text query
+     **/
+    @ApiModelProperty(value = "Text query")
+    @JsonProperty("textQuery")
+    public String getTextQuery() {
+        return textQuery;
+    }
+
+    public void setTextQuery(String textQuery) {
+        this.textQuery = textQuery;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -204,6 +218,7 @@ public class Model {
         sb.append("  updatedAt: ").append(updatedAt).append("\n");
         sb.append("  createdBy: ").append(createdBy).append("\n");
         sb.append("  updatedBy: ").append(updatedBy).append("\n");
+        sb.append("  textQuery: ").append(textQuery).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

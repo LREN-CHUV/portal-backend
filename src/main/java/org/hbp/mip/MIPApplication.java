@@ -23,10 +23,10 @@ package org.hbp.mip;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.CORSFilter;
 import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -36,6 +36,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -57,8 +59,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -100,21 +101,31 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return userAuthentication.getDetails().toString();
     }
 
-    public static User getUser(Principal principal) {
+    /**
+     * returns the user for the current session.
+     *
+     * the "synchronized" keyword is there to avoid a bug that the transaction is supposed to protect me from.
+     * To test if your solution to removing it works, do the following:
+     * - clean DB from scratch
+     * - restart DB and backend (no session or anything like that)
+     * - log in using the front end
+     * - check you have no 500 error in the network logs.
+     * @param principal
+     * @return
+     */
+    public static synchronized User getUser(Principal principal) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        Query query = session.createQuery("from User where username= :username");
-        query.setString("username", principal.getName());
-        User user = (User) query.uniqueResult();
-        session.getTransaction().commit();
+        User user = (User) session
+                .createQuery("from User where username= :username")
+                .setString("username", principal.getName())
+                .uniqueResult();
         if (user == null) {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
-            session.beginTransaction();
             user = new User(getUserInfos());
             user.setTeam("CHUV");
             session.save(user);
-            session.getTransaction().commit();
         }
+        session.getTransaction().commit();
         return user;
     }
 
@@ -142,7 +153,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                 .build();
     }
 
-    @RequestMapping("/user")
+    @RequestMapping(path = "/user", method = RequestMethod.GET)
     public Principal user(Principal principal, HttpServletResponse response) {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -150,7 +161,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             String userJSON = mapper.writeValueAsString(getUser(principal));
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
             cookie.setPath("/");
-            cookie.setMaxAge(2592000);
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -158,6 +168,25 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             e.printStackTrace();
         }
         return principal;
+    }
+
+    @RequestMapping(path = "/user", method = RequestMethod.POST)
+    public ResponseEntity<Void> postUser(Principal principal, HttpServletResponse response,
+                                         @ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
+        ObjectMapper mapper = new ObjectMapper();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        User user = (User) session
+                .createQuery("from User where username= :username")
+                .setString("username", principal.getName())
+                .uniqueResult();
+        if (user != null) {
+            user.setAgreeNDA(agreeNDA);
+            session.update(user);
+        }
+        session.getTransaction().commit();
+
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @Override

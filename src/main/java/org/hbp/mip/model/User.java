@@ -41,6 +41,7 @@ public class User {
     private List<String> languages = new LinkedList<String>();
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new LinkedList<String>();
+    private Boolean agreeNDA = null;
 
     public User() {
     }
@@ -329,6 +330,19 @@ public class User {
         this.roles = roles;
     }
 
+    /**
+     * Agree NDA
+     **/
+    @ApiModelProperty(value = "Agree NDA")
+    @JsonProperty("agreeNDA")
+    public Boolean getAgreeNDA() {
+        return agreeNDA;
+    }
+
+    public void setAgreeNDA(Boolean agreeNDA) {
+        this.agreeNDA = agreeNDA;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -352,6 +366,7 @@ public class User {
         sb.append("  isActive: ").append(isActive).append("\n");
         sb.append("  languages: ").append(languages).append("\n");
         sb.append("  roles: ").append(roles).append("\n");
+        sb.append("  agreeNDA: ").append(agreeNDA).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

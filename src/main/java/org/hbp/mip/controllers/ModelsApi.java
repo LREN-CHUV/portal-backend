@@ -87,7 +87,8 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }
