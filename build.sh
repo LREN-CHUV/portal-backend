@@ -6,6 +6,8 @@ else
   DOCKER_COMPOSE="sudo docker-compose"
 fi
 
+# TODO: Cannot clean otherwise the build fails because of Hibernate schema generation
+mvn package
 cp target/mip.jar src/docker/build/
 
 $DOCKER_COMPOSE build
