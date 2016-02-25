@@ -41,7 +41,7 @@
 				<connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
 				<connection.username>portal</connection.username>
 				<connection.password>iaezXODVLb1e70I</connection.password>
-				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+				<hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</hibernate.dialect>
 				<schema.deploy>false</schema.deploy>
 			</properties>
 		</profile>
