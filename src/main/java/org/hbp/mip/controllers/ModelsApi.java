@@ -9,9 +9,10 @@ import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
 import org.hbp.mip.utils.CSVUtil;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
 
-    private static final String DATA_FILE = "data/values.csv";
+	@Autowired
+	MIPApplication mipApplication;
+
+    @Autowired
+	SessionFactory sessionFactoryBean;
+
+	private static final String DATA_FILE = "data/values.csv";
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -43,7 +50,7 @@ public class ModelsApi {
     )  {
 
         // Get current user
-        User user = MIPApplication.getUser(principal);
+        User user = mipApplication.getUser(principal);
 
         // Prepare HQL query from Model and User tables
         String queryString = "select m from Model m, User u where m.createdBy=u.id";
@@ -60,7 +67,7 @@ public class ModelsApi {
         }
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         List<Model> models = new LinkedList<>();
         try{
             session.beginTransaction();
@@ -102,7 +109,7 @@ public class ModelsApi {
     )  {
 
         // Get current user
-        User user = MIPApplication.getUser(principal);
+        User user = mipApplication.getUser(principal);
 
         // Set up model
         model.setSlug(model.getTitle().toLowerCase());
@@ -111,7 +118,7 @@ public class ModelsApi {
         model.setCreatedAt(new Date());
 
         // Save model into DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         try{
             session.beginTransaction();
             session.save(model);
@@ -134,7 +141,7 @@ public class ModelsApi {
     )  {
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         Model model = null;
         try{
             session.beginTransaction();
@@ -160,7 +167,7 @@ public class ModelsApi {
     )  {
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         session.beginTransaction();
         org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
         query.setString("slug", slug);
@@ -168,7 +175,7 @@ public class ModelsApi {
         session.getTransaction().commit();
 
         if(model != null) {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session = sessionFactoryBean.getCurrentSession();
             try{
                 session.beginTransaction();
                 query = session.createQuery("from Query where id= :id");
@@ -240,10 +247,10 @@ public class ModelsApi {
     )  {
 
         // Get current user
-        User user = MIPApplication.getUser(principal);
+        User user = mipApplication.getUser(principal);
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         try{
             session.beginTransaction();
             session.update(model);
@@ -267,7 +274,7 @@ public class ModelsApi {
             Principal principal
     )  {
         // Get current user
-        User user = MIPApplication.getUser(principal);
+        User user = mipApplication.getUser(principal);
 
         // Set slug
         String originalSlug = model.getSlug();
@@ -278,7 +285,7 @@ public class ModelsApi {
         model.setSlug(copySlug);
 
         // Save model into DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         try{
             session.beginTransaction();
             session.save(model);

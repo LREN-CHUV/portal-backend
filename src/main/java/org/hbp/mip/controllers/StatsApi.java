@@ -3,9 +3,10 @@ package org.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import org.hbp.mip.model.GeneralStats;
 import org.hbp.mip.model.Statistics;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/stats", description = "the stats API")
 public class StatsApi {
 
+    @Autowired
+	SessionFactory sessionFactoryBean;
+
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(method = RequestMethod.GET)
@@ -29,7 +33,7 @@ public class StatsApi {
         GeneralStats stats = new GeneralStats();
 
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         Long nbUsers = 0L;
         Long nbArticles = 0L;
         Long nbVariables = 0L;

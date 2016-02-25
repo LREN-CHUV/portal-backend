@@ -7,9 +7,10 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/datasets", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/datasets", description = "the datasets API")
 public class DatasetsApi {
-
+	
+    @Autowired
+	SessionFactory sessionFactoryBean;
 
     @ApiOperation(value = "Get a dataset", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -33,7 +36,7 @@ public class DatasetsApi {
     )  {
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         Dataset dataset = null;
         try{
             session.beginTransaction();

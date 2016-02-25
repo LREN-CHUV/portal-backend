@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+	
+	<context:component-scan base-package="org.hbp.mip" />
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+<!-- 
+		<property name="dataSource">
+			<bean id="idDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+				<property name="driverClassName" value="${connection.driver_class}" />
+				<property name="url" value="${connection.url}" />
+				<property name="username" value="${connection.username}" />
+				<property name="password" value="${connection.password}" />
+			</bean>
+
+		</property>
+ -->
+		
+		<property name="packagesToScan">
+ 			<list>
+ 				<value>org.hbp.mip.model</value>
+ 			</list>
+		</property>
+		
+		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+	</bean>
+
+	<bean id="httpSessionCsrfTokenRepository" class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository">
+		<property name="headerName" value="X-XSRF-TOKEN" />
+	</bean>
+	
+	<bean id="hbpFilter" class="org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter">
+		<constructor-arg value="/login/hbp"></constructor-arg>
+		<property name="authenticationSuccessHandler">
+			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+				<property name="defaultTargetUrl" value="http://frontend/#/home" />
+			</bean>
+		</property>
+		<property name="restTemplate">
+			<bean class="org.springframework.security.oauth2.client.OAuth2RestTemplate">
+				<constructor-arg name="resource" ref="hbp" />
+				<constructor-arg name="context" ref="oauth2ClientContext" />
+			</bean>
+		</property>
+		<property name="tokenServices">
+			<bean class="org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices">
+				<constructor-arg name="clientId" value="996f97c5-a3ca-460e-b18b-00df3e2be89a" />
+				<constructor-arg name="userInfoEndpointUrl" value="https://services.humanbrainproject.eu/oidc/v0/api/user/me" />
+			</bean>
+		</property>
+	</bean>
+	
+
+</beans>

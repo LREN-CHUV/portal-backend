@@ -2,8 +2,9 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.User;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/users", description = "the users API")
 public class UsersApi {
 
+    @Autowired
+	SessionFactory sessionFactoryBean;
+
     @ApiOperation(value = "Get a user", response = User.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
@@ -30,7 +34,7 @@ public class UsersApi {
     )  {
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         User user = null;
         try{
             session.beginTransaction();

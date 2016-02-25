@@ -18,15 +18,12 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-    </properties>
-
 	<profiles>
 		<profile>
 			<id>dev</id>
 			<properties>
+		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		        <java.version>1.8</java.version>
 				<connection.driver_class>org.h2.Driver</connection.driver_class>
 				<connection.url>jdbc:h2:mem:test</connection.url>
 				<connection.username>root</connection.username>
@@ -38,10 +35,12 @@
 		<profile>
 			<id>prod</id>
 			<properties>
+		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		        <java.version>1.8</java.version>
 				<connection.driver_class>org.postgresql.Driver</connection.driver_class>
-				<connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
-				<connection.username>postgres</connection.username>
-				<connection.password>test</connection.password>
+				<connection.url>jdbc:postgresql://localhost:5432/postgres</connection.url>
+				<connection.username>root</connection.username>
+				<connection.password>root</connection.password>
 				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
 				<schema.deploy>false</schema.deploy>
 			</properties>
@@ -65,6 +64,10 @@
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>angularjs</artifactId>
@@ -130,15 +133,27 @@
     	<resources>
     		<resource>
 	    		<directory>src/main/resources</directory>
-	    		<includes><include>**/*.xml</include></includes>
-	    		<filtering>true</filtering>
+	    		<includes><include>**/*.csv</include></includes>
+	    		<excludes><exclude>**/*.xml</exclude></excludes>
     		</resource>
     		<resource>
 	    		<directory>src/main/resources</directory>
-	    		<includes><include>**/*.csv</include></includes>
+	    		<includes><include>**/*.xml</include></includes>
+	    		<excludes><exclude>**/*.csv</exclude></excludes>
+	    		<filtering>true</filtering>
     		</resource>
     	</resources>
+    	
         <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -150,9 +165,6 @@
                 <executions>
                     <execution>
                         <phase>compile</phase>
-                        <configuration>
-                        	<skip>${schema.deploy}</skip>
-                        </configuration>
                         <goals>
                             <goal>export</goal>
                         </goals>

@@ -6,8 +6,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.hbp.mip.model.Group;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GroupsApi {
 
 
+    @Autowired
+	SessionFactory sessionFactoryBean;
+
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
@@ -31,7 +35,7 @@ public class GroupsApi {
         String rootCode = "root";
 
         // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = sessionFactoryBean.getCurrentSession();
         Group group = null;
         try{
             session.beginTransaction();

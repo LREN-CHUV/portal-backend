@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.CORSFilter;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,6 +36,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -81,6 +83,8 @@ import java.net.URLEncoder;
 import java.security.Principal;
 
 @SpringBootApplication
+@Configuration
+@ImportResource("classpath:spring/application-context.xml")
 @RestController
 @EnableOAuth2Client
 @EnableSwagger2
@@ -90,25 +94,35 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
 
-    public static void main(String[] args) {
+    @Autowired
+	SessionFactory sessionFactoryBean;
+
+    @Autowired
+    HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository;
+    
+    @Autowired
+    OAuth2ClientAuthenticationProcessingFilter hbpFilter;
+
+
+public static void main(String[] args) {
         SpringApplication.run(MIPApplication.class, args);
     }
 
-    public static String getUserInfos() {
+    public String getUserInfos() {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
         Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
         return userAuthentication.getDetails().toString();
     }
 
-    public static User getUser(Principal principal) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+    public User getUser(Principal principal) {
+        Session session = sessionFactoryBean.getCurrentSession();
         session.beginTransaction();
         Query query = session.createQuery("from User where username= :username");
         query.setString("username", principal.getName());
         User user = (User) query.uniqueResult();
         session.getTransaction().commit();
         if (user == null) {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session = sessionFactoryBean.getCurrentSession();
             session.beginTransaction();
             user = new User(getUserInfos());
             user.setTeam("CHUV");
@@ -172,7 +186,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                 .and().logout().logoutSuccessUrl("/login/hbp").permitAll()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository())
                 .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
-                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+                .addFilterBefore(hbpFilter, BasicAuthenticationFilter.class);
     }
 
     @Bean
@@ -184,22 +198,24 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         return registration;
     }
 
+/*
     private Filter ssoFilter() {
-        OAuth2ClientAuthenticationProcessingFilter hbpFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/hbp");
+    	OAuth2ClientAuthenticationProcessingFilter hbpFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/hbp");
         OAuth2RestTemplate hbpTemplate = new OAuth2RestTemplate(hbp(), oauth2ClientContext);
         hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("http://frontend/#/home"));
         hbpFilter.setRestTemplate(hbpTemplate);
         hbpFilter.setTokenServices(new UserInfoTokenServices(hbpResource().getUserInfoUri(), hbp().getClientId()));
         return hbpFilter;
     }
+*/
 
-    @Bean
+    @Bean(name="hbp")
     @ConfigurationProperties("hbp.client")
     OAuth2ProtectedResourceDetails hbp() {
         return new AuthorizationCodeResourceDetails();
     }
 
-    @Bean
+    @Bean(name="hbpResource")
     @ConfigurationProperties("hbp.resource")
     ResourceServerProperties hbpResource() {
         return new ResourceServerProperties();
@@ -226,8 +242,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-        repository.setHeaderName("X-XSRF-TOKEN");
+        HttpSessionCsrfTokenRepository repository = httpSessionCsrfTokenRepository;
         return repository;
     }
 
