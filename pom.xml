@@ -30,6 +30,7 @@
 				<connection.password>root</connection.password>
 				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
 				<schema.deploy>true</schema.deploy>
+                <frontend.redirect>http://frontend/#/home</frontend.redirect>
 			</properties>
 		</profile>
 		<profile>
@@ -43,6 +44,7 @@
 				<connection.password>iaezXODVLb1e70I</connection.password>
 				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
 				<schema.deploy>false</schema.deploy>
+                <frontend.redirect>https://mip.humanbrainproject.eu/#/home</frontend.redirect>
 			</properties>
 		</profile>
         <profile>
@@ -56,6 +58,7 @@
                 <connection.password>test</connection.password>
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
+                <frontend.redirect>http://frontend/#/home</frontend.redirect>
             </properties>
         </profile>
 	</profiles>

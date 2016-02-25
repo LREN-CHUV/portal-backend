@@ -8,18 +8,6 @@
 	<context:component-scan base-package="org.hbp.mip" />
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-<!-- 
-		<property name="dataSource">
-			<bean id="idDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-				<property name="driverClassName" value="${connection.driver_class}" />
-				<property name="url" value="${connection.url}" />
-				<property name="username" value="${connection.username}" />
-				<property name="password" value="${connection.password}" />
-			</bean>
-
-		</property>
- -->
-		
 		<property name="packagesToScan">
  			<list>
  				<value>org.hbp.mip.model</value>
@@ -37,7 +25,7 @@
 		<constructor-arg value="/login/hbp"></constructor-arg>
 		<property name="authenticationSuccessHandler">
 			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
-				<property name="defaultTargetUrl" value="http://frontend/#/home" />
+				<property name="defaultTargetUrl" value="${frontend.redirect}" />
 			</bean>
 		</property>
 		<property name="restTemplate">
