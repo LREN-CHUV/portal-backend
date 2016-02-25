@@ -20,7 +20,7 @@
 
 	<profiles>
 		<profile>
-			<id>dev</id>
+			<id>test</id>
 			<properties>
 		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		        <java.version>1.8</java.version>
@@ -45,6 +45,19 @@
 				<schema.deploy>false</schema.deploy>
 			</properties>
 		</profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
+                <connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
+                <connection.username>postgres</connection.username>
+                <connection.password>test</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+                <schema.deploy>false</schema.deploy>
+            </properties>
+        </profile>
 	</profiles>
 
     <dependencies>
