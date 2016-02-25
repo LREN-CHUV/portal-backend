@@ -38,9 +38,9 @@
 		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		        <java.version>1.8</java.version>
 				<connection.driver_class>org.postgresql.Driver</connection.driver_class>
-				<connection.url>jdbc:postgresql://localhost:5432/postgres</connection.url>
-				<connection.username>root</connection.username>
-				<connection.password>root</connection.password>
+				<connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
+				<connection.username>portal</connection.username>
+				<connection.password>iaezXODVLb1e70I</connection.password>
 				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
 				<schema.deploy>false</schema.deploy>
 			</properties>
