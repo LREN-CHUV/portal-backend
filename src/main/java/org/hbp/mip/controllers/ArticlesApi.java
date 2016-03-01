@@ -9,11 +9,10 @@ import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +31,6 @@ public class ArticlesApi {
 
 	@Autowired
 	MIPApplication mipApplication;
-
-    @Autowired
-	SessionFactory sessionFactoryBean;
 
 	@ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -68,7 +64,7 @@ public class ArticlesApi {
             }
         }
 
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Article> articles = new LinkedList<>();
         // Query DB
         try{
@@ -123,7 +119,7 @@ public class ArticlesApi {
         article.setCreatedBy(user);
 
         // Save article into DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
             session.save(article);
@@ -147,7 +143,7 @@ public class ArticlesApi {
     ) {
 
         // Query DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Article article = null;
         try{
             session.beginTransaction();
@@ -179,7 +175,7 @@ public class ArticlesApi {
         User user = mipApplication.getUser(principal);
 
         // Query DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
             session.update(article);

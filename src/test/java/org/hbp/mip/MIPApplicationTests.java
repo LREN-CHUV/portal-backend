@@ -15,30 +15,13 @@
  */
 package org.hbp.mip;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes=MIPApplication.class, locations={"classpath:spring/application-context.xml"})
 public class MIPApplicationTests {
-
-	@Autowired
-	LocalSessionFactoryBean sessionFactoryBean;
-	
-	@Test
-	public void contextLoads() {
-	}
-
-	@Test
-	public void testMainApp() {
-		assertNotNull(sessionFactoryBean);
-	}
-
 }

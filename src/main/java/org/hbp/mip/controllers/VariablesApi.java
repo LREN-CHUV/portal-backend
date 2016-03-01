@@ -8,9 +8,8 @@ package org.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Value;
 import org.hbp.mip.model.Variable;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +24,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/variables", description = "the variables API")
 public class VariablesApi {
 
-    @Autowired
-	SessionFactory sessionFactoryBean;
-
     @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
@@ -41,7 +37,7 @@ public class VariablesApi {
     )  {
 
         // Get variables from DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Variable> variables = new LinkedList<>();
         try{
             session.beginTransaction();
@@ -66,7 +62,7 @@ public class VariablesApi {
     )  {
 
         // Query DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Variable variable = null;
         try{
             session.beginTransaction();
@@ -95,7 +91,7 @@ public class VariablesApi {
     )  {
 
         // Query DB
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Value> values = new LinkedList<>();
         try{
             session.beginTransaction();

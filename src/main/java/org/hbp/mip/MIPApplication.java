@@ -26,8 +26,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.CORSFilter;
+import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -96,9 +96,6 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     OAuth2ClientContext oauth2ClientContext;
 
     @Autowired
-	SessionFactory sessionFactoryBean;
-
-    @Autowired
     HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository;
     
     @Autowired
@@ -128,7 +125,7 @@ public static void main(String[] args) {
      * @return
      */
      public synchronized User getUser(Principal principal) {
-         Session session = sessionFactoryBean.getCurrentSession();
+         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
          session.beginTransaction();
          User user = (User) session
             .createQuery("from User where username= :username")
@@ -188,7 +185,7 @@ public static void main(String[] args) {
     public ResponseEntity<Void> postUser(Principal principal, HttpServletResponse response,
                                          @ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
         ObjectMapper mapper = new ObjectMapper();
-        Session session = sessionFactoryBean.getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         User user = (User) session
             .createQuery("from User where username= :username")
