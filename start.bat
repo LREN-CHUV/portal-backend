@@ -1,0 +1,1 @@
+start java -jar target\backend-services-0.0.1-SNAPSHOT.jar  --spring.config.location=config\application.yml
