@@ -94,7 +94,8 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }
@@ -112,7 +113,8 @@ public class ModelsApi {
         User user = mipApplication.getUser(principal);
 
         // Set up model
-        model.setSlug(model.getTitle().toLowerCase());
+        model.setSlug(model.getConfig().getTitle().get("text").toLowerCase());
+        model.setTitle(model.getConfig().getTitle().get("text"));
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
@@ -131,32 +133,6 @@ public class ModelsApi {
             }        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "Get SVG", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
-    @RequestMapping(value = "/{slug}.svg", produces = {"image/svg+xml"}, method = RequestMethod.GET)
-    public ResponseEntity<String> getSVG(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    )  {
-
-        // Query DB
-        Session session = sessionFactoryBean.getCurrentSession();
-        Model model = null;
-        try{
-            session.beginTransaction();
-            org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
-            query.setString("slug", slug);
-            model = (Model) query.uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }        }
-
-        return new ResponseEntity<String>(HttpStatus.OK).ok(model.getChart().getSvg());
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)

@@ -18,33 +18,33 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-	<profiles>
-		<profile>
-			<id>test</id>
-			<properties>
-		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		        <java.version>1.8</java.version>
-				<connection.driver_class>org.h2.Driver</connection.driver_class>
-				<connection.url>jdbc:h2:mem:test</connection.url>
-				<connection.username>root</connection.username>
-				<connection.password>root</connection.password>
-				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
-				<schema.deploy>true</schema.deploy>
-			</properties>
-		</profile>
-		<profile>
-			<id>prod</id>
-			<properties>
-		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		        <java.version>1.8</java.version>
-				<connection.driver_class>org.postgresql.Driver</connection.driver_class>
-				<connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
-				<connection.username>portal</connection.username>
-				<connection.password>iaezXODVLb1e70I</connection.password>
-				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
-				<schema.deploy>false</schema.deploy>
-			</properties>
-		</profile>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.h2.Driver</connection.driver_class>
+                <connection.url>jdbc:h2:mem:test</connection.url>
+                <connection.username>root</connection.username>
+                <connection.password>root</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+                <schema.deploy>true</schema.deploy>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
+                <connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
+                <connection.username>portal</connection.username>
+                <connection.password>iaezXODVLb1e70I</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+                <schema.deploy>false</schema.deploy>
+            </properties>
+        </profile>
         <profile>
             <id>dev</id>
             <properties>
@@ -58,7 +58,7 @@
                 <schema.deploy>false</schema.deploy>
             </properties>
         </profile>
-	</profiles>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -77,10 +77,10 @@
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>angularjs</artifactId>
@@ -143,30 +143,30 @@
     </dependencies>
 
     <build>
-    	<resources>
-    		<resource>
-	    		<directory>src/main/resources</directory>
-	    		<includes><include>**/*.csv</include></includes>
-	    		<excludes><exclude>**/*.xml</exclude></excludes>
-    		</resource>
-    		<resource>
-	    		<directory>src/main/resources</directory>
-	    		<includes><include>**/*.xml</include></includes>
-	    		<excludes><exclude>**/*.csv</exclude></excludes>
-	    		<filtering>true</filtering>
-    		</resource>
-    	</resources>
-    	
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes><include>**/*.csv</include></includes>
+                <excludes><exclude>**/*.xml</exclude></excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes><include>**/*.xml</include></includes>
+                <excludes><exclude>**/*.csv</exclude></excludes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-					<!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -183,6 +183,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

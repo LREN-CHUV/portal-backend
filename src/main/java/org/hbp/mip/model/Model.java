@@ -8,12 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
@@ -36,7 +34,7 @@ public class Model {
     private Dataset dataset = null;
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    private Chart chart = null;
+    private Config config = null;
     @ManyToOne
     private User createdBy = null;
     @ManyToOne
@@ -124,17 +122,14 @@ public class Model {
         this.valid = valid;
     }
 
-    /**
-     * Chart
-     **/
-    @ApiModelProperty(value = "Chart")
-    @JsonProperty("chart")
-    public Chart getChart() {
-        return chart;
+    @ApiModelProperty(value = "Config")
+    @JsonProperty("config")
+    public Config getConfig() {
+        return config;
     }
 
-    public void setChart(Chart chart) {
-        this.chart = chart;
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
     /**
@@ -211,9 +206,7 @@ public class Model {
         sb.append("  slug: ").append(slug).append("\n");
         sb.append("  description: ").append(description).append("\n");
         sb.append("  query: ").append(query).append("\n");
-        sb.append("  dataset: ").append(dataset).append("\n");
         sb.append("  valid: ").append(valid).append("\n");
-        sb.append("  chart: ").append(chart).append("\n");
         sb.append("  createdAt: ").append(createdAt).append("\n");
         sb.append("  updatedAt: ").append(updatedAt).append("\n");
         sb.append("  createdBy: ").append(createdBy).append("\n");
@@ -222,4 +215,5 @@ public class Model {
         sb.append("}\n");
         return sb.toString();
     }
+
 }

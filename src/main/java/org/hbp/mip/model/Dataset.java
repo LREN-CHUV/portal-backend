@@ -21,9 +21,9 @@ public class Dataset {
     private String code = null;
     private Date date = null;
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> header = new LinkedList<String>();
-    @Transient
-    private Map<String, List<Object>> data = new HashMap<>();
+    private List<String> header = new LinkedList<>();
+    @ElementCollection(fetch=FetchType.EAGER)
+    private Map<String, LinkedList<Object>> data = new HashMap<>();
 
     public Dataset() {
     }
@@ -67,11 +67,11 @@ public class Dataset {
         this.header = header;
     }
 
-    public Map<String, List<Object>> getData() {
+    public Map<String, LinkedList<Object>> getData() {
         return data;
     }
 
-    public void setData(Map<String, List<Object>> data) {
+    public void setData(Map<String, LinkedList<Object>> data) {
         this.data = data;
     }
 
@@ -83,7 +83,6 @@ public class Dataset {
         sb.append("  code: ").append(code).append("\n");
         sb.append("  date: ").append(date).append("\n");
         sb.append("  header: ").append(header).append("\n");
-        sb.append("  data: ").append(data).append("\n");
         sb.append("}\n");
         return sb.toString();
     }

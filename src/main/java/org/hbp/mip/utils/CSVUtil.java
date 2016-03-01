@@ -27,7 +27,7 @@ public class CSVUtil {
         String code = GenerateDSCode(query);
         Date date = new Date();
         List<String> header = new LinkedList<>();
-        Map<String, List<Object>> data = new HashMap<>();
+        Map<String, LinkedList<Object>> data = new HashMap<>();
 
         List<Variable> variables = new LinkedList<>();
         //variables.addAll(query.getVariables());  // TODO : check that
@@ -50,6 +50,7 @@ public class CSVUtil {
                 String c = v.getCode();
                 int idx = find(c, firstRow);
                 List<Object> l = new LinkedList<>();
+                LinkedList<Object> ll = new LinkedList<>();
                 for (String[] row : rows) {
                     switch (type) {
                         case "T": {
@@ -122,10 +123,9 @@ public class CSVUtil {
                 // TODO : Remove this limit -> only to avoid bug with Virtua's front-end
                 if(l.size() > 50)
                 {
-                    l = l.subList(0, 49);
+                    ll.addAll(l.subList(0,49));
                 }
-                data.put(c, l);
-                System.out.println("Adding "+l.size()+" values to "+c);
+                data.put(c, ll);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -302,10 +302,19 @@ public class CSVUtil {
     private static String getTypeFromDB(Variable v)
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query q = session.createQuery("SELECT type FROM Variable where code= :code").setString("code", v.getCode());
-        String type = (String) q.uniqueResult();
-        session.getTransaction().commit();
+        String type = null;
+        try{
+            session.beginTransaction();
+            org.hibernate.Query q = session.createQuery("SELECT type FROM Variable where code= :code").setString("code", v.getCode());
+            type = (String) q.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         if(type == null)
         {

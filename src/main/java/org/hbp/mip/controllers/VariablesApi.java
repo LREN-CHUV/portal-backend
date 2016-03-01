@@ -52,7 +52,8 @@ public class VariablesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<List<Variable>>(HttpStatus.OK).ok(variables);
     }
