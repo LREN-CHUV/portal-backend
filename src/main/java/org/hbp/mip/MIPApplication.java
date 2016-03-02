@@ -224,17 +224,6 @@ public static void main(String[] args) {
         return registration;
     }
 
-/*
-    private Filter ssoFilter() {
-    	OAuth2ClientAuthenticationProcessingFilter hbpFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/hbp");
-        OAuth2RestTemplate hbpTemplate = new OAuth2RestTemplate(hbp(), oauth2ClientContext);
-        hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("http://frontend/#/home"));
-        hbpFilter.setRestTemplate(hbpTemplate);
-        hbpFilter.setTokenServices(new UserInfoTokenServices(hbpResource().getUserInfoUri(), hbp().getClientId()));
-        return hbpFilter;
-    }
-*/
-
     @Bean(name="hbp")
     @ConfigurationProperties("hbp.client")
     OAuth2ProtectedResourceDetails hbp() {
