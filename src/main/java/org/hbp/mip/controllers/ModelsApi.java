@@ -98,10 +98,10 @@ public class ModelsApi {
     }
 
 
-    @ApiOperation(value = "Create a model", response = Void.class)
+    @ApiOperation(value = "Create a model", response = Model.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Model created") })
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Void> addAModel(
+    public ResponseEntity<Model> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model,
             Principal principal
     )  {
@@ -129,7 +129,7 @@ public class ModelsApi {
                 session.getTransaction().rollback();
             }        }
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
