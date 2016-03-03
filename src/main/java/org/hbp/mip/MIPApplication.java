@@ -133,7 +133,6 @@ public static void main(String[] args) {
             .uniqueResult();
          if (user == null) {
             user = new User(getUserInfos());
-            user.setTeam("CHUV");
             session.save(user);
         }
          session.getTransaction().commit();

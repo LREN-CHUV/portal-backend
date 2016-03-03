@@ -90,6 +90,18 @@ public class User {
             }
         }
 
+        p = Pattern.compile("contractor=([\\w ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            this.team = m.group(1);
+        }
+
+        p = Pattern.compile("subprojects=([A-Za-z0-9\\[\\] ]+)");
+        m = p.matcher(userInfo);
+        if (m.find()) {
+            this.team += m.group(1);
+        }
+
         if (this.picture == null || this.picture.isEmpty()) {
             this.picture = "images/users/default_user.png";
         }
