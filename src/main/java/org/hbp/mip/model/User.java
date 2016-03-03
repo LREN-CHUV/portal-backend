@@ -47,34 +47,35 @@ public class User {
     }
 
     public User(String userInfo) {
+
         Pattern p;
         Matcher m;
 
-        p = Pattern.compile("username=([\\w ]+)");
+        p = Pattern.compile("preferred_username=([\\w ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.username = m.group(1);
         }
 
-        p = Pattern.compile("displayName=([\\w ]+)");
+        p = Pattern.compile("name=([\\w ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.fullname = m.group(1);
         }
 
-        p = Pattern.compile("givenName=([\\w ]+)");
+        p = Pattern.compile("given_name=([\\w ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.firstname = m.group(1);
         }
 
-        p = Pattern.compile("familyName=([\\w ]+)");
+        p = Pattern.compile("family_name=([\\w ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.lastname = m.group(1);
         }
 
-        p = Pattern.compile("value=([\\w.]+@[\\w.]+)");
+        p = Pattern.compile("email=([\\w.]+@[\\w.]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.email = m.group(1);
@@ -96,10 +97,10 @@ public class User {
             this.team = m.group(1);
         }
 
-        p = Pattern.compile("subprojects=([A-Za-z0-9\\[\\] ]+)");
+        p = Pattern.compile("picture=([\\w.:/ ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
-            this.team += m.group(1);
+            this.picture = m.group(1);
         }
 
         if (this.picture == null || this.picture.isEmpty()) {

@@ -20,7 +20,7 @@ hbp:
     # use-current-uri: false  # For production server
     # pre-established-redirect-uri: https://mip.humanbrainproject.eu/services/login/hbp  # For production server
   resource:
-    userInfoUri: https://services.humanbrainproject.eu/oidc/v0/api/user/me
+    userInfoUri: https://services.humanbrainproject.eu/oidc/userinfo
 
 logging:
   level:

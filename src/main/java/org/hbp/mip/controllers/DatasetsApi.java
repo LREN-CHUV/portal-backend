@@ -45,7 +45,8 @@ public class DatasetsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
     }

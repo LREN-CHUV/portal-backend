@@ -126,16 +126,26 @@ public static void main(String[] args) {
      */
      public synchronized User getUser(Principal principal) {
          Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-         session.beginTransaction();
-         User user = (User) session
-            .createQuery("from User where username= :username")
-            .setString("username", principal.getName())
-            .uniqueResult();
-         if (user == null) {
-            user = new User(getUserInfos());
-            session.save(user);
-        }
-         session.getTransaction().commit();
+         User user = null;
+         try {
+             session.beginTransaction();
+             user = (User) session
+                     .createQuery("from User where username= :username")
+                     .setString("username", principal.getName())
+                     .uniqueResult();
+             if (user == null) {
+                 user = new User(getUserInfos());
+                 session.save(user);
+             }
+             session.getTransaction().commit();
+         } catch (Exception e)
+         {
+             if(session.getTransaction() != null)
+             {
+                 session.getTransaction().rollback();
+             }
+         }
+
         return user;
     }
 

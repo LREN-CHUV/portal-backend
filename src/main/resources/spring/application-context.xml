@@ -27,7 +27,7 @@
 		<property name="tokenServices">
 			<bean class="org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices">
 				<constructor-arg name="clientId" value="996f97c5-a3ca-460e-b18b-00df3e2be89a" />
-				<constructor-arg name="userInfoEndpointUrl" value="https://services.humanbrainproject.eu/oidc/v0/api/user/me" />
+				<constructor-arg name="userInfoEndpointUrl" value="https://services.humanbrainproject.eu/oidc/userinfo" />
 			</bean>
 		</property>
 	</bean>

@@ -127,7 +127,8 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
@@ -203,7 +204,8 @@ public class ModelsApi {
                 if(session.getTransaction() != null)
                 {
                     session.getTransaction().rollback();
-                }            }
+                }
+            }
         }
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
@@ -233,7 +235,8 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

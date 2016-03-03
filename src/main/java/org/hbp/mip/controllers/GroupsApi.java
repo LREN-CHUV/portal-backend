@@ -43,7 +43,8 @@ public class GroupsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Group>(HttpStatus.OK).ok(group);
     }

@@ -93,7 +93,8 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<List<Article>>(HttpStatus.OK).ok(articles);
     }
@@ -129,7 +130,8 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -156,7 +158,8 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Article>(HttpStatus.OK).ok(article);
     }
@@ -185,7 +188,8 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
-            }        }
+            }
+        }
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
