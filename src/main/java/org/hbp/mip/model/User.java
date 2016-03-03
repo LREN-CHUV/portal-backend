@@ -97,7 +97,7 @@ public class User {
             this.team = m.group(1);
         }
 
-        p = Pattern.compile("picture=([\\w.:/ ]+)");
+        p = Pattern.compile("picture=([-a-zA-Z0-9+&@#/%=~_|.: ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
             this.picture = m.group(1);
