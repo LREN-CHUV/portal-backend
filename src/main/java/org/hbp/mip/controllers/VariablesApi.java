@@ -10,7 +10,6 @@ import org.hbp.mip.model.Value;
 import org.hbp.mip.model.Variable;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,7 @@ public class VariablesApi {
     @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Variable>> getVariables(
+    public ResponseEntity<List> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
             @ApiParam(value = "List of subgroups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "subgroup", required = false) String subgroup,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isVariable", required = false) String isVariable,
@@ -36,9 +35,8 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter
     )  {
 
-        // Get variables from DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<Variable> variables = new LinkedList<>();
+        List variables = new LinkedList<>();
         try{
             session.beginTransaction();
             variables = session.createQuery("from Variable").list();
@@ -51,7 +49,7 @@ public class VariablesApi {
             }
         }
 
-        return new ResponseEntity<List<Variable>>(HttpStatus.OK).ok(variables);
+        return ResponseEntity.ok(variables);
     }
 
     @ApiOperation(value = "Get a variable", response = Variable.class)
@@ -78,21 +76,21 @@ public class VariablesApi {
             }
         }
 
-        return new ResponseEntity<Variable>(HttpStatus.OK).ok(variable);
+        return ResponseEntity.ok(variable);
     }
 
 
     @ApiOperation(value = "Get values from a variable", response = Value.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}/values", method = RequestMethod.GET)
-    public ResponseEntity<List<Value>> getValuesFromAVariable(
+    public ResponseEntity<List> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q
     )  {
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<Value> values = new LinkedList<>();
+        List values = new LinkedList<>();
         try{
             session.beginTransaction();
             values = session.createQuery("select values from Variable where code= :code").setString("code", code).list();
@@ -105,7 +103,7 @@ public class VariablesApi {
             }
         }
 
-        return new ResponseEntity<List<Value>>(HttpStatus.OK).ok(values);
+        return ResponseEntity.ok(values);
     }
 
 

@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiResponses;
 import org.hbp.mip.model.Group;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,15 +25,13 @@ public class GroupsApi {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Group> getTheRootGroup()  {
 
-        // Set up root group
         String rootCode = "root";
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Group group = null;
         try{
             session.beginTransaction();
-            org.hibernate.Query query = session.createQuery("from Group where code= :code");
+            org.hibernate.Query query = session.createQuery("FROM Group WHERE code= :code");
             query.setString("code", rootCode);
             group = (Group) query.uniqueResult();
             session.getTransaction().commit();
@@ -46,7 +43,7 @@ public class GroupsApi {
             }
         }
 
-        return new ResponseEntity<Group>(HttpStatus.OK).ok(group);
+        return ResponseEntity.ok(group);
     }
 
 

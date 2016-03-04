@@ -10,7 +10,6 @@ import org.hbp.mip.model.Dataset;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,6 @@ public class DatasetsApi {
             @ApiParam(value = "code", required = true) @PathVariable("code") String code
     )  {
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Dataset dataset = null;
         try{
@@ -48,8 +46,7 @@ public class DatasetsApi {
             }
         }
 
-        return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
+        return ResponseEntity.ok(dataset);
     }
-
 
 }

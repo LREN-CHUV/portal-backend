@@ -44,24 +44,21 @@ public class ModelsApi {
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team
     )  {
 
-        // Get current user
         User user = mipApplication.getUser();
 
-        // Prepare HQL query from Model and User tables
-        String queryString = "select m from Model m, User u where m.createdBy=u.id";
+        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.id";
         if(own != null && own)
         {
-            queryString += " and u.username= :username";
+            queryString += " AND u.username= :username";
         }
         else
         {
             if(team != null && team)
             {
-                queryString += " and u.team= :team";
+                queryString += " AND u.team= :team";
             }
         }
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Model> models = new LinkedList<>();
         try{
@@ -103,17 +100,14 @@ public class ModelsApi {
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
     )  {
 
-        // Get current user
         User user = mipApplication.getUser();
 
-        // Set up model
         model.setSlug(model.getConfig().getTitle().get("text").toLowerCase());
         model.setTitle(model.getConfig().getTitle().get("text"));
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
 
-        // Save model into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
@@ -137,20 +131,27 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     )  {
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        org.hibernate.Query query = session.createQuery("from Model where slug= :slug");
-        query.setString("slug", slug);
-        Model model = (Model) query.uniqueResult();
-        session.getTransaction().commit();
+        Model model = null;
+        org.hibernate.Query query;
+        try {
+            session.beginTransaction();
+            query = session.createQuery("FROM Model WHERE slug= :slug").setString("slug", slug);
+            model = (Model) query.uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         if(model != null) {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             try{
                 session.beginTransaction();
-                query = session.createQuery("from Query where id= :id");
-                query.setLong("id", model.getQuery().getId());
+                query = session.createQuery("FROM Query WHERE id= :id").setLong("id", model.getQuery().getId());
                 org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
                 session.getTransaction().commit();
 
@@ -205,7 +206,7 @@ public class ModelsApi {
             }
         }
 
-        return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
+        return new ResponseEntity<>(HttpStatus.OK).ok(model);
     }
 
 
@@ -217,10 +218,8 @@ public class ModelsApi {
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
 
-        // Get current user
         User user = mipApplication.getUser();
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
@@ -234,7 +233,7 @@ public class ModelsApi {
             }
         }
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation(value = "Copy a model", response = Model.class)
@@ -244,10 +243,9 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
-        // Get current user
+
         User user = mipApplication.getUser();
 
-        // Set slug
         String originalSlug = model.getSlug();
         String copySlug;
         do {
@@ -255,7 +253,6 @@ public class ModelsApi {
         } while (getAModel(copySlug) == null);
         model.setSlug(copySlug);
 
-        // Save model into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
@@ -269,7 +266,7 @@ public class ModelsApi {
             }
         }
 
-        return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
+        return new ResponseEntity<>(HttpStatus.OK).ok(model);
     }
 
     private String randomStr(int length) {
@@ -292,7 +289,7 @@ public class ModelsApi {
 
         // TODO : Implement delete method
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

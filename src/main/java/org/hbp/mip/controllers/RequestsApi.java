@@ -4,7 +4,6 @@ import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
 import org.hbp.mip.model.Query;
 import org.hbp.mip.utils.CSVUtil;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +31,7 @@ public class RequestsApi {
 
         Dataset dataset = CSVUtil.parseValues(DATA_FILE, query);
 
-        return new ResponseEntity<Dataset>(HttpStatus.OK).ok(dataset);
+        return ResponseEntity.ok(dataset);
     }
 
 }

@@ -4,7 +4,6 @@ import io.swagger.annotations.*;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Session;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,6 @@ public class UsersApi {
             @ApiParam(value = "username", required = true) @PathVariable("username") String username
     )  {
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         User user = null;
         try{
@@ -47,6 +45,6 @@ public class UsersApi {
             }
         }
 
-        return new ResponseEntity<User>(HttpStatus.OK).ok(user);
+        return ResponseEntity.ok(user);
     }
 }

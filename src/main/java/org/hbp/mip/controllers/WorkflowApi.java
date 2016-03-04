@@ -1,7 +1,6 @@
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +40,7 @@ public class WorkflowApi {
             results = "";
         }
 
-        return new ResponseEntity<>(HttpStatus.OK).ok(results);
+        return ResponseEntity.ok(results);
     }
 
 
@@ -66,7 +65,7 @@ public class WorkflowApi {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -95,7 +94,7 @@ public class WorkflowApi {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             con.setSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

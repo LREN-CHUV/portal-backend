@@ -34,37 +34,33 @@ public class ArticlesApi {
 	@ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Article>> getArticles(
+    public ResponseEntity<List> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
 
-        // Get current user
         User user = mipApplication.getUser();
 
-        // Prepare HQL query using Article and User tables
-        String queryString = "SELECT a FROM Article a, User u where a.createdBy=u.id";
+        String queryString = "SELECT a FROM Article a, User u WHERE a.createdBy=u.id";
         if(status != null)
         {
-            queryString += " and status= :status";
+            queryString += " AND status= :status";
         }
-
         if(own != null && own)
         {
-            queryString += " and u.username= :username";
+            queryString += " AND u.username= :username";
         }
         else
         {
             if(team != null && team)
             {
-                queryString += " and u.team= :team";
+                queryString += " AND u.team= :team";
             }
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<Article> articles = new LinkedList<>();
-        // Query DB
+        List articles = new LinkedList<>();
         try{
             session.beginTransaction();
             Query query = session.createQuery(queryString);
@@ -85,7 +81,6 @@ public class ArticlesApi {
             }
             articles = query.list();
             session.getTransaction().commit();
-
         } catch (Exception e)
         {
             if(session.getTransaction() != null)
@@ -94,7 +89,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<List<Article>>(HttpStatus.OK).ok(articles);
+        return ResponseEntity.ok(articles);
     }
 
 
@@ -105,10 +100,8 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to create", required = true) Article article
     ) {
 
-        // Get current user
         User user = mipApplication.getUser();
 
-        // Set up article to save
         article.setCreatedAt(new Date());
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
@@ -116,7 +109,6 @@ public class ArticlesApi {
         article.setSlug(article.getTitle().toLowerCase().replaceAll(" ","_"));
         article.setCreatedBy(user);
 
-        // Save article into DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
@@ -130,7 +122,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -141,12 +133,11 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
 
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Article article = null;
         try{
             session.beginTransaction();
-            Query query = session.createQuery("from Article where slug= :slug");
+            Query query = session.createQuery("FROM Article WHERE slug= :slug");
             query.setString("slug", slug);
             article = (Article) query.uniqueResult();
             session.getTransaction().commit();
@@ -158,7 +149,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<Article>(HttpStatus.OK).ok(article);
+        return ResponseEntity.ok(article);
     }
 
 
@@ -170,10 +161,6 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to update", required = true) Article article
     ) {
 
-        // Get current user
-        User user = mipApplication.getUser();
-
-        // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
@@ -187,7 +174,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -200,8 +187,7 @@ public class ArticlesApi {
 
         // TODO : Implement delete method
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }
