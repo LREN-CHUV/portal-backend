@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,12 +37,11 @@ public class ArticlesApi {
     public ResponseEntity<List<Article>> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
-            @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team,
-            Principal principal
+            @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Prepare HQL query using Article and User tables
         String queryString = "SELECT a FROM Article a, User u where a.createdBy=u.id";
@@ -104,12 +102,11 @@ public class ArticlesApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Article created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
-            @RequestBody @ApiParam(value = "Article to create", required = true) Article article,
-            Principal principal
+            @RequestBody @ApiParam(value = "Article to create", required = true) Article article
     ) {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Set up article to save
         article.setCreatedAt(new Date());
@@ -170,12 +167,11 @@ public class ArticlesApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Article to update", required = true) Article article,
-            Principal principal
+            @RequestBody @ApiParam(value = "Article to update", required = true) Article article
     ) {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

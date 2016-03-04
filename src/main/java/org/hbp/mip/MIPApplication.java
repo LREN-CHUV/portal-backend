@@ -121,22 +121,14 @@ public static void main(String[] args) {
      * - restart DB and backend (no session or anything like that)
      * - log in using the front end
      * - check you have no 500 error in the network logs.
-     * @param principal
      * @return
      */
-     public synchronized User getUser(Principal principal) {
+     public synchronized User getUser() {
          Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-         User user = null;
+         User user = new User(getUserInfos());
          try {
              session.beginTransaction();
-             user = (User) session
-                     .createQuery("from User where username= :username")
-                     .setString("username", principal.getName())
-                     .uniqueResult();
-             if (user == null) {
-                 user = new User(getUserInfos());
-                 session.save(user);
-             }
+             session.merge(user);
              session.getTransaction().commit();
          } catch (Exception e)
          {
@@ -178,7 +170,7 @@ public static void main(String[] args) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            String userJSON = mapper.writeValueAsString(getUser(principal));
+            String userJSON = mapper.writeValueAsString(getUser());
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
             cookie.setPath("/");
             response.addCookie(cookie);

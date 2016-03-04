@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,12 +41,11 @@ public class ModelsApi {
     public ResponseEntity<List<Model>> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
-            Principal principal
+            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team
     )  {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Prepare HQL query from Model and User tables
         String queryString = "select m from Model m, User u where m.createdBy=u.id";
@@ -102,12 +100,11 @@ public class ModelsApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Model created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Model> addAModel(
-            @RequestBody @ApiParam(value = "Model to create", required = true) Model model,
-            Principal principal
+            @RequestBody @ApiParam(value = "Model to create", required = true) Model model
     )  {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Set up model
         model.setSlug(model.getConfig().getTitle().get("text").toLowerCase());
@@ -217,12 +214,11 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model,
-            Principal principal
+            @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
 
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Query DB
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -246,11 +242,10 @@ public class ModelsApi {
     @RequestMapping(value = "/{slug}/copies", method = RequestMethod.POST)
     public ResponseEntity<Model> copyAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model,
-            Principal principal
+            @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
         // Get current user
-        User user = mipApplication.getUser(principal);
+        User user = mipApplication.getUser();
 
         // Set slug
         String originalSlug = model.getSlug();
