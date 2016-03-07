@@ -5,9 +5,7 @@
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -17,35 +15,62 @@ import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "`user`")
-@ApiModel(description = "")
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
+
     @Id
     private String username = null;
+
     private String fullname = null;
+
     private String firstname = null;
+
     private String lastname = null;
+
     private String picture = null;
+
     private String web = null;
+
     private String phone = null;
+
     private String birthday = null;
+
     private String gender = null;
+
     private String city = null;
+
     private String country = null;
+
     private String password = null;
+
     private String email = null;
+
     private String apikey = null;
+
     private String team = null;
+
     private Boolean isActive = null;
+
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> languages = new LinkedList<String>();
+    @CollectionTable(name = "user_languages", joinColumns = @JoinColumn(name = "user_username"))
+    private List<String> languages = new LinkedList<>();
+
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new LinkedList<String>();
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_username"))
+    private List<String> roles = new LinkedList<>();
+
     private Boolean agreeNDA = null;
+
 
     public User() {
     }
 
+
+    /**
+     * Create a user using OpenID user profile
+     * @param userInfo info from OpenID UserInfo endpoint
+     */
     public User(String userInfo) {
 
         Pattern p;
@@ -109,11 +134,7 @@ public class User {
 
     }
 
-    /**
-     * Fullname
-     **/
-    @ApiModelProperty(value = "Fullname")
-    @JsonProperty("fullname")
+
     public String getFullname() {
         return fullname;
     }
@@ -122,11 +143,7 @@ public class User {
         this.fullname = fullname;
     }
 
-    /**
-     * Username
-     **/
-    @ApiModelProperty(value = "Username")
-    @JsonProperty("username")
+
     public String getUsername() {
         return username;
     }
@@ -135,11 +152,7 @@ public class User {
         this.username = username;
     }
 
-    /**
-     * Firstname
-     **/
-    @ApiModelProperty(value = "Firstname")
-    @JsonProperty("firstname")
+
     public String getFirstname() {
         return firstname;
     }
@@ -148,11 +161,7 @@ public class User {
         this.firstname = firstname;
     }
 
-    /**
-     * Lastname
-     **/
-    @ApiModelProperty(value = "Lastname")
-    @JsonProperty("lastname")
+
     public String getLastname() {
         return lastname;
     }
@@ -161,11 +170,7 @@ public class User {
         this.lastname = lastname;
     }
 
-    /**
-     * Path to a profile picture
-     **/
-    @ApiModelProperty(value = "Path to a profile picture")
-    @JsonProperty("picture")
+
     public String getPicture() {
         return picture;
     }
@@ -174,11 +179,7 @@ public class User {
         this.picture = picture;
     }
 
-    /**
-     * Personnal web site URL
-     **/
-    @ApiModelProperty(value = "Personnal web site URL")
-    @JsonProperty("web")
+
     public String getWeb() {
         return web;
     }
@@ -187,11 +188,7 @@ public class User {
         this.web = web;
     }
 
-    /**
-     * Phone number
-     **/
-    @ApiModelProperty(value = "Phone number")
-    @JsonProperty("phone")
+
     public String getPhone() {
         return phone;
     }
@@ -200,11 +197,7 @@ public class User {
         this.phone = phone;
     }
 
-    /**
-     * Birthday date
-     **/
-    @ApiModelProperty(value = "Birthday date")
-    @JsonProperty("birthday")
+
     public String getBirthday() {
         return birthday;
     }
@@ -213,11 +206,7 @@ public class User {
         this.birthday = birthday;
     }
 
-    /**
-     * Gender
-     **/
-    @ApiModelProperty(value = "Gender")
-    @JsonProperty("gender")
+
     public String getGender() {
         return gender;
     }
@@ -226,11 +215,7 @@ public class User {
         this.gender = gender;
     }
 
-    /**
-     * City
-     **/
-    @ApiModelProperty(value = "City")
-    @JsonProperty("city")
+
     public String getCity() {
         return city;
     }
@@ -239,11 +224,7 @@ public class User {
         this.city = city;
     }
 
-    /**
-     * Country
-     **/
-    @ApiModelProperty(value = "Country")
-    @JsonProperty("country")
+
     public String getCountry() {
         return country;
     }
@@ -252,11 +233,7 @@ public class User {
         this.country = country;
     }
 
-    /**
-     * password
-     **/
-    @ApiModelProperty(value = "password")
-    @JsonProperty("password")
+
     public String getPassword() {
         return password;
     }
@@ -265,11 +242,7 @@ public class User {
         this.password = password;
     }
 
-    /**
-     * E-mail address
-     **/
-    @ApiModelProperty(value = "E-mail address")
-    @JsonProperty("email")
+
     public String getEmail() {
         return email;
     }
@@ -278,11 +251,7 @@ public class User {
         this.email = email;
     }
 
-    /**
-     * API key
-     **/
-    @ApiModelProperty(value = "API key")
-    @JsonProperty("apikey")
+
     public String getApikey() {
         return apikey;
     }
@@ -291,11 +260,7 @@ public class User {
         this.apikey = apikey;
     }
 
-    /**
-     * Team
-     **/
-    @ApiModelProperty(value = "Team")
-    @JsonProperty("team")
+
     public String getTeam() {
         return team;
     }
@@ -304,11 +269,7 @@ public class User {
         this.team = team;
     }
 
-    /**
-     * Is it active ?
-     **/
-    @ApiModelProperty(value = "Is it active ?")
-    @JsonProperty("isActive")
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -317,11 +278,7 @@ public class User {
         this.isActive = isActive;
     }
 
-    /**
-     * Languages
-     **/
-    @ApiModelProperty(value = "Languages")
-    @JsonProperty("languages")
+
     public List<String> getLanguages() {
         return languages;
     }
@@ -330,11 +287,7 @@ public class User {
         this.languages = languages;
     }
 
-    /**
-     * Roles
-     **/
-    @ApiModelProperty(value = "Roles")
-    @JsonProperty("roles")
+
     public List<String> getRoles() {
         return roles;
     }
@@ -343,11 +296,7 @@ public class User {
         this.roles = roles;
     }
 
-    /**
-    * Agree NDA
-    **/
-    @ApiModelProperty(value = "Agree NDA")
-    @JsonProperty("agreeNDA")
+
     public Boolean getAgreeNDA() {
         return agreeNDA;
     }
@@ -356,40 +305,4 @@ public class User {
         this.agreeNDA = agreeNDA;
     }
 
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class User {\n");
-
-        sb.append("  fullname: ").append(fullname).append("\n");
-        sb.append("  username: ").append(username).append("\n");
-        sb.append("  firstname: ").append(firstname).append("\n");
-        sb.append("  lastname: ").append(lastname).append("\n");
-        sb.append("  picture: ").append(picture).append("\n");
-        sb.append("  web: ").append(web).append("\n");
-        sb.append("  phone: ").append(phone).append("\n");
-        sb.append("  birthday: ").append(birthday).append("\n");
-        sb.append("  gender: ").append(gender).append("\n");
-        sb.append("  city: ").append(city).append("\n");
-        sb.append("  country: ").append(country).append("\n");
-        sb.append("  password: ").append(password).append("\n");
-        sb.append("  email: ").append(email).append("\n");
-        sb.append("  apikey: ").append(apikey).append("\n");
-        sb.append("  team: ").append(team).append("\n");
-        sb.append("  isActive: ").append(isActive).append("\n");
-        sb.append("  languages: ").append(languages).append("\n");
-        sb.append("  roles: ").append(roles).append("\n");
-        sb.append("  agreeNDA: ").append(agreeNDA).append("\n");
-        sb.append("}\n");
-        return sb.toString();
-    }
-
-    public void addLanguage(String language) {
-        this.languages.add(language);
-    }
-
-    public void addRole(String role) {
-        this.roles.add(role);
-    }
 }

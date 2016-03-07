@@ -7,7 +7,6 @@ package org.hbp.mip.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,34 +15,42 @@ import java.util.List;
 
 @Entity
 @Table(name = "`article`")
-@ApiModel(description = "")
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Article {
+
     @Id
     private String slug = null;
+
     private String title = null;
+
     private String status = null;
+
     private String _abstract = null;
+
     @Column(columnDefinition = "text")
     private String content = null;
+
     private Date publishedAt = null;
+
     private Date createdAt = null;
+
     private Date updatedAt = null;
+
     @ManyToOne
     private User createdBy = null;
+
     @ManyToOne
     private User updatedBy = null;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    private List<Tag> tags = new LinkedList<Tag>();
+    private List<Tag> tags = new LinkedList<>();
+
 
     public Article() {
     }
 
-    /**
-     * Status
-     **/
-    @ApiModelProperty(value = "Status")
-    @JsonProperty("status")
+
     public String getStatus() {
         return status;
     }
@@ -52,11 +59,7 @@ public class Article {
         this.status = status;
     }
 
-    /**
-     * Title
-     **/
-    @ApiModelProperty(value = "Title")
-    @JsonProperty("title")
+
     public String getTitle() {
         return title;
     }
@@ -65,11 +68,7 @@ public class Article {
         this.title = title;
     }
 
-    /**
-     * Short string identifier
-     **/
-    @ApiModelProperty(value = "Short string identifier")
-    @JsonProperty("slug")
+
     public String getSlug() {
         return slug;
     }
@@ -78,10 +77,7 @@ public class Article {
         this.slug = slug;
     }
 
-    /**
-     * Short introduction
-     **/
-    @ApiModelProperty(value = "Short introduction")
+
     @JsonProperty("abstract")
     public String getAbstract() {
         return _abstract;
@@ -91,11 +87,7 @@ public class Article {
         this._abstract = _abstract;
     }
 
-    /**
-     * Content
-     **/
-    @ApiModelProperty(value = "Content")
-    @JsonProperty("content")
+
     public String getContent() {
         return content;
     }
@@ -104,11 +96,7 @@ public class Article {
         this.content = content;
     }
 
-    /**
-     * Publication date
-     **/
-    @ApiModelProperty(value = "Publication date")
-    @JsonProperty("publishedAt")
+
     public Date getPublishedAt() {
         return publishedAt;
     }
@@ -117,11 +105,7 @@ public class Article {
         this.publishedAt = publishedAt;
     }
 
-    /**
-     * Creation date
-     **/
-    @ApiModelProperty(value = "Creation date")
-    @JsonProperty("createdAt")
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -130,11 +114,7 @@ public class Article {
         this.createdAt = createdAt;
     }
 
-    /**
-     * Update date
-     **/
-    @ApiModelProperty(value = "Update date")
-    @JsonProperty("updatedAt")
+
     public Date getUpdatedAt() {
         return updatedAt;
     }
@@ -143,11 +123,7 @@ public class Article {
         this.updatedAt = updatedAt;
     }
 
-    /**
-     * Author
-     **/
-    @ApiModelProperty(value = "Author")
-    @JsonProperty("createdBy")
+
     public User getCreatedBy() {
         return createdBy;
     }
@@ -156,11 +132,7 @@ public class Article {
         this.createdBy = createdBy;
     }
 
-    /**
-     * Updater
-     **/
-    @ApiModelProperty(value = "Updater")
-    @JsonProperty("updatedBy")
+
     public User getUpdatedBy() {
         return updatedBy;
     }
@@ -169,10 +141,7 @@ public class Article {
         this.updatedBy = updatedBy;
     }
 
-    /**
-     **/
-    @ApiModelProperty(value = "")
-    @JsonProperty("tags")
+
     public List<Tag> getTags() {
         return tags;
     }
@@ -181,27 +150,4 @@ public class Article {
         this.tags = tags;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Article {\n");
-
-        sb.append("  status: ").append(status).append("\n");
-        sb.append("  title: ").append(title).append("\n");
-        sb.append("  slug: ").append(slug).append("\n");
-        sb.append("  _abstract: ").append(_abstract).append("\n");
-        sb.append("  content: ").append(content).append("\n");
-        sb.append("  publishedAt: ").append(publishedAt).append("\n");
-        sb.append("  createdAt: ").append(createdAt).append("\n");
-        sb.append("  updatedAt: ").append(updatedAt).append("\n");
-        sb.append("  createdBy: ").append(createdBy).append("\n");
-        sb.append("  updatedBy: ").append(updatedBy).append("\n");
-        sb.append("  tags: ").append(tags).append("\n");
-        sb.append("}\n");
-        return sb.toString();
-    }
-
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
-    }
 }

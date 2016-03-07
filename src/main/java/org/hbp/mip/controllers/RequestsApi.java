@@ -1,3 +1,7 @@
+/**
+ * Created by mirco on 18.01.16.
+ */
+
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
@@ -12,9 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * Created by mirco on 18.01.16.
- */
 @RestController
 @RequestMapping(value = "/queries/requests", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/queries/requests", description = "the requests API")

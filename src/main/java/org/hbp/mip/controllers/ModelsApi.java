@@ -4,7 +4,6 @@
 
 package org.hbp.mip.controllers;
 
-
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
@@ -109,17 +108,11 @@ public class ModelsApi {
         model.setCreatedAt(new Date());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
+
             session.beginTransaction();
             session.save(model);
             session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-        }
+
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
     }
@@ -133,23 +126,17 @@ public class ModelsApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
-        org.hibernate.Query query;
-        try {
+        Query query;
+
             session.beginTransaction();
             query = session.createQuery("FROM Model WHERE slug= :slug").setString("slug", slug);
             model = (Model) query.uniqueResult();
             session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-        }
+
 
         if(model != null) {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
-            try{
+
                 session.beginTransaction();
                 query = session.createQuery("FROM Query WHERE id= :id").setLong("id", model.getQuery().getId());
                 org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
@@ -197,13 +184,7 @@ public class ModelsApi {
 
                 Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
                 model.setDataset(ds);
-            } catch (Exception e)
-            {
-                if(session.getTransaction() != null)
-                {
-                    session.getTransaction().rollback();
-                }
-            }
+
         }
 
         return new ResponseEntity<>(HttpStatus.OK).ok(model);

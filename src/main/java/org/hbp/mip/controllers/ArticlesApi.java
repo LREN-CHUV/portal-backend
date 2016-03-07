@@ -61,7 +61,6 @@ public class ArticlesApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List articles = new LinkedList<>();
-        try{
             session.beginTransaction();
             Query query = session.createQuery(queryString);
             if(status != null)
@@ -81,13 +80,7 @@ public class ArticlesApi {
             }
             articles = query.list();
             session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-        }
+
 
         return ResponseEntity.ok(articles);
     }

@@ -5,34 +5,35 @@
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
 @Table(name = "`dataset`")
-@ApiModel(description = "")
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Dataset {
+
     @Id
     private String code = null;
+
     private Date date = null;
+
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "dataset_header", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> header = new LinkedList<>();
+
     @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name = "dataset_data", joinColumns = @JoinColumn(name = "dataset_code"))
     private Map<String, LinkedList<Object>> data = new HashMap<>();
+
 
     public Dataset() {
     }
 
-    /**
-     * Code
-     **/
-    @ApiModelProperty(value = "Code")
-    @JsonProperty("code")
+
     public String getCode() {
         return code;
     }
@@ -41,11 +42,7 @@ public class Dataset {
         this.code = code;
     }
 
-    /**
-     * Date
-     **/
-    @ApiModelProperty(value = "Date")
-    @JsonProperty("date")
+
     public Date getDate() {
         return date;
     }
@@ -54,11 +51,7 @@ public class Dataset {
         this.date = date;
     }
 
-    /**
-     * Header
-     **/
-    @ApiModelProperty(value = "Header")
-    @JsonProperty("header")
+
     public List<String> getHeader() {
         return header;
     }
@@ -67,24 +60,13 @@ public class Dataset {
         this.header = header;
     }
 
+
     public Map<String, LinkedList<Object>> getData() {
         return data;
     }
 
     public void setData(Map<String, LinkedList<Object>> data) {
         this.data = data;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Dataset {\n");
-
-        sb.append("  code: ").append(code).append("\n");
-        sb.append("  date: ").append(date).append("\n");
-        sb.append("  header: ").append(header).append("\n");
-        sb.append("}\n");
-        return sb.toString();
     }
 
 }

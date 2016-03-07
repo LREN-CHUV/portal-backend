@@ -6,9 +6,7 @@ package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -16,26 +14,27 @@ import java.util.List;
 
 @Entity
 @Table(name = "`group`")
-@ApiModel(description = "")
+@ApiModel
 @JsonIgnoreProperties(value = { "parent" })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Group {
+
     @Id
     private String code = null;
+
     private String label = null;
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Group parent = null;
+
     @OneToMany(fetch = FetchType.EAGER)
-    private List<Group> groups = new LinkedList<Group>();
+    private List<Group> groups = new LinkedList<>();
+
 
     public Group() {
     }
 
-    /**
-     * Code
-     **/
-    @ApiModelProperty(value = "Code")
-    @JsonProperty("code")
+
     public String getCode() {
         return code;
     }
@@ -44,11 +43,7 @@ public class Group {
         this.code = code;
     }
 
-    /**
-     * Label
-     **/
-    @ApiModelProperty(value = "Label")
-    @JsonProperty("label")
+
     public String getLabel() {
         return label;
     }
@@ -57,21 +52,16 @@ public class Group {
         this.label = label;
     }
 
+
     public Group getParent() {
         return parent;
     }
 
-    @ApiModelProperty(value = "Parent")
-    @JsonProperty("parent")
     public void setParent(Group parent) {
         this.parent = parent;
     }
 
-    /**
-     * Groups
-     **/
-    @ApiModelProperty(value = "Groups")
-    @JsonProperty("groups")
+
     public List<Group> getGroups() {
         return groups;
     }
@@ -80,22 +70,6 @@ public class Group {
         this.groups = groups;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Group {\n");
-
-        sb.append("  code: ").append(code).append("\n");
-        sb.append("  label: ").append(label).append("\n");
-        sb.append("  parent: ").append(parent).append("\n");
-        sb.append("  groups: ").append(groups).append("\n");
-        sb.append("}\n");
-        return sb.toString();
-    }
-
-    public void addGroup(Group group) {
-        this.groups.add(group);
-    }
 
     public Group clone()
     {

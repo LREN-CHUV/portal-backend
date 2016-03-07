@@ -1,3 +1,7 @@
+/**
+ * Created by mirco on 02.03.16.
+ */
+
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
@@ -13,9 +17,6 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-/**
- * Created by mirco on 02.03.16.
- */
 @RestController
 @RequestMapping(value = "/workflow/{algo}")
 @Api(value = "/workflow/{algo}", description = "Forward workflow API")

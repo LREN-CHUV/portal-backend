@@ -1,3 +1,7 @@
+/**
+ * Created by mirco on 25.02.16.
+ */
+
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,25 +13,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by mirco on 25.02.16.
- */
 @Entity
 @Table(name = "`config`")
-@ApiModel(description = "")
+@ApiModel
 @JsonIgnoreProperties(value = { "id" })
 public class Config {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id = null;
+
     private String type = null;
+
     private Integer height = null;
+
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "config_yAxisVariables", joinColumns = @JoinColumn(name = "config_id"))
     private List<String> yAxisVariables = new LinkedList<>();
+
     private String xAxisVariable = null;
+
     private Boolean hasXAxis = null;
+
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "config_title", joinColumns = @JoinColumn(name = "config_id"))
     private Map<String, String> title = new HashMap<>();
+
+
+    public Config() {
+    }
+
 
     public Long getId() {
         return id;
@@ -37,6 +52,7 @@ public class Config {
         this.id = id;
     }
 
+
     public String getType() {
         return type;
     }
@@ -44,6 +60,7 @@ public class Config {
     public void setType(String type) {
         this.type = type;
     }
+
 
     public Integer getHeight() {
         return height;
@@ -53,6 +70,7 @@ public class Config {
         this.height = height;
     }
 
+
     public List<String> getyAxisVariables() {
         return yAxisVariables;
     }
@@ -60,6 +78,7 @@ public class Config {
     public void setyAxisVariables(List<String> yAxisVariables) {
         this.yAxisVariables = yAxisVariables;
     }
+
 
     public String getxAxisVariable() {
         return xAxisVariable;
@@ -69,6 +88,7 @@ public class Config {
         this.xAxisVariable = xAxisVariable;
     }
 
+
     public Boolean getHasXAxis() {
         return hasXAxis;
     }
@@ -77,6 +97,7 @@ public class Config {
         this.hasXAxis = hasXAxis;
     }
 
+
     public Map<String, String> getTitle() {
         return title;
     }
@@ -84,4 +105,5 @@ public class Config {
     public void setTitle(Map<String, String> title) {
         this.title = title;
     }
+
 }

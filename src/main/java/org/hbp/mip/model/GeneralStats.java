@@ -1,12 +1,13 @@
+/**
+ * Created by mirco on 03.02.16.
+ */
+
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
-/**
- * Created by mirco on 03.02.16.
- */
-@ApiModel(description = "")
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeneralStats {
 
@@ -14,8 +15,10 @@ public class GeneralStats {
     private Long articles = null;
     private Long variables = null;
 
+
     public GeneralStats() {
     }
+
 
     public Long getUsers() {
         return users;
@@ -25,6 +28,7 @@ public class GeneralStats {
         this.users = users;
     }
 
+
     public Long getArticles() {
         return articles;
     }
@@ -32,6 +36,7 @@ public class GeneralStats {
     public void setArticles(Long articles) {
         this.articles = articles;
     }
+
 
     public Long getVariables() {
         return variables;
