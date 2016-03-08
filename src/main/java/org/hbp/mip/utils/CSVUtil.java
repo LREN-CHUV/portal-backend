@@ -29,14 +29,19 @@ public class CSVUtil {
         String code = GenerateDSCode(query);
         Date date = new Date();
         List<String> header = new LinkedList<>();
+        List<String> grouping = new LinkedList<>();
         Map<String, LinkedList<Object>> data = new HashMap<>();
 
-        List<Variable> variables = new LinkedList<>();
-        //variables.addAll(query.getVariables());  // TODO : check that
-        variables.addAll(query.getCovariables());
-        //variables.addAll(query.getGrouping());  // TODO : check that
+        List<Variable> covs = new LinkedList<>();
+        List<Variable> grps = new LinkedList<>();
+        List<Variable> all = new LinkedList<>();
+        covs.addAll(query.getCovariables());
+        grps.addAll(query.getGrouping());
+        all.addAll(query.getCovariables());
+        all.addAll(query.getGrouping());
 
-        header.addAll(variables.stream().map(Variable::getCode).collect(Collectors.toList()));
+        header.addAll(covs.stream().map(Variable::getCode).collect(Collectors.toList()));
+        grouping.addAll(grps.stream().map(Variable::getCode).collect(Collectors.toList()));
 
         try {
             InputStream is = Dataset.class.getClassLoader().getResourceAsStream(filename);
@@ -47,7 +52,7 @@ public class CSVUtil {
             isr.close();
             is.close();
 
-            for (Variable v : variables) {
+            for (Variable v : all) {
                 String type = getTypeFromDB(v);
                 String c = v.getCode();
                 int idx = find(c, firstRow);
@@ -135,6 +140,7 @@ public class CSVUtil {
         result.setCode(code);
         result.setDate(date);
         result.setHeader(header);
+        result.setGrouping(grouping);
         result.setData(data);
 
         return result;

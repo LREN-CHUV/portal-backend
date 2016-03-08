@@ -25,6 +25,10 @@ public class Dataset {
     @CollectionTable(name = "dataset_header", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> header = new LinkedList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "dataset_grouping", joinColumns = @JoinColumn(name = "dataset_code"))
+    private List<String> grouping = new LinkedList<>();
+
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name = "dataset_data", joinColumns = @JoinColumn(name = "dataset_code"))
     private Map<String, LinkedList<Object>> data = new HashMap<>();
@@ -58,6 +62,15 @@ public class Dataset {
 
     public void setHeader(List<String> header) {
         this.header = header;
+    }
+
+
+    public List<String> getGrouping() {
+        return grouping;
+    }
+
+    public void setGrouping(List<String> grouping) {
+        this.grouping = grouping;
     }
 
 
