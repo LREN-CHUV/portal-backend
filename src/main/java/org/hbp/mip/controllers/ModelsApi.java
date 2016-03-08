@@ -29,10 +29,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
 
-	@Autowired
-	MIPApplication mipApplication;
+    @Autowired
+    MIPApplication mipApplication;
 
-	private static final String DATA_FILE = "data/values.csv";
+    private static final String DATA_FILE = "data/values.csv";
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -109,9 +109,17 @@ public class ModelsApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
+        try {
             session.beginTransaction();
             session.save(model);
             session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
 
         return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
@@ -128,62 +136,80 @@ public class ModelsApi {
         Model model = null;
         Query query;
 
+        try {
             session.beginTransaction();
             query = session.createQuery("FROM Model WHERE slug= :slug").setString("slug", slug);
             model = (Model) query.uniqueResult();
             session.getTransaction().commit();
 
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
+
 
         if(model != null) {
             session = HibernateUtil.getSessionFactory().getCurrentSession();
+            org.hbp.mip.model.Query q = null;
 
+            try {
                 session.beginTransaction();
                 query = session.createQuery("FROM Query WHERE id= :id").setLong("id", model.getQuery().getId());
-                org.hbp.mip.model.Query q = (org.hbp.mip.model.Query) query.uniqueResult();
+                q = (org.hbp.mip.model.Query) query.uniqueResult();
                 session.getTransaction().commit();
-
-                List<Variable> vars = new LinkedList<>();
-                for (Variable var : q.getVariables()) {
-                    Variable v = new Variable();
-                    v.setCode(var.getCode());
-                    vars.add(v);
+            } catch (Exception e)
+            {
+                if(session.getTransaction() != null)
+                {
+                    session.getTransaction().rollback();
                 }
+            }
 
-                List<Variable> covs = new LinkedList<>();
-                for (Variable cov : q.getCovariables()) {
-                    Variable v = new Variable();
-                    v.setCode(cov.getCode());
-                    covs.add(v);
-                }
+            List<Variable> vars = new LinkedList<>();
+            for (Variable var : q.getVariables()) {
+                Variable v = new Variable();
+                v.setCode(var.getCode());
+                vars.add(v);
+            }
 
-                List<Variable> grps = new LinkedList<>();
-                for (Variable grp : q.getGrouping()) {
-                    Variable v = new Variable();
-                    v.setCode(grp.getCode());
-                    grps.add(v);
-                }
+            List<Variable> covs = new LinkedList<>();
+            for (Variable cov : q.getCovariables()) {
+                Variable v = new Variable();
+                v.setCode(cov.getCode());
+                covs.add(v);
+            }
 
-                List<Filter> fltrs = new LinkedList<>();
-                for (Filter fltr : q.getFilters()) {
-                    Filter f = new Filter();
-                    f.setId(fltr.getId());
-                    f.setOperator(fltr.getOperator());
-                    f.setValues(fltr.getValues());
-                    f.setVariable(fltr.getVariable());
-                    fltrs.add(f);
-                }
+            List<Variable> grps = new LinkedList<>();
+            for (Variable grp : q.getGrouping()) {
+                Variable v = new Variable();
+                v.setCode(grp.getCode());
+                grps.add(v);
+            }
 
-                org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
-                myQuery.setId(q.getId());
-                myQuery.setVariables(vars);
-                myQuery.setCovariables(covs);
-                myQuery.setGrouping(grps);
-                myQuery.setFilters(fltrs);
+            List<Filter> fltrs = new LinkedList<>();
+            for (Filter fltr : q.getFilters()) {
+                Filter f = new Filter();
+                f.setId(fltr.getId());
+                f.setOperator(fltr.getOperator());
+                f.setValues(fltr.getValues());
+                f.setVariable(fltr.getVariable());
+                fltrs.add(f);
+            }
 
-                model.setQuery(myQuery);
+            org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
+            myQuery.setId(q.getId());
+            myQuery.setVariables(vars);
+            myQuery.setCovariables(covs);
+            myQuery.setGrouping(grps);
+            myQuery.setFilters(fltrs);
 
-                Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
-                model.setDataset(ds);
+            model.setQuery(myQuery);
+
+            Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
+            model.setDataset(ds);
 
         }
 

@@ -97,12 +97,12 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
 
     @Autowired
     HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository;
-    
+
     @Autowired
     OAuth2ClientAuthenticationProcessingFilter hbpFilter;
 
 
-public static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(MIPApplication.class, args);
     }
 
@@ -112,7 +112,7 @@ public static void main(String[] args) {
         return userAuthentication.getDetails().toString();
     }
 
-     /**
+    /**
      * returns the user for the current session.
      *
      * the "synchronized" keyword is there to avoid a bug that the transaction is supposed to protect me from.
@@ -123,20 +123,20 @@ public static void main(String[] args) {
      * - check you have no 500 error in the network logs.
      * @return
      */
-     public synchronized User getUser() {
-         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-         User user = new User(getUserInfos());
-         try {
-             session.beginTransaction();
-             session.merge(user);
-             session.getTransaction().commit();
-         } catch (Exception e)
-         {
-             if(session.getTransaction() != null)
-             {
-                 session.getTransaction().rollback();
-             }
-         }
+    public synchronized User getUser() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        User user = new User(getUserInfos());
+        try {
+            session.beginTransaction();
+            session.merge(user);
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
         return user;
     }
@@ -187,18 +187,26 @@ public static void main(String[] args) {
                                          @ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
         ObjectMapper mapper = new ObjectMapper();
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        User user = (User) session
-            .createQuery("from User where username= :username")
-            .setString("username", principal.getName())
-            .uniqueResult();
-        if (user != null) {
-            user.setAgreeNDA(agreeNDA);
-            session.update(user);
+        try {
+            session.beginTransaction();
+            User user = (User) session
+                    .createQuery("from User where username= :username")
+                    .setString("username", principal.getName())
+                    .uniqueResult();
+            if (user != null) {
+                user.setAgreeNDA(agreeNDA);
+                session.update(user);
+            }
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
         }
-        session.getTransaction().commit();
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

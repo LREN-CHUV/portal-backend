@@ -28,10 +28,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {
 
-	@Autowired
-	MIPApplication mipApplication;
+    @Autowired
+    MIPApplication mipApplication;
 
-	@ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
+    @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List> getArticles(
@@ -61,25 +61,28 @@ public class ArticlesApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List articles = new LinkedList<>();
+        try {
             session.beginTransaction();
             Query query = session.createQuery(queryString);
-            if(status != null)
-            {
+            if (status != null) {
                 query.setString("status", status);
             }
-            if(own != null && own)
-            {
+            if (own != null && own) {
                 query.setString("username", user.getUsername());
-            }
-            else
-            {
-                if(team != null && team)
-                {
+            } else {
+                if (team != null && team) {
                     query.setString("team", user.getTeam());
                 }
             }
             articles = query.list();
             session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+        }
 
 
         return ResponseEntity.ok(articles);
