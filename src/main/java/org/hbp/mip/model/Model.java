@@ -9,10 +9,7 @@ import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -47,9 +44,11 @@ public class Model {
     private Config config = null;
 
     @ManyToOne
+    @JoinColumn(name = "createdby_username")
     private User createdBy = null;
 
     @ManyToOne
+    @JoinColumn(name = "updatedby_username")
     private User updatedBy = null;
 
     private String textQuery = null;

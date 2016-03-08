@@ -38,9 +38,11 @@ public class Article {
     private Date updatedAt = null;
 
     @ManyToOne
+    @JoinColumn(name = "createdby_username")
     private User createdBy = null;
 
     @ManyToOne
+    @JoinColumn(name = "updatedby_username")
     private User updatedBy = null;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
