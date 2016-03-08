@@ -5,6 +5,7 @@
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,22 +31,26 @@ public class WorkflowApi {
             @RequestBody @ApiParam(value = "Model to create", required = true) String query
     ) throws Exception {
 
-        String results = "";
+        StringBuilder results = new StringBuilder();
+        int code = 0;
 
         if(algo.equals("glr"))
         {
-            results = sendPost("https://mip.humanbrainproject.eu/services/request", query);
+            code = sendPost("https://mip.humanbrainproject.eu/services/request", query, results);
+            if(code != 200){
+                return new ResponseEntity<>(HttpStatus.valueOf(code));
+            }
         }
         else if(algo.equals("anv"))
         {
-            results = "";
+            results.append("not implemented");
         }
 
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(results.toString());
     }
 
 
-    private static String sendPost(String url, String query) throws Exception {
+    private static int sendPost(String url, String query, StringBuilder resp) throws Exception {
 
         URL obj = new URL(url);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -62,18 +67,22 @@ public class WorkflowApi {
         wr.flush();
         wr.close();
 
-        con.getResponseCode();
+        int respCode = con.getResponseCode();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
+        if(respCode == 200)
+        {
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
 
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            resp.append(response.toString());
         }
-        in.close();
 
-        return response.toString();
+        return respCode;
     }
 
     private static void allowInsecureConnection(HttpsURLConnection con) {
