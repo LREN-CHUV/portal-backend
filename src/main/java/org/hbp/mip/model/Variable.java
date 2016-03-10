@@ -52,6 +52,8 @@ public class Variable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "variables")
     private List<Query> queries = new LinkedList<>();
 
+    private String description = null;
+
 
     public Variable() {
     }
@@ -184,6 +186,15 @@ public class Variable {
 
     public void setQueries(List<Query> queries) {
         this.queries = queries;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

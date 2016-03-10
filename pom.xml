@@ -17,35 +17,35 @@
         <version>1.3.2.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-	<profiles>
-		<profile>
-			<id>test</id>
-			<properties>
-		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		        <java.version>1.8</java.version>
-				<connection.driver_class>org.h2.Driver</connection.driver_class>
-				<connection.url>jdbc:h2:mem:test</connection.url>
-				<connection.username>root</connection.username>
-				<connection.password>root</connection.password>
-				<hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
-				<schema.deploy>true</schema.deploy>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.h2.Driver</connection.driver_class>
+                <connection.url>jdbc:h2:mem:test</connection.url>
+                <connection.username>root</connection.username>
+                <connection.password>root</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+                <schema.deploy>true</schema.deploy>
                 <frontend.redirect>http://frontend/#/home</frontend.redirect>
-			</properties>
-		</profile>
-		<profile>
-			<id>prod</id>
-			<properties>
-		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		        <java.version>1.8</java.version>
-				<connection.driver_class>org.postgresql.Driver</connection.driver_class>
-				<connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
-				<connection.username>portal</connection.username>
-				<connection.password>iaezXODVLb1e70I</connection.password>
-				<hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
-				<schema.deploy>false</schema.deploy>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
+                <connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
+                <connection.username>portal</connection.username>
+                <connection.password>iaezXODVLb1e70I</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+                <schema.deploy>false</schema.deploy>
                 <frontend.redirect>https://mip.humanbrainproject.eu/#/home</frontend.redirect>
-			</properties>
-		</profile>
+            </properties>
+        </profile>
         <profile>
             <id>dev</id>
             <properties>
