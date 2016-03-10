@@ -37,16 +37,13 @@ public class WorkflowApi {
         if(algo.equals("glr"))
         {
             code = sendPost("https://mip.humanbrainproject.eu/services/request", query, results);
-            if(code != 200){
-                return new ResponseEntity<>(HttpStatus.valueOf(code));
-            }
         }
         else if(algo.equals("anv"))
         {
             results.append("not implemented");
         }
 
-        return ResponseEntity.ok(results.toString());
+        return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
     }
 
 
@@ -69,18 +66,22 @@ public class WorkflowApi {
 
         int respCode = con.getResponseCode();
 
-        if(respCode == 200)
-        {
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            resp.append(response.toString());
+        BufferedReader in = null;
+        if(respCode == 200) {
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         }
+        else
+        {
+            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        }
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        resp.append(response.toString());
 
         return respCode;
     }
