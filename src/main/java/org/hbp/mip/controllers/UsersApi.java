@@ -33,9 +33,10 @@ public class UsersApi {
         User user = null;
         try{
             session.beginTransaction();
-            org.hibernate.Query query = session.createQuery("from User where username= :username");
-            query.setString("username", username);
-            user = (User) query.uniqueResult();
+            user = (User) session
+                    .createQuery("from User where username= :username")
+                    .setString("username", username)
+                    .uniqueResult();
             session.getTransaction().commit();
         } catch (Exception e)
         {

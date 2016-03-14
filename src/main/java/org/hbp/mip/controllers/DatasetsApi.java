@@ -8,7 +8,6 @@ package org.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
 import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,9 +33,10 @@ public class DatasetsApi {
         Dataset dataset = null;
         try{
             session.beginTransaction();
-            Query query = session.createQuery("from Dataset where code= :code");
-            query.setString("code", code);
-            dataset = (Dataset) query.uniqueResult();
+            dataset = (Dataset) session
+                    .createQuery("from Dataset where code= :code")
+                    .setString("code", code)
+                    .uniqueResult();
             session.getTransaction().commit();
         } catch (Exception e)
         {

@@ -39,7 +39,9 @@ public class VariablesApi {
         List variables = new LinkedList<>();
         try{
             session.beginTransaction();
-            variables = session.createQuery("from Variable").list();
+            variables = session
+                    .createQuery("from Variable")
+                    .list();
             session.getTransaction().commit();
         } catch (Exception e)
         {
@@ -64,9 +66,10 @@ public class VariablesApi {
         Variable variable = null;
         try{
             session.beginTransaction();
-            org.hibernate.Query query = session.createQuery("from Variable where code= :code");
-            query.setString("code", code);
-            variable = (Variable) query.uniqueResult();
+            variable = (Variable) session
+                    .createQuery("from Variable where code= :code")
+                    .setString("code", code)
+                    .uniqueResult();
             session.getTransaction().commit();
         } catch (Exception e)
         {
@@ -93,7 +96,10 @@ public class VariablesApi {
         List values = new LinkedList<>();
         try{
             session.beginTransaction();
-            values = session.createQuery("select values from Variable where code= :code").setString("code", code).list();
+            values = session
+                    .createQuery("select values from Variable where code= :code")
+                    .setString("code", code)
+                    .list();
             session.getTransaction().commit();
         } catch (Exception e)
         {

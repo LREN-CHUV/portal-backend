@@ -34,9 +34,10 @@ public class GroupsApi {
         Group group = null;
         try{
             session.beginTransaction();
-            org.hibernate.Query query = session.createQuery("FROM Group WHERE code= :code");
-            query.setString("code", rootCode);
-            group = (Group) query.uniqueResult();
+            group = (Group) session
+                    .createQuery("FROM Group WHERE code= :code")
+                    .setString("code", rootCode)
+                    .uniqueResult();
             session.getTransaction().commit();
         } catch (Exception e)
         {

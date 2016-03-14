@@ -100,25 +100,55 @@ public class ArticlesApi {
 
         User user = mipApplication.getUser();
 
+        String originalTitle = article.getTitle();
+
         article.setCreatedAt(new Date());
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
         }
-
-        Slugify slg = null;
-        try {
-            slg = new Slugify();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String slug = slg.slugify(article.getTitle());
-
-        article.setSlug(slug);
         article.setCreatedBy(user);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
+
+            Long count;
+            int i = 0;
+            do {
+                Slugify slg = null;
+                try {
+                    slg = new Slugify();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String slug = slg.slugify(article.getTitle());
+                article.setSlug(slug);
+
+                count = (Long) session
+                        .createQuery("select count(*) from Article where slug= :slug")
+                        .setString("slug", slug)
+                        .uniqueResult();
+                if(count > 0)
+                {
+                    String title = article.getTitle();
+                    if(i > 0)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    i++;
+                    article.setTitle(title + " (" + i + ")");
+                }
+            } while(count > 0);
+
+            count = (Long) session
+                    .createQuery("select count(*) from Article where title= :title")
+                    .setString("title", originalTitle)
+                    .uniqueResult();
+            if(count < 1)
+            {
+                article.setTitle(originalTitle);
+            }
+
             session.save(article);
             session.getTransaction().commit();
         } catch (Exception e)
@@ -144,9 +174,10 @@ public class ArticlesApi {
         Article article = null;
         try{
             session.beginTransaction();
-            Query query = session.createQuery("FROM Article WHERE slug= :slug");
-            query.setString("slug", slug);
-            article = (Article) query.uniqueResult();
+            article = (Article) session
+                    .createQuery("FROM Article WHERE slug= :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
             session.getTransaction().commit();
         } catch (Exception e)
         {
@@ -171,6 +202,31 @@ public class ArticlesApi {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
+
+            String oldTitle = (String) session
+                    .createQuery("select title from Article where slug= :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
+
+            if(!oldTitle.equals(article.getTitle())) {
+                Long count;
+                int i = 0;
+                do {
+                    String title = article.getTitle();
+                    count = (Long) session
+                            .createQuery("select count(*) from Article where title= :title")
+                            .setString("title", title)
+                            .uniqueResult();
+                    if (count > 0 && !oldTitle.equals(title)) {
+                        if (i > 0) {
+                            title = title.substring(0, title.length() - 4);
+                        }
+                        i++;
+                        article.setTitle(title + " (" + i + ")");
+                    }
+                } while (count > 0 && !oldTitle.equals(article.getTitle()));
+            }
+
             session.update(article);
             session.getTransaction().commit();
         } catch (Exception e)

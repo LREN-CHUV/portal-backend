@@ -103,15 +103,8 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        Slugify slg = null;
-        try {
-            slg = new Slugify();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String slug = slg.slugify(model.getConfig().getTitle().get("text"));
+        String originalTitle = model.getTitle();
 
-        model.setSlug(slug);
         model.setTitle(model.getConfig().getTitle().get("text"));
         model.setValid(true);
         model.setCreatedBy(user);
@@ -121,6 +114,45 @@ public class ModelsApi {
 
         try {
             session.beginTransaction();
+            Long count;
+            int i = 0;
+
+            do {
+                Slugify slg = null;
+                try {
+                    slg = new Slugify();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String slug = slg.slugify(model.getTitle());
+                model.setSlug(slug);
+
+                count = (Long) session
+                        .createQuery("select count(*) from Model where slug= :slug")
+                        .setString("slug", slug)
+                        .uniqueResult();
+                if(count > 0)
+                {
+                    String title = model.getTitle();
+                    if(i > 0)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    i++;
+                    model.setTitle(title + " (" + i + ")");
+                }
+
+            } while (count > 0);
+
+            count = (Long) session
+                    .createQuery("select count(*) from Article where title= :title")
+                    .setString("title", originalTitle)
+                    .uniqueResult();
+            if(count < 1)
+            {
+                model.setTitle(originalTitle);
+            }
+
             session.save(model);
             session.getTransaction().commit();
         } catch (Exception e)
@@ -148,8 +180,10 @@ public class ModelsApi {
 
         try {
             session.beginTransaction();
-            query = session.createQuery("FROM Model WHERE slug= :slug").setString("slug", slug);
-            model = (Model) query.uniqueResult();
+            model = (Model) session
+                    .createQuery("FROM Model WHERE slug= :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
             session.getTransaction().commit();
 
         } catch (Exception e)
@@ -167,8 +201,10 @@ public class ModelsApi {
 
             try {
                 session.beginTransaction();
-                query = session.createQuery("FROM Query WHERE id= :id").setLong("id", model.getQuery().getId());
-                q = (org.hbp.mip.model.Query) query.uniqueResult();
+                q = (org.hbp.mip.model.Query) session
+                        .createQuery("FROM Query WHERE id= :id")
+                        .setLong("id", model.getQuery().getId())
+                        .uniqueResult();
                 session.getTransaction().commit();
             } catch (Exception e)
             {
@@ -240,6 +276,31 @@ public class ModelsApi {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
+
+            String oldTitle = (String) session
+                    .createQuery("select title from Article where slug= :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
+
+            if(!oldTitle.equals(model.getTitle())) {
+                Long count;
+                int i = 0;
+                do {
+                    String title = model.getTitle();
+                    count = (Long) session
+                            .createQuery("select count(*) from Article where title= :title")
+                            .setString("title", title)
+                            .uniqueResult();
+                    if (count > 0 && !oldTitle.equals(title)) {
+                        if (i > 0) {
+                            title = title.substring(0, title.length() - 4);
+                        }
+                        i++;
+                        model.setTitle(title + " (" + i + ")");
+                    }
+                } while (count > 0 && !oldTitle.equals(model.getTitle()));
+            }
+
             session.update(model);
             session.getTransaction().commit();
         } catch (Exception e)
