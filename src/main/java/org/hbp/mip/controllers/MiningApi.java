@@ -5,6 +5,7 @@
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,29 +20,22 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 @RestController
-@RequestMapping(value = "/workflow/{algo}")
-@Api(value = "/workflow/{algo}", description = "Forward workflow API")
-public class WorkflowApi {
+@RequestMapping(value = "/mining")
+@Api(value = "/mining", description = "Forward mining API")
+public class MiningApi {
 
-    @ApiOperation(value = "Send a request to the workflow", response = String.class)
+    @Value("#{'${workflow.miningUrl:http://localhost:8087/mining}'}")
+    private String miningUrl;
+
+    @ApiOperation(value = "Send a request to the workflow for data mining", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> postWorkflow(
-            @ApiParam(value = "algo", required = true) @PathVariable("algo") String algo,
+    public ResponseEntity<String> postMining(
             @RequestBody @ApiParam(value = "Model to create", required = true) String query
     ) throws Exception {
 
         StringBuilder results = new StringBuilder();
-        int code = 0;
-
-        if(algo.equals("glr"))
-        {
-            code = sendPost("https://mip.humanbrainproject.eu/services/request", query, results);
-        }
-        else if(algo.equals("anv"))
-        {
-            results.append("not implemented");
-        }
+        int code = sendPost(miningUrl, query, results);
 
         return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
     }
@@ -66,7 +60,7 @@ public class WorkflowApi {
 
         int respCode = con.getResponseCode();
 
-        BufferedReader in = null;
+        BufferedReader in;
         if(respCode == 200) {
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         }

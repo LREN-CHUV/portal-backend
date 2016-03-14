@@ -38,3 +38,5 @@ server:
   session:
     timeout: 2592000
 
+workflow:
+  miningUrl: http://hbpfed1.chuv.ch:8087/mining
