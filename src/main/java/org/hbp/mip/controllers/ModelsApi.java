@@ -4,6 +4,7 @@
 
 package org.hbp.mip.controllers;
 
+import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,7 +103,15 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        model.setSlug(model.getConfig().getTitle().get("text").toLowerCase());
+        Slugify slg = null;
+        try {
+            slg = new Slugify();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String slug = slg.slugify(model.getConfig().getTitle().get("text"));
+
+        model.setSlug(slug);
         model.setTitle(model.getConfig().getTitle().get("text"));
         model.setValid(true);
         model.setCreatedBy(user);

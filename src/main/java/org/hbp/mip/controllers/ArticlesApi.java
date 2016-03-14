@@ -5,6 +5,7 @@
 package org.hbp.mip.controllers;
 
 
+import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +104,16 @@ public class ArticlesApi {
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
         }
-        article.setSlug(article.getTitle().toLowerCase().replaceAll(" ","_"));
+
+        Slugify slg = null;
+        try {
+            slg = new Slugify();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String slug = slg.slugify(article.getTitle());
+
+        article.setSlug(slug);
         article.setCreatedBy(user);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
