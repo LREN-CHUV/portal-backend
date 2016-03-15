@@ -132,11 +132,8 @@ public class CSVUtil {
                         }
                     }
                 }
-                // TODO : Remove this limit -> only to avoid bug with Virtua's front-end
-                if(l.size() > 50)
-                {
-                    ll.addAll(l.subList(0,49));
-                }
+
+                ll.addAll(l);
                 data.put(c, ll);
             }
         } catch (IOException e) {
