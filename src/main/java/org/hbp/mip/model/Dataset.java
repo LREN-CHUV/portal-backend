@@ -29,6 +29,10 @@ public class Dataset {
     @CollectionTable(name = "dataset_grouping", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> grouping = new LinkedList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "dataset_variable", joinColumns = @JoinColumn(name = "dataset_code"))
+    private List<String> variable = new LinkedList<>();
+
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(name = "dataset_data", joinColumns = @JoinColumn(name = "dataset_code"))
     private Map<String, LinkedList<Object>> data = new HashMap<>();
@@ -71,6 +75,15 @@ public class Dataset {
 
     public void setGrouping(List<String> grouping) {
         this.grouping = grouping;
+    }
+
+
+    public List<String> getVariable() {
+        return variable;
+    }
+
+    public void setVariable(List<String> variable) {
+        this.variable = variable;
     }
 
 
