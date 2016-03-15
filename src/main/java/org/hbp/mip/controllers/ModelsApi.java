@@ -87,6 +87,7 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -160,6 +161,7 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -191,6 +193,7 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -211,6 +214,7 @@ public class ModelsApi {
                 if(session.getTransaction() != null)
                 {
                     session.getTransaction().rollback();
+                    throw e;
                 }
             }
 
@@ -308,6 +312,7 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -341,6 +346,7 @@ public class ModelsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 

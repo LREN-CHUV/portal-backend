@@ -48,6 +48,7 @@ public class VariablesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -76,6 +77,7 @@ public class VariablesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -106,6 +108,7 @@ public class VariablesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 

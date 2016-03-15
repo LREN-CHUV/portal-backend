@@ -43,6 +43,7 @@ public class UsersApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 

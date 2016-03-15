@@ -44,6 +44,7 @@ public class GroupsApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 

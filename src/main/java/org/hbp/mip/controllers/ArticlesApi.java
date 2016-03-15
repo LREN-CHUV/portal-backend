@@ -83,6 +83,7 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -156,6 +157,7 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -184,6 +186,7 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -234,6 +237,7 @@ public class ArticlesApi {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
