@@ -60,6 +60,20 @@
                 <frontend.redirect>http://frontend/#/home</frontend.redirect>
             </properties>
         </profile>
+        <profile>
+            <id>asdev</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
+                <connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
+                <connection.username>postgres</connection.username>
+                <connection.password>test</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+                <schema.deploy>false</schema.deploy>
+                <frontend.redirect>https://hbp-dev.ahead-solutions.ch/#/home</frontend.redirect>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>
