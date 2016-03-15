@@ -26,6 +26,7 @@ public class Article {
 
     private String status = null;
 
+    @Column(columnDefinition = "text")
     private String _abstract = null;
 
     @Column(columnDefinition = "text")
