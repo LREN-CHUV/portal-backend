@@ -31,7 +31,7 @@ public class MiningApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> postMining(
-            @RequestBody @ApiParam(value = "Model to create", required = true) String query
+            @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
     ) throws Exception {
 
         StringBuilder results = new StringBuilder();

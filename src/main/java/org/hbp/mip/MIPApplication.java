@@ -128,6 +128,11 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         User user = new User(getUserInfos());
         try {
             session.beginTransaction();
+            Boolean agreeNDA = (Boolean) session
+                    .createQuery("SELECT agreeNDA FROM User WHERE username= :username")
+                    .setString("username", user.getUsername())
+                    .uniqueResult();
+            user.setAgreeNDA(agreeNDA);
             session.merge(user);
             session.getTransaction().commit();
         } catch (Exception e)
@@ -135,6 +140,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
@@ -183,15 +189,14 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     }
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
-    public ResponseEntity<Void> postUser(Principal principal, HttpServletResponse response,
-                                         @ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
-        ObjectMapper mapper = new ObjectMapper();
+    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
+        String username = getUser().getUsername();
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             session.beginTransaction();
             User user = (User) session
                     .createQuery("from User where username= :username")
-                    .setString("username", principal.getName())
+                    .setString("username", username)
                     .uniqueResult();
             if (user != null) {
                 user.setAgreeNDA(agreeNDA);
@@ -203,6 +208,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
+                throw e;
             }
         }
 
