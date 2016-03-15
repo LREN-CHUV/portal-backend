@@ -51,6 +51,7 @@ public class Model {
     @JoinColumn(name = "updatedby_username")
     private User updatedBy = null;
 
+    @Column(columnDefinition = "text")
     private String textQuery = null;
 
 

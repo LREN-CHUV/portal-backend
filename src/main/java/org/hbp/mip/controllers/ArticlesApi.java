@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -96,7 +97,7 @@ public class ArticlesApi {
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Article created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
-            @RequestBody @ApiParam(value = "Article to create", required = true) Article article
+            @RequestBody @ApiParam(value = "Article to create", required = true) @Valid Article article
     ) {
 
         User user = mipApplication.getUser();
@@ -199,7 +200,7 @@ public class ArticlesApi {
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Article to update", required = true) Article article
+            @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

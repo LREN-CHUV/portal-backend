@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +24,8 @@ public class Article {
     @Id
     private String slug = null;
 
+    @NotNull
+    @Size(min = 1, max = 255)
     private String title = null;
 
     private String status = null;
