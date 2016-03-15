@@ -132,8 +132,11 @@ public class CSVUtil {
                         }
                     }
                 }
-
-                ll.addAll(l);
+                // TODO : should we remove this limit ???
+                if(l.size() > 100)
+                {
+                    ll.addAll(l.subList(0,99));
+                }
                 data.put(c, ll);
             }
         } catch (IOException e) {
