@@ -93,7 +93,7 @@ public class ArticlesApi {
 
 
     @ApiOperation(value = "Create an article", response = Void.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article created") })
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Article created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
             @RequestBody @ApiParam(value = "Article to create", required = true) Article article
@@ -161,7 +161,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
@@ -195,7 +195,7 @@ public class ArticlesApi {
 
 
     @ApiOperation(value = "Update an article", response = Void.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article updated") })
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Article updated") })
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
@@ -241,7 +241,7 @@ public class ArticlesApi {
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 

@@ -96,7 +96,7 @@ public class ModelsApi {
 
 
     @ApiOperation(value = "Create a model", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model created") })
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Model created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Model> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
@@ -166,7 +166,7 @@ public class ModelsApi {
         }
 
 
-        return new ResponseEntity<Model>(HttpStatus.OK).ok(model);
+        return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
@@ -268,7 +268,7 @@ public class ModelsApi {
 
 
     @ApiOperation(value = "Update a model", response = Void.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model updated") })
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Model updated") })
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
@@ -316,11 +316,11 @@ public class ModelsApi {
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ApiOperation(value = "Copy a model", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model copied"), @ApiResponse(code = 404, message = "Not found") })
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Model copied"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{slug}/copies", method = RequestMethod.POST)
     public ResponseEntity<Model> copyAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
@@ -350,7 +350,7 @@ public class ModelsApi {
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK).ok(model);
+        return new ResponseEntity<>(HttpStatus.CREATED).ok(model);
     }
 
     private String randomStr(int length) {

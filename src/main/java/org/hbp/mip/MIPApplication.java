@@ -212,7 +212,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
