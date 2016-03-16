@@ -44,7 +44,7 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.id";
+        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.username";
         if(own != null && own)
         {
             queryString += " AND u.username= :username";
@@ -53,7 +53,8 @@ public class ModelsApi {
         {
             if(team != null && team)
             {
-                queryString += " AND u.team= :team";
+                // TODO: decide if this is needed
+                //queryString += " AND u.team= :team";
             }
         }
 
@@ -70,7 +71,8 @@ public class ModelsApi {
             {
                 if(team != null && team)
                 {
-                    query.setString("team", user.getTeam());
+                    // TODO: decide if this is needed
+                    //query.setString("team", user.getTeam());
                 }
             }
             if(limit != null)
@@ -287,6 +289,17 @@ public class ModelsApi {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
+
+            String author = (String) session
+                    .createQuery("select U.username from User U, Model M where M.createdBy = U.username and M.slug = :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
+
+            if(!user.getUsername().equals(author))
+            {
+                session.getTransaction().commit();
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
             String oldTitle = (String) session
                     .createQuery("select title from Model where slug= :slug")
