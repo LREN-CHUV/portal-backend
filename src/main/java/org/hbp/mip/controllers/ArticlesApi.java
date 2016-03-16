@@ -102,54 +102,61 @@ public class ArticlesApi {
 
         User user = mipApplication.getUser();
 
-        String originalTitle = article.getTitle();
-
         article.setCreatedAt(new Date());
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
         }
         article.setCreatedBy(user);
 
+        Long count;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
 
-            Long count;
             int i = 0;
-            do {
-                Slugify slg = null;
-                try {
-                    slg = new Slugify();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String slug = slg.slugify(article.getTitle());
-                article.setSlug(slug);
+            do{
+                i++;
+                count = (Long) session
+                        .createQuery("select count(*) from Article where title= :title")
+                        .setString("title", article.getTitle())
+                        .uniqueResult();
 
+                if(count > 0)
+                {
+                    String title = article.getTitle();
+                    if(i > 1)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    article.setTitle(title + " (" + i + ")");
+                }
+            } while(count > 0);
+
+            Slugify slg = null;
+            try {
+                slg = new Slugify();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String slug = slg.slugify(article.getTitle());
+
+            i = 0;
+            do {
+                i++;
                 count = (Long) session
                         .createQuery("select count(*) from Article where slug= :slug")
                         .setString("slug", slug)
                         .uniqueResult();
                 if(count > 0)
                 {
-                    String title = article.getTitle();
-                    if(i > 0)
+                    if(i > 1)
                     {
-                        title = title.substring(0, title.length()-4);
+                        slug = slug.substring(0, slug.length()-2);
                     }
-                    i++;
-                    article.setTitle(title + " (" + i + ")");
+                    slug += "-"+i;
                 }
+                article.setSlug(slug);
             } while(count > 0);
-
-            count = (Long) session
-                    .createQuery("select count(*) from Article where title= :title")
-                    .setString("title", originalTitle)
-                    .uniqueResult();
-            if(count < 1)
-            {
-                article.setTitle(originalTitle);
-            }
 
             session.save(article);
             session.getTransaction().commit();
@@ -212,23 +219,25 @@ public class ArticlesApi {
                     .setString("slug", slug)
                     .uniqueResult();
 
-            if(!oldTitle.equals(article.getTitle())) {
+            String newTitle = article.getTitle();
+
+            if(!newTitle.equals(oldTitle)) {
                 Long count;
                 int i = 0;
                 do {
-                    String title = article.getTitle();
+                    i++;
+                    newTitle = article.getTitle();
                     count = (Long) session
                             .createQuery("select count(*) from Article where title= :title")
-                            .setString("title", title)
+                            .setString("title", newTitle)
                             .uniqueResult();
-                    if (count > 0 && !oldTitle.equals(title)) {
-                        if (i > 0) {
-                            title = title.substring(0, title.length() - 4);
+                    if (count > 0 && !newTitle.equals(oldTitle)) {
+                        if (i > 1) {
+                            newTitle = newTitle.substring(0, newTitle.length() - 4);
                         }
-                        i++;
-                        article.setTitle(title + " (" + i + ")");
+                        article.setTitle(newTitle + " (" + i + ")");
                     }
-                } while (count > 0 && !oldTitle.equals(article.getTitle()));
+                } while (count > 0 && !newTitle.equals(oldTitle));
             }
 
             session.update(article);

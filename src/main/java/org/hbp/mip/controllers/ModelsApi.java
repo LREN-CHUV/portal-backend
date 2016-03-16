@@ -18,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -104,55 +101,64 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        String originalTitle = model.getConfig().getTitle().get("text");
-
-        model.setTitle(originalTitle);
+        model.setTitle(model.getConfig().getTitle().get("text"));
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
 
+        Long count;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        try {
+        try{
             session.beginTransaction();
-            Long count;
+
             int i = 0;
+            do{
+                i++;
+                count = (Long) session
+                        .createQuery("select count(*) from Model where title= :title")
+                        .setString("title", model.getTitle())
+                        .uniqueResult();
 
-            do {
-                Slugify slg = null;
-                try {
-                    slg = new Slugify();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(count > 0)
+                {
+                    String title = model.getTitle();
+                    if(i > 1)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    model.setTitle(title + " (" + i + ")");
                 }
-                String slug = slg.slugify(model.getTitle());
-                model.setSlug(slug);
+            } while(count > 0);
 
+            Slugify slg = null;
+            try {
+                slg = new Slugify();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String slug = slg.slugify(model.getTitle());
+
+            i = 0;
+            do {
+                i++;
                 count = (Long) session
                         .createQuery("select count(*) from Model where slug= :slug")
                         .setString("slug", slug)
                         .uniqueResult();
                 if(count > 0)
                 {
-                    String title = model.getTitle();
-                    if(i > 0)
+                    if(i > 1)
                     {
-                        title = title.substring(0, title.length()-4);
+                        slug = slug.substring(0, slug.length()-2);
                     }
-                    i++;
-                    model.setTitle(title + " (" + i + ")");
+                    slug += "-"+i;
                 }
+                model.setSlug(slug);
+            } while(count > 0);
 
-            } while (count > 0);
-
-            count = (Long) session
-                    .createQuery("select count(*) from Model where title= :title")
-                    .setString("title", originalTitle)
-                    .uniqueResult();
-            if(count < 1)
-            {
-                model.setTitle(originalTitle);
-            }
+            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+            map.put("text", model.getTitle());
+            model.getConfig().setTitle(map);
 
             session.save(model);
             session.getTransaction().commit();
@@ -164,7 +170,6 @@ public class ModelsApi {
                 throw e;
             }
         }
-
 
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
@@ -284,28 +289,34 @@ public class ModelsApi {
             session.beginTransaction();
 
             String oldTitle = (String) session
-                    .createQuery("SELECT title FROM Model WHERE slug= :slug")
+                    .createQuery("select title from Model where slug= :slug")
                     .setString("slug", slug)
                     .uniqueResult();
 
-            if(!oldTitle.equals(model.getTitle())) {
+            String newTitle = model.getTitle();
+
+            if(!newTitle.equals(oldTitle)) {
                 Long count;
                 int i = 0;
                 do {
-                    String title = model.getTitle();
+                    i++;
+                    newTitle = model.getTitle();
                     count = (Long) session
                             .createQuery("select count(*) from Model where title= :title")
-                            .setString("title", title)
+                            .setString("title", newTitle)
                             .uniqueResult();
-                    if (count > 0 && !oldTitle.equals(title)) {
-                        if (i > 0) {
-                            title = title.substring(0, title.length() - 4);
+                    if (count > 0 && !newTitle.equals(oldTitle)) {
+                        if (i > 1) {
+                            newTitle = newTitle.substring(0, newTitle.length() - 4);
                         }
-                        i++;
-                        model.setTitle(title + " (" + i + ")");
+                        model.setTitle(newTitle + " (" + i + ")");
                     }
-                } while (count > 0 && !oldTitle.equals(model.getTitle()));
+                } while (count > 0 && !newTitle.equals(oldTitle));
             }
+
+            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+            map.put("text", model.getTitle());
+            model.getConfig().setTitle(map);
 
             session.update(model);
             session.getTransaction().commit();
