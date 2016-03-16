@@ -104,9 +104,9 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        String originalTitle = model.getTitle();
+        String originalTitle = model.getConfig().getTitle().get("text");
 
-        model.setTitle(model.getConfig().getTitle().get("text"));
+        model.setTitle(originalTitle);
         model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
@@ -146,7 +146,7 @@ public class ModelsApi {
             } while (count > 0);
 
             count = (Long) session
-                    .createQuery("select count(*) from Article where title= :title")
+                    .createQuery("select count(*) from Model where title= :title")
                     .setString("title", originalTitle)
                     .uniqueResult();
             if(count < 1)
@@ -277,12 +277,14 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
+        model.setTitle(model.getConfig().getTitle().get("text"));
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
 
             String oldTitle = (String) session
-                    .createQuery("select title from Article where slug= :slug")
+                    .createQuery("SELECT title FROM Model WHERE slug= :slug")
                     .setString("slug", slug)
                     .uniqueResult();
 
@@ -292,7 +294,7 @@ public class ModelsApi {
                 do {
                     String title = model.getTitle();
                     count = (Long) session
-                            .createQuery("select count(*) from Article where title= :title")
+                            .createQuery("select count(*) from Model where title= :title")
                             .setString("title", title)
                             .uniqueResult();
                     if (count > 0 && !oldTitle.equals(title)) {
