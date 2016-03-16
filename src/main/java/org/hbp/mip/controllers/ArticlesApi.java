@@ -56,6 +56,7 @@ public class ArticlesApi {
         }
         else
         {
+            queryString += " AND status='published'";
             if(team != null && team)
             {
                 // TODO: decide if this is needed
@@ -182,15 +183,24 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
 
+        User user = mipApplication.getUser();
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Article article = null;
         try{
             session.beginTransaction();
+
             article = (Article) session
                     .createQuery("FROM Article WHERE slug= :slug")
                     .setString("slug", slug)
                     .uniqueResult();
+
             session.getTransaction().commit();
+
+            if (!article.getStatus().equals("published") && !article.getCreatedBy().getUsername().equals(user.getUsername()))
+            {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
         } catch (Exception e)
         {
             if(session.getTransaction() != null)
