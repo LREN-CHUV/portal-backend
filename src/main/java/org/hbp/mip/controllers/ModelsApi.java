@@ -39,18 +39,24 @@ public class ModelsApi {
     public ResponseEntity<List<Model>> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team
+            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
+            @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
 
         User user = mipApplication.getUser();
 
         String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.username";
+        if(valid != null && valid)
+        {
+            queryString += " AND m.valid= :valid";
+        }
         if(own != null && own)
         {
             queryString += " AND u.username= :username";
         }
         else
         {
+            queryString += " AND (m.valid=true or u.username= :username)";
             if(team != null && team)
             {
                 // TODO: decide if this is needed
@@ -63,18 +69,11 @@ public class ModelsApi {
         try{
             session.beginTransaction();
             Query query = session.createQuery(queryString);
-            if(own != null && own)
+            if(valid != null)
             {
-                query.setString("username", user.getUsername());
+                query.setBoolean("valid", valid);
             }
-            else
-            {
-                if(team != null && team)
-                {
-                    // TODO: decide if this is needed
-                    //query.setString("team", user.getTeam());
-                }
-            }
+            query.setString("username", user.getUsername());
             if(limit != null)
             {
                 query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
@@ -104,9 +103,12 @@ public class ModelsApi {
         User user = mipApplication.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
-        model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
+        if(model.getValid() == null)
+        {
+            model.setValid(false);
+        }
 
         Long count;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -183,6 +185,8 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     )  {
 
+        User user = mipApplication.getUser();
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
         Query query;
@@ -194,6 +198,11 @@ public class ModelsApi {
                     .setString("slug", slug)
                     .uniqueResult();
             session.getTransaction().commit();
+
+            if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
+            {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
 
         } catch (Exception e)
         {

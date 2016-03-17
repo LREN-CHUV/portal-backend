@@ -56,7 +56,7 @@ public class ArticlesApi {
         }
         else
         {
-            queryString += " AND status='published'";
+            queryString += " AND (status='published' or u.username= :username)";
             if(team != null && team)
             {
                 // TODO: decide if this is needed
@@ -72,14 +72,7 @@ public class ArticlesApi {
             if (status != null) {
                 query.setString("status", status);
             }
-            if (own != null && own) {
-                query.setString("username", user.getUsername());
-            } else {
-                if (team != null && team) {
-                    // TODO: decide if this is needed
-                    //query.setString("team", user.getTeam());
-                }
-            }
+            query.setString("username", user.getUsername());
             articles = query.list();
             session.getTransaction().commit();
         } catch (Exception e)
