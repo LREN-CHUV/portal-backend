@@ -18,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -42,21 +39,28 @@ public class ModelsApi {
     public ResponseEntity<List<Model>> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team
+            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
+            @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
 
         User user = mipApplication.getUser();
 
-        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.id";
+        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.username";
+        if(valid != null && valid)
+        {
+            queryString += " AND m.valid= :valid";
+        }
         if(own != null && own)
         {
             queryString += " AND u.username= :username";
         }
         else
         {
+            queryString += " AND (m.valid=true or u.username= :username)";
             if(team != null && team)
             {
-                queryString += " AND u.team= :team";
+                // TODO: decide if this is needed
+                //queryString += " AND u.team= :team";
             }
         }
 
@@ -65,17 +69,11 @@ public class ModelsApi {
         try{
             session.beginTransaction();
             Query query = session.createQuery(queryString);
-            if(own != null && own)
+            if(valid != null)
             {
-                query.setString("username", user.getUsername());
+                query.setBoolean("valid", valid);
             }
-            else
-            {
-                if(team != null && team)
-                {
-                    query.setString("team", user.getTeam());
-                }
-            }
+            query.setString("username", user.getUsername());
             if(limit != null)
             {
                 query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
@@ -104,55 +102,67 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        String originalTitle = model.getTitle();
-
         model.setTitle(model.getConfig().getTitle().get("text"));
-        model.setValid(true);
         model.setCreatedBy(user);
         model.setCreatedAt(new Date());
+        if(model.getValid() == null)
+        {
+            model.setValid(false);
+        }
 
+        Long count;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        try {
+        try{
             session.beginTransaction();
-            Long count;
+
             int i = 0;
+            do{
+                i++;
+                count = (Long) session
+                        .createQuery("select count(*) from Model where title= :title")
+                        .setString("title", model.getTitle())
+                        .uniqueResult();
 
-            do {
-                Slugify slg = null;
-                try {
-                    slg = new Slugify();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(count > 0)
+                {
+                    String title = model.getTitle();
+                    if(i > 1)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    model.setTitle(title + " (" + i + ")");
                 }
-                String slug = slg.slugify(model.getTitle());
-                model.setSlug(slug);
+            } while(count > 0);
 
+            Slugify slg = null;
+            try {
+                slg = new Slugify();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String slug = slg.slugify(model.getTitle());
+
+            i = 0;
+            do {
+                i++;
                 count = (Long) session
                         .createQuery("select count(*) from Model where slug= :slug")
                         .setString("slug", slug)
                         .uniqueResult();
                 if(count > 0)
                 {
-                    String title = model.getTitle();
-                    if(i > 0)
+                    if(i > 1)
                     {
-                        title = title.substring(0, title.length()-4);
+                        slug = slug.substring(0, slug.length()-2);
                     }
-                    i++;
-                    model.setTitle(title + " (" + i + ")");
+                    slug += "-"+i;
                 }
+                model.setSlug(slug);
+            } while(count > 0);
 
-            } while (count > 0);
-
-            count = (Long) session
-                    .createQuery("select count(*) from Article where title= :title")
-                    .setString("title", originalTitle)
-                    .uniqueResult();
-            if(count < 1)
-            {
-                model.setTitle(originalTitle);
-            }
+            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+            map.put("text", model.getTitle());
+            model.getConfig().setTitle(map);
 
             session.save(model);
             session.getTransaction().commit();
@@ -165,7 +175,6 @@ public class ModelsApi {
             }
         }
 
-
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
 
@@ -175,6 +184,8 @@ public class ModelsApi {
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     )  {
+
+        User user = mipApplication.getUser();
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
@@ -187,6 +198,11 @@ public class ModelsApi {
                     .setString("slug", slug)
                     .uniqueResult();
             session.getTransaction().commit();
+
+            if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
+            {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
 
         } catch (Exception e)
         {
@@ -277,33 +293,52 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
+        model.setTitle(model.getConfig().getTitle().get("text"));
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
 
-            String oldTitle = (String) session
-                    .createQuery("select title from Article where slug= :slug")
+            String author = (String) session
+                    .createQuery("select U.username from User U, Model M where M.createdBy = U.username and M.slug = :slug")
                     .setString("slug", slug)
                     .uniqueResult();
 
-            if(!oldTitle.equals(model.getTitle())) {
+            if(!user.getUsername().equals(author))
+            {
+                session.getTransaction().commit();
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            String oldTitle = (String) session
+                    .createQuery("select title from Model where slug= :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
+
+            String newTitle = model.getTitle();
+
+            if(!newTitle.equals(oldTitle)) {
                 Long count;
                 int i = 0;
                 do {
-                    String title = model.getTitle();
+                    i++;
+                    newTitle = model.getTitle();
                     count = (Long) session
-                            .createQuery("select count(*) from Article where title= :title")
-                            .setString("title", title)
+                            .createQuery("select count(*) from Model where title= :title")
+                            .setString("title", newTitle)
                             .uniqueResult();
-                    if (count > 0 && !oldTitle.equals(title)) {
-                        if (i > 0) {
-                            title = title.substring(0, title.length() - 4);
+                    if (count > 0 && !newTitle.equals(oldTitle)) {
+                        if (i > 1) {
+                            newTitle = newTitle.substring(0, newTitle.length() - 4);
                         }
-                        i++;
-                        model.setTitle(title + " (" + i + ")");
+                        model.setTitle(newTitle + " (" + i + ")");
                     }
-                } while (count > 0 && !oldTitle.equals(model.getTitle()));
+                } while (count > 0 && !newTitle.equals(oldTitle));
             }
+
+            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+            map.put("text", model.getTitle());
+            model.getConfig().setTitle(map);
 
             session.update(model);
             session.getTransaction().commit();

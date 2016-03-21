@@ -45,7 +45,7 @@ public class ArticlesApi {
 
         User user = mipApplication.getUser();
 
-        String queryString = "SELECT a FROM Article a, User u WHERE a.createdBy=u.id";
+        String queryString = "SELECT a FROM Article a, User u WHERE a.createdBy=u.username";
         if(status != null)
         {
             queryString += " AND status= :status";
@@ -56,9 +56,11 @@ public class ArticlesApi {
         }
         else
         {
+            queryString += " AND (status='published' or u.username= :username)";
             if(team != null && team)
             {
-                queryString += " AND u.team= :team";
+                // TODO: decide if this is needed
+                //queryString += " AND u.team= :team";
             }
         }
 
@@ -70,13 +72,7 @@ public class ArticlesApi {
             if (status != null) {
                 query.setString("status", status);
             }
-            if (own != null && own) {
-                query.setString("username", user.getUsername());
-            } else {
-                if (team != null && team) {
-                    query.setString("team", user.getTeam());
-                }
-            }
+            query.setString("username", user.getUsername());
             articles = query.list();
             session.getTransaction().commit();
         } catch (Exception e)
@@ -102,54 +98,61 @@ public class ArticlesApi {
 
         User user = mipApplication.getUser();
 
-        String originalTitle = article.getTitle();
-
         article.setCreatedAt(new Date());
         if (article.getStatus().equals("published")) {
             article.setPublishedAt(new Date());
         }
         article.setCreatedBy(user);
 
+        Long count;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
 
-            Long count;
             int i = 0;
-            do {
-                Slugify slg = null;
-                try {
-                    slg = new Slugify();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String slug = slg.slugify(article.getTitle());
-                article.setSlug(slug);
+            do{
+                i++;
+                count = (Long) session
+                        .createQuery("select count(*) from Article where title= :title")
+                        .setString("title", article.getTitle())
+                        .uniqueResult();
 
+                if(count > 0)
+                {
+                    String title = article.getTitle();
+                    if(i > 1)
+                    {
+                        title = title.substring(0, title.length()-4);
+                    }
+                    article.setTitle(title + " (" + i + ")");
+                }
+            } while(count > 0);
+
+            Slugify slg = null;
+            try {
+                slg = new Slugify();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String slug = slg.slugify(article.getTitle());
+
+            i = 0;
+            do {
+                i++;
                 count = (Long) session
                         .createQuery("select count(*) from Article where slug= :slug")
                         .setString("slug", slug)
                         .uniqueResult();
                 if(count > 0)
                 {
-                    String title = article.getTitle();
-                    if(i > 0)
+                    if(i > 1)
                     {
-                        title = title.substring(0, title.length()-4);
+                        slug = slug.substring(0, slug.length()-2);
                     }
-                    i++;
-                    article.setTitle(title + " (" + i + ")");
+                    slug += "-"+i;
                 }
+                article.setSlug(slug);
             } while(count > 0);
-
-            count = (Long) session
-                    .createQuery("select count(*) from Article where title= :title")
-                    .setString("title", originalTitle)
-                    .uniqueResult();
-            if(count < 1)
-            {
-                article.setTitle(originalTitle);
-            }
 
             session.save(article);
             session.getTransaction().commit();
@@ -173,15 +176,24 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
 
+        User user = mipApplication.getUser();
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Article article = null;
         try{
             session.beginTransaction();
+
             article = (Article) session
                     .createQuery("FROM Article WHERE slug= :slug")
                     .setString("slug", slug)
                     .uniqueResult();
+
             session.getTransaction().commit();
+
+            if (!article.getStatus().equals("published") && !article.getCreatedBy().getUsername().equals(user.getUsername()))
+            {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
         } catch (Exception e)
         {
             if(session.getTransaction() != null)
@@ -203,32 +215,47 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
 
+        User user = mipApplication.getUser();
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
             session.beginTransaction();
+
+            String author = (String) session
+                    .createQuery("select U.username from User U, Article A where A.createdBy = U.username and A.slug = :slug")
+                    .setString("slug", slug)
+                    .uniqueResult();
+
+            if(!user.getUsername().equals(author))
+            {
+                session.getTransaction().commit();
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
             String oldTitle = (String) session
                     .createQuery("select title from Article where slug= :slug")
                     .setString("slug", slug)
                     .uniqueResult();
 
-            if(!oldTitle.equals(article.getTitle())) {
+            String newTitle = article.getTitle();
+
+            if(!newTitle.equals(oldTitle)) {
                 Long count;
                 int i = 0;
                 do {
-                    String title = article.getTitle();
+                    i++;
+                    newTitle = article.getTitle();
                     count = (Long) session
                             .createQuery("select count(*) from Article where title= :title")
-                            .setString("title", title)
+                            .setString("title", newTitle)
                             .uniqueResult();
-                    if (count > 0 && !oldTitle.equals(title)) {
-                        if (i > 0) {
-                            title = title.substring(0, title.length() - 4);
+                    if (count > 0 && !newTitle.equals(oldTitle)) {
+                        if (i > 1) {
+                            newTitle = newTitle.substring(0, newTitle.length() - 4);
                         }
-                        i++;
-                        article.setTitle(title + " (" + i + ")");
+                        article.setTitle(newTitle + " (" + i + ")");
                     }
-                } while (count > 0 && !oldTitle.equals(article.getTitle()));
+                } while (count > 0 && !newTitle.equals(oldTitle));
             }
 
             session.update(article);
