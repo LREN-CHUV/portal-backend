@@ -52,6 +52,7 @@ public class Variable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "variables")
     private List<Query> queries = new LinkedList<>();
 
+    @Column(columnDefinition = "text")
     private String description = null;
 
 
