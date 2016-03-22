@@ -64,6 +64,8 @@ public class ModelsApi {
             }
         }
 
+        queryString += " ORDER BY m.createdAt DESC";
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Model> models = new LinkedList<>();
         try{
