@@ -57,7 +57,9 @@
                 <connection.password>test</connection.password>
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
-                <frontend.redirect>http://frontend/#/home</frontend.redirect>
+                <frontend.redirect>http://frontend/home</frontend.redirect>
+                <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
+                <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
             </properties>
         </profile>
         <profile>
@@ -71,7 +73,9 @@
                 <connection.password>test</connection.password>
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
-                <frontend.redirect>https://hbp-dev.ahead-solutions.ch/#/home</frontend.redirect>
+                <frontend.redirect>https://hbp-dev.ahead-solutions.ch/home</frontend.redirect>
+                <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
+                <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
             </properties>
         </profile>
     </profiles>

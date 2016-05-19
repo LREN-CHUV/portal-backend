@@ -5,6 +5,7 @@
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.gson.annotations.Expose;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -20,44 +21,62 @@ import java.util.regex.Pattern;
 public class User {
 
     @Id
+    @Expose
     private String username = null;
 
+    @Expose
     private String fullname = null;
 
+    @Expose
     private String firstname = null;
 
+    @Expose
     private String lastname = null;
 
+    @Expose
     private String picture = null;
 
+    @Expose
     private String web = null;
 
+    @Expose
     private String phone = null;
 
+    @Expose
     private String birthday = null;
 
+    @Expose
     private String gender = null;
 
+    @Expose
     private String city = null;
 
+    @Expose
     private String country = null;
 
+    @Expose
     private String password = null;
 
+    @Expose
     private String email = null;
 
+    @Expose
     private String apikey = null;
 
+    @Expose
     private String team = null;
 
+    @Expose
     private Boolean isActive = null;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_languages", joinColumns = @JoinColumn(name = "user_username"))
+    @Expose
     private List<String> languages = new LinkedList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_username"))
+    @Expose
     private List<String> roles = new LinkedList<>();
 
     private Boolean agreeNDA = null;

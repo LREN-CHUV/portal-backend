@@ -20,6 +20,7 @@
         <mapping class="org.hbp.mip.model.Article"/>
         <mapping class="org.hbp.mip.model.Dataset"/>
         <mapping class="org.hbp.mip.model.Model"/>
+        <mapping class="org.hbp.mip.model.Experiment"/>
         <mapping class="org.hbp.mip.model.Query"/>
         <mapping class="org.hbp.mip.model.Tag"/>
         <mapping class="org.hbp.mip.model.User"/>

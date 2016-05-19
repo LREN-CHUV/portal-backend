@@ -5,6 +5,7 @@
 package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.gson.annotations.Expose;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -19,8 +20,10 @@ import java.util.Date;
 public class Model {
 
     @Id
+    @Expose
     private String slug = null;
 
+    @Expose
     private String title = null;
 
     private String description = null;

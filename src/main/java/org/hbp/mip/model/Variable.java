@@ -7,6 +7,7 @@ package org.hbp.mip.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ import java.util.List;
 public class Variable {
 
     @Id
+    @Expose
     private String code = null;
 
     private String label = null;
