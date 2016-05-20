@@ -20,7 +20,7 @@ import java.util.Map;
 public class Config {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id = null;
 
     private String type = null;

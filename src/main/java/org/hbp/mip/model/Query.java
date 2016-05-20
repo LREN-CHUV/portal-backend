@@ -21,7 +21,7 @@ import java.util.List;
 public class Query {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id = null;
 
     private String request = null;

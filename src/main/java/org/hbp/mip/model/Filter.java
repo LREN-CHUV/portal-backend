@@ -20,7 +20,7 @@ import java.util.List;
 public class Filter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id = null;
 
     @ManyToOne

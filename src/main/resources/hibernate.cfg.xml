@@ -29,6 +29,7 @@
         <mapping class="org.hbp.mip.model.Filter"/>
         <mapping class="org.hbp.mip.model.Group"/>
         <mapping class="org.hbp.mip.model.Config"/>
+        <mapping class="org.hbp.mip.model.App"/>
 
     </session-factory>
 </hibernate-configuration>
