@@ -91,6 +91,29 @@ public class ModelsApi {
             }
         }
 
+        for(Model model:models){
+            String ds_code = model.getDataset().getCode();
+
+            session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Dataset dataset = null;
+            try{
+                session.beginTransaction();
+                dataset = (Dataset) session
+                        .createQuery("from Dataset where code= :code")
+                        .setString("code", ds_code)
+                        .uniqueResult();
+            } catch (Exception e)
+            {
+                if(session.getTransaction() != null)
+                {
+                    session.getTransaction().rollback();
+                    throw e;
+                }
+            }
+
+            model.setDataset(dataset);
+        }
+
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
     }
 
