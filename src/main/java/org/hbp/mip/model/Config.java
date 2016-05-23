@@ -20,7 +20,7 @@ import java.util.Map;
 public class Config {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id = null;
 
     private String type = null;
