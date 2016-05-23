@@ -102,6 +102,7 @@ public class ModelsApi {
                         .createQuery("from Dataset where code= :code")
                         .setString("code", ds_code)
                         .uniqueResult();
+                session.getTransaction().commit();
             } catch (Exception e)
             {
                 if(session.getTransaction() != null)
