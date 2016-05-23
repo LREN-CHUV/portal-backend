@@ -6,6 +6,9 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.App;
+import org.hbp.mip.utils.HibernateUtil;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +34,21 @@ public class AppsApi {
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
         List<App> apps = new LinkedList<>();
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        try {
+            session.beginTransaction();
+            Query query = session.createQuery("FROM App");
+            apps = query.list();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+                throw e;
+            }
+        }
 
         return ResponseEntity.ok(apps);
     }
