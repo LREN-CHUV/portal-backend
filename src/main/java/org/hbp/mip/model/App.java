@@ -18,18 +18,31 @@ public class App {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
+
     private String name;
+
+    @Column(columnDefinition = "text")
     private String description;
+
     private String author;
+
     private String email;
+
     private String category;
+
     private String link;
+
+    @Column(columnDefinition = "text")
     private String image;
-    private Integer ratings;
-    private Integer ratings_count;
+
+    private Integer totalRating;
+
+    private Integer ratingCount;
+
 
     public App() {
     }
+
 
     public Integer getId() {
         return id;
@@ -39,6 +52,7 @@ public class App {
         this.id = id;
     }
 
+
     public String getName() {
         return name;
     }
@@ -46,6 +60,7 @@ public class App {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public String getDescription() {
         return description;
@@ -55,6 +70,7 @@ public class App {
         this.description = description;
     }
 
+
     public String getAuthor() {
         return author;
     }
@@ -62,6 +78,7 @@ public class App {
     public void setAuthor(String author) {
         this.author = author;
     }
+
 
     public String getEmail() {
         return email;
@@ -71,6 +88,7 @@ public class App {
         this.email = email;
     }
 
+
     public String getCategory() {
         return category;
     }
@@ -78,6 +96,7 @@ public class App {
     public void setCategory(String category) {
         this.category = category;
     }
+
 
     public String getLink() {
         return link;
@@ -87,6 +106,7 @@ public class App {
         this.link = link;
     }
 
+
     public String getImage() {
         return image;
     }
@@ -95,19 +115,21 @@ public class App {
         this.image = image;
     }
 
-    public Integer getRatings() {
-        return ratings;
+
+    public Integer getTotalRating() {
+        return totalRating;
     }
 
-    public void setRatings(Integer ratings) {
-        this.ratings = ratings;
+    public void setTotalRating(Integer totalRating) {
+        this.totalRating = totalRating;
     }
 
-    public Integer getRatings_count() {
-        return ratings_count;
+
+    public Integer getRatingCount() {
+        return ratingCount;
     }
 
-    public void setRatings_count(Integer ratings_count) {
-        this.ratings_count = ratings_count;
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
     }
 }
