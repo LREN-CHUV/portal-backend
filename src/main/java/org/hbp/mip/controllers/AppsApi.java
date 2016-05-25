@@ -10,6 +10,7 @@ import org.hbp.mip.model.App;
 import org.hbp.mip.model.User;
 import org.hbp.mip.model.Vote;
 import org.hbp.mip.utils.HibernateUtil;
+import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolationException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,7 +84,24 @@ public class AppsApi {
             session.save(vote);
 
             session.getTransaction().commit();
-        } catch (Exception e)
+        }
+        catch (ConstraintViolationException cve)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        catch (NonUniqueObjectException nuoe)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        catch (Exception e)
         {
             if(session.getTransaction() != null)
             {
