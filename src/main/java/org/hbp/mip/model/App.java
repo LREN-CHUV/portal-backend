@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "`app`")
@@ -38,6 +40,9 @@ public class App {
     private Integer totalRating;
 
     private Integer ratingCount;
+
+    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
+    private Set<Vote> votes = new HashSet<>();
 
 
     public App() {
@@ -131,5 +136,14 @@ public class App {
 
     public void setRatingCount(Integer ratingCount) {
         this.ratingCount = ratingCount;
+    }
+
+
+    public Set<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(Set<Vote> votes) {
+        this.votes = votes;
     }
 }

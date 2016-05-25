@@ -9,8 +9,10 @@ import com.google.gson.annotations.Expose;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,6 +82,9 @@ public class User {
     private List<String> roles = new LinkedList<>();
 
     private Boolean agreeNDA = null;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Vote> appsVotes = new HashSet<>();
 
 
     public User() {
@@ -324,4 +329,12 @@ public class User {
         this.agreeNDA = agreeNDA;
     }
 
+
+    public Set<Vote> getAppsVotes() {
+        return appsVotes;
+    }
+
+    public void setAppsVotes(Set<Vote> appsVotes) {
+        this.appsVotes = appsVotes;
+    }
 }
