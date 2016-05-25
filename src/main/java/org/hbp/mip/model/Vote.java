@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "`vote`")
@@ -25,6 +27,8 @@ public class Vote {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private App app;
 
+    @Min(0)
+    @Max(5)
     private int value;
 
 

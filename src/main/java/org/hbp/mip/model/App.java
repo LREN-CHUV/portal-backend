@@ -4,6 +4,7 @@
 
 package org.hbp.mip.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 @Table(name = "`app`")
 @ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = { "votes" })
 public class App {
 
     @Id
@@ -36,10 +38,6 @@ public class App {
 
     @Column(columnDefinition = "text")
     private String image;
-
-    private Integer totalRating;
-
-    private Integer ratingCount;
 
     @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
     private Set<Vote> votes = new HashSet<>();
@@ -121,29 +119,25 @@ public class App {
     }
 
 
-    public Integer getTotalRating() {
-        return totalRating;
-    }
-
-    public void setTotalRating(Integer totalRating) {
-        this.totalRating = totalRating;
-    }
-
-
-    public Integer getRatingCount() {
-        return ratingCount;
-    }
-
-    public void setRatingCount(Integer ratingCount) {
-        this.ratingCount = ratingCount;
-    }
-
-
     public Set<Vote> getVotes() {
         return votes;
     }
 
     public void setVotes(Set<Vote> votes) {
         this.votes = votes;
+    }
+
+
+    public int getRatingCount() {
+        return votes.size();
+    }
+
+
+    public long getRatingSum() {
+        long sum = 0;
+        for(Vote vote : votes) {
+            sum += vote.getValue();
+        }
+        return sum;
     }
 }

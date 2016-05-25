@@ -4,6 +4,7 @@
 
 package org.hbp.mip.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.annotations.Expose;
 import io.swagger.annotations.ApiModel;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
 @Table(name = "`user`")
 @ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(value = { "appsVotes" })
 public class User {
 
     @Id
