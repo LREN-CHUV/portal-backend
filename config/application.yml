@@ -40,4 +40,6 @@ server:
 
 workflow:
   miningUrl: http://mip.humanbrainproject.eu/services/mining
-  exaremeMiningUrl: http://hbps2.chuv.ch:9090/mining/
+  exaremeListAlgoUrl: http://hbps2.chuv.ch:9090/mining/algorithms
+  exaremeQueryUrl: http://hbps2.chuv.ch:9090/mining/query
+

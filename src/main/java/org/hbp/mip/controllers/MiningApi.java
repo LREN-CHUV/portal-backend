@@ -4,6 +4,7 @@
 
 package org.hbp.mip.controllers;
 
+import com.google.gson.JsonParser;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,11 @@ public class MiningApi {
     @Value("#{'${workflow.miningUrl:http://localhost:8087/mining}'}")
     private String miningUrl;
 
-    @Value("#{'${workflow.exaremeMiningUrl:http://localhost:9090/mining}'}")
-    private String exaremeMiningUrl;
+    @Value("#{'${workflow.exaremeListAlgoUrl:http://localhost:9090/mining/algorithms}'}")
+    private String exaremeListAlgoUrl;
+
+    @Value("#{'${workflow.exaremeQueryUrl:http://localhost:9090/mining/query}'}")
+    private String exaremeQueryUrl;
 
     @ApiOperation(value = "Send a request to the workflow for data mining", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -51,11 +55,61 @@ public class MiningApi {
     @RequestMapping(path = "/exareme/algorithms", method = RequestMethod.GET)
     public ResponseEntity<String> getExaremeAlgoList(
     ) throws Exception {
-        String url = exaremeMiningUrl+"algorithm/";
-
         try {
             StringBuilder results = new StringBuilder();
-            int code = sendGet(url, results);
+            int code = sendGet(exaremeListAlgoUrl, results);
+
+            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+        }
+        catch(UnknownHostException uhe) {
+            uhe.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @ApiOperation(value = "Send a request to the Exareme service to run an algorithm", response = String.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(path = "/exareme/query/{algo}", method = RequestMethod.POST)
+    public ResponseEntity<String> postExaremeQuery(
+            @ApiParam(value = "algo", required = true) @PathVariable("algo") String algo,
+            @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
+    ) throws Exception {
+        try {
+
+            /* Launch computation */
+
+            String url = exaremeQueryUrl+"/"+algo+"/?format=true";
+            StringBuilder results = new StringBuilder();
+            int code = sendPost(url, query, results);
+            if (code < 200 || code > 299)
+            {
+                return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+            }
+
+            JsonParser parser = new JsonParser();
+            String key = parser.parse(results.toString()).getAsJsonObject().get("queryKey").getAsString();
+
+            /* Wait for result */
+
+            url = exaremeQueryUrl+"/"+key+"/status";
+            double progress = 0;
+
+            while (progress < 100) {
+                Thread.sleep(200);
+                results = new StringBuilder();
+                code = sendPost(url, query, results);
+                if (code < 200 || code > 299)
+                {
+                    return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+                }
+                progress = parser.parse(results.toString()).getAsJsonObject().get("status").getAsDouble();
+            }
+
+            /* Get result */
+
+            url = exaremeQueryUrl+"/"+key+"/result";
+            results = new StringBuilder();
+            code = sendPost(url, query, results);
 
             return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
         }
