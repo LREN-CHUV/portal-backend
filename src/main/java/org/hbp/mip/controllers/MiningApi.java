@@ -15,6 +15,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 @RestController
 @RequestMapping(value = "/mining")
@@ -24,34 +25,70 @@ public class MiningApi {
     @Value("#{'${workflow.miningUrl:http://localhost:8087/mining}'}")
     private String miningUrl;
 
+    @Value("#{'${workflow.exaremeMiningUrl:http://localhost:9090/mining}'}")
+    private String exaremeMiningUrl;
+
     @ApiOperation(value = "Send a request to the workflow for data mining", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> postMining(
             @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
     ) throws Exception {
+        try {
+            StringBuilder results = new StringBuilder();
+            int code = sendPost(miningUrl, query, results);
 
-        StringBuilder results = new StringBuilder();
-        int code = sendPost(miningUrl, query, results);
-
-        return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+        }
+        catch(UnknownHostException uhe) {
+            uhe.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
     }
 
+    @ApiOperation(value = "Send a request to the Exareme service to list available algorithms", response = String.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(path = "/exareme/algorithms", method = RequestMethod.GET)
+    public ResponseEntity<String> getExaremeAlgoList(
+    ) throws Exception {
+        String url = exaremeMiningUrl+"algorithm/";
+
+        try {
+            StringBuilder results = new StringBuilder();
+            int code = sendGet(url, results);
+
+            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+        }
+        catch(UnknownHostException uhe) {
+            uhe.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    private static int sendGet(String url, StringBuilder resp) throws Exception {
+        return sendHTTP(url, "", resp, "GET");
+    }
 
     private static int sendPost(String url, String query, StringBuilder resp) throws Exception {
+        return sendHTTP(url, query, resp, "POST");
+    }
+
+    private static int sendHTTP(String url, String query, StringBuilder resp, String httpVerb) throws Exception {
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        con.setRequestMethod("POST");
-        con.addRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Content-Length", Integer.toString(query.length()));
+        if(!httpVerb.equals("GET")) {
+            con.setRequestMethod(httpVerb);
+            con.addRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Content-Length", Integer.toString(query.length()));
 
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.write(query.getBytes("UTF8"));
-        wr.flush();
-        wr.close();
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            wr.write(query.getBytes("UTF8"));
+            wr.flush();
+            wr.close();
+        }
 
         int respCode = con.getResponseCode();
 
