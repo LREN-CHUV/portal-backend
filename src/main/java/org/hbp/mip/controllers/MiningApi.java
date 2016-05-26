@@ -72,7 +72,7 @@ public class MiningApi {
     @RequestMapping(path = "/exareme/query/{algo}", method = RequestMethod.POST)
     public ResponseEntity<String> postExaremeQuery(
             @ApiParam(value = "algo", required = true) @PathVariable("algo") String algo,
-            @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
+            @RequestBody(required = false) @ApiParam(value = "Query for the data mining") String query
     ) throws Exception {
         try {
 
@@ -134,14 +134,17 @@ public class MiningApi {
 
         if(!httpVerb.equals("GET")) {
             con.setRequestMethod(httpVerb);
-            con.addRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Content-Length", Integer.toString(query.length()));
+            if(query != null && query.length() > 0)
+            {
+                con.addRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("Content-Length", Integer.toString(query.length()));
 
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.write(query.getBytes("UTF8"));
-            wr.flush();
-            wr.close();
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.write(query.getBytes("UTF8"));
+                wr.flush();
+                wr.close();
+            }
         }
 
         int respCode = con.getResponseCode();
