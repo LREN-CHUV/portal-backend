@@ -74,16 +74,35 @@ public class AppsApi {
         try {
             session.beginTransaction();
 
+            Vote vote = (Vote) session.createQuery("" +
+                    "SELECT v FROM Vote v, User u, App a " +
+                    "WHERE u=v.user " +
+                    "AND a=v.app " +
+                    "AND u.username= :username " +
+                    "AND a.id= :app_id")
+                    .setString("username", user.getUsername())
+                    .setLong("app_id", id)
+                    .uniqueResult();
             App app = (App) session.createQuery("FROM App where id= :id").setLong("id", id).uniqueResult();
 
-            Vote vote = new Vote();
-            vote.setUser(user);
-            vote.setValue(value);
-            vote.setApp(app);
+            if (vote != null) {
+                vote.setValue(value);
 
-            session.save(vote);
+                session.update(vote);
+                session.getTransaction().commit();
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            else
+            {
+                vote = new Vote();
+                vote.setUser(user);
+                vote.setValue(value);
+                vote.setApp(app);
 
-            session.getTransaction().commit();
+                session.save(vote);
+                session.getTransaction().commit();
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
         }
         catch (ConstraintViolationException cve)
         {
@@ -108,8 +127,7 @@ public class AppsApi {
                 session.getTransaction().rollback();
                 throw e;
             }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
