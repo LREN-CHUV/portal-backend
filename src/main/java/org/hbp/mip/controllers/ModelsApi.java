@@ -227,7 +227,7 @@ public class ModelsApi {
 
             if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
             {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
         } catch (Exception e)
@@ -423,18 +423,6 @@ public class ModelsApi {
             sb.append(c);
         }
         return sb.toString();
-    }
-
-    @ApiOperation(value = "Delete a model", response = Void.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Model deleted") })
-    @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> deleteAModel(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    )  {
-
-        // TODO : Implement delete method
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

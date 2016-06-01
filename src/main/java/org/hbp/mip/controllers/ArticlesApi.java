@@ -163,6 +163,7 @@ public class ArticlesApi {
                 session.getTransaction().rollback();
                 throw e;
             }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -192,7 +193,7 @@ public class ArticlesApi {
 
             if (!article.getStatus().equals("published") && !article.getCreatedBy().getUsername().equals(user.getUsername()))
             {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         } catch (Exception e)
         {
@@ -270,19 +271,6 @@ public class ArticlesApi {
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-
-    @ApiOperation(value = "Delete an article", response = Void.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Article deleted") })
-    @RequestMapping(value = "/{slug}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> deleteAnArticle(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
-    ) {
-
-        // TODO : Implement delete method
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

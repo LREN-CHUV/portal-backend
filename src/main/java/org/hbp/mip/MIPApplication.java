@@ -210,6 +210,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
                 session.getTransaction().rollback();
                 throw e;
             }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
