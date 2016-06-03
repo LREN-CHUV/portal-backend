@@ -78,6 +78,22 @@
                 <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
             </properties>
         </profile>
+        <profile>
+            <id>hbps1</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
+                <connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
+                <connection.username>postgres</connection.username>
+                <connection.password>test</connection.password>
+                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
+                <schema.deploy>false</schema.deploy>
+                <frontend.redirect>http://hbps1.chuv.ch:8081/home</frontend.redirect>
+                <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
+                <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>
