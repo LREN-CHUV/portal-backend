@@ -30,6 +30,9 @@
                 <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
                 <schema.deploy>true</schema.deploy>
                 <frontend.redirect>http://frontend/#/home</frontend.redirect>
+                <flyway.url>${connection.url}</flyway.url>
+                <flyway.user>${connection.username}</flyway.user>
+                <flyway.password>${connection.password}</flyway.password>
             </properties>
         </profile>
         <profile>
@@ -44,6 +47,9 @@
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
                 <frontend.redirect>https://mip.humanbrainproject.eu/#/home</frontend.redirect>
+                <flyway.url>${connection.url}</flyway.url>
+                <flyway.user>${connection.username}</flyway.user>
+                <flyway.password>${connection.password}</flyway.password>
             </properties>
         </profile>
         <profile>
@@ -60,6 +66,9 @@
                 <frontend.redirect>http://frontend/home</frontend.redirect>
                 <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
                 <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
+                <flyway.url>${connection.url}</flyway.url>
+                <flyway.user>${connection.username}</flyway.user>
+                <flyway.password>${connection.password}</flyway.password>
             </properties>
         </profile>
         <profile>
@@ -76,6 +85,9 @@
                 <frontend.redirect>https://hbp-dev.ahead-solutions.ch/home</frontend.redirect>
                 <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
                 <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
+                <flyway.url>${connection.url}</flyway.url>
+                <flyway.user>${connection.username}</flyway.user>
+                <flyway.password>${connection.password}</flyway.password>
             </properties>
         </profile>
         <profile>
@@ -92,6 +104,9 @@
                 <frontend.redirect>http://hbps1.chuv.ch:8081/home</frontend.redirect>
                 <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
                 <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
+                <flyway.url>${connection.url}</flyway.url>
+                <flyway.user>${connection.username}</flyway.user>
+                <flyway.password>${connection.password}</flyway.password>
             </properties>
         </profile>
     </profiles>
@@ -157,9 +172,9 @@
             <version>1.4.187</version>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>9.4-1205-jdbc42</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -232,6 +247,11 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>4.0.1</version>
             </plugin>
         </plugins>
     </build>
