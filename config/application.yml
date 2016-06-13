@@ -19,7 +19,7 @@ hbp:
     clientAuthenticationScheme: form
     # use-current-uri: false  # For both production and HBPS1 deployments
     # pre-established-redirect-uri: https://mip.humanbrainproject.eu/services/login/hbp  # For production deployment
-    # pre-established-redirect-uri: http://hbps1.chuv.ch:8081/services/login/hbp  # For HBPS1 deployment
+    # pre-established-redirect-uri: http://hbps1.chuv.ch/services/login/hbp  # For HBPS1 deployment
   resource:
     userInfoUri: https://services.humanbrainproject.eu/oidc/userinfo
 

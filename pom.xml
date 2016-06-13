@@ -101,7 +101,7 @@
                 <connection.password>test</connection.password>
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
-                <frontend.redirect>http://hbps1.chuv.ch:8081/home</frontend.redirect>
+                <frontend.redirect>http://hbps1.chuv.ch/home</frontend.redirect>
                 <workflow.experimentUrl>http://as-dev.cloudapp.net:8087/experiment</workflow.experimentUrl>
                 <workflow.listMethodsUrl>http://as-dev.cloudapp.net:8087/list-methods</workflow.listMethodsUrl>
                 <flyway.url>${connection.url}</flyway.url>
