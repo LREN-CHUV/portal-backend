@@ -7,7 +7,7 @@ else
 fi
 
 # TODO: Cannot clean otherwise the build fails because of Hibernate schema generation
-mvn package
+mvn package -P dev -Dmaven.test.skip=TRUE
 cp target/mip.jar src/docker/build/
 
 $DOCKER_COMPOSE build

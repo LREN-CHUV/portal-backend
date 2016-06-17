@@ -78,7 +78,7 @@ public class MiningApi {
 
             /* Launch computation */
 
-            String url = exaremeQueryUrl+"/"+algo+"/?format=true";
+            String url = exaremeQueryUrl+"/"+algo;
             StringBuilder results = new StringBuilder();
             int code = sendPost(url, query, results);
             if (code < 200 || code > 299)
@@ -86,32 +86,10 @@ public class MiningApi {
                 return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
             }
 
-            JsonParser parser = new JsonParser();
-            String key = parser.parse(results.toString()).getAsJsonObject().get("queryKey").getAsString();
-
-            /* Wait for result */
-
-            url = exaremeQueryUrl+"/"+key+"/status";
-            double progress = 0;
-
-            while (progress < 100) {
-                Thread.sleep(200);
-                results = new StringBuilder();
-                code = sendPost(url, query, results);
-                if (code < 200 || code > 299)
-                {
-                    return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
-                }
-                progress = parser.parse(results.toString()).getAsJsonObject().get("status").getAsDouble();
-            }
-
             /* Get result */
+            String result = results.toString().replaceAll("\\\\", "").replaceAll("\"(.*)\"", "$1");
 
-            url = exaremeQueryUrl+"/"+key+"/result";
-            results = new StringBuilder();
-            code = sendPost(url, query, results);
-
-            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
+            return new ResponseEntity<>(result, HttpStatus.valueOf(code));
         }
         catch(UnknownHostException uhe) {
             uhe.printStackTrace();
