@@ -1,0 +1,14 @@
+{
+  "code": "glm_exareme",
+  "label": "GLM (exareme)",
+  "type": ["statistics"],
+  "environment": "Exareme",
+  "description": "Linear Regression using Exareme services",
+  "constraints": {
+    "variable": {
+      "real": true,
+      "binominal": false,
+      "polynominal": false
+    }
+  }
+}
