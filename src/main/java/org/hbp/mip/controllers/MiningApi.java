@@ -23,14 +23,14 @@ import java.net.UnknownHostException;
 @Api(value = "/mining", description = "Forward mining API")
 public class MiningApi {
 
-    @Value("#{'${workflow.miningUrl:http://localhost:8087/mining}'}")
-    private String miningUrl;
+    @Value("#{'${workflow.listMethodsUrl:http://hbps1.chuv.ch:8087/list-methods}'}")
+    private String listMethodsUrl;
 
-    @Value("#{'${workflow.exaremeListAlgoUrl:http://localhost:9090/mining/algorithms}'}")
-    private String exaremeListAlgoUrl;
+    @Value("#{'${workflow.miningMipUrl:http://hbps1.chuv.ch:8087/mining}'}")
+    private String miningMipUrl;
 
-    @Value("#{'${workflow.exaremeQueryUrl:http://localhost:9090/mining/query}'}")
-    private String exaremeQueryUrl;
+    @Value("#{'${workflow.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    private String miningExaremeQueryUrl;
 
     @ApiOperation(value = "Send a request to the workflow for data mining", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -38,9 +38,22 @@ public class MiningApi {
     public ResponseEntity<String> postMining(
             @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
     ) throws Exception {
+        // TODO : switch between sources
+
+        StringBuilder response = new StringBuilder();
+
+        int code = sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<String> postMipMining(String query) throws Exception {
         try {
             StringBuilder results = new StringBuilder();
-            int code = sendPost(miningUrl, query, results);
+            int code = sendPost(miningMipUrl, query, results);
 
             return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
         }
@@ -50,35 +63,13 @@ public class MiningApi {
         }
     }
 
-    @ApiOperation(value = "Send a request to the Exareme service to list available algorithms", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(path = "/exareme/algorithms", method = RequestMethod.GET)
-    public ResponseEntity<String> getExaremeAlgoList(
-    ) throws Exception {
-        try {
-            StringBuilder results = new StringBuilder();
-            int code = sendGet(exaremeListAlgoUrl, results);
 
-            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
-        }
-        catch(UnknownHostException uhe) {
-            uhe.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
-        }
-    }
-
-    @ApiOperation(value = "Send a request to the Exareme service to run an algorithm", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(path = "/exareme/query/{algo}", method = RequestMethod.POST)
-    public ResponseEntity<String> postExaremeQuery(
-            @ApiParam(value = "algo", required = true) @PathVariable("algo") String algo,
-            @RequestBody(required = false) @ApiParam(value = "Query for the data mining") String query
-    ) throws Exception {
+    public ResponseEntity<String> postExaremeMining(String algo, String query) throws Exception {
         try {
 
             /* Launch computation */
 
-            String url = exaremeQueryUrl+"/"+algo+"/?format=true";
+            String url = miningExaremeQueryUrl +"/"+algo+"/?format=true";
             StringBuilder results = new StringBuilder();
             int code = sendPost(url, query, results);
             if (code < 200 || code > 299)
@@ -91,7 +82,7 @@ public class MiningApi {
 
             /* Wait for result */
 
-            url = exaremeQueryUrl+"/"+key+"/status";
+            url = miningExaremeQueryUrl +"/"+key+"/status";
             double progress = 0;
 
             while (progress < 100) {
@@ -107,7 +98,7 @@ public class MiningApi {
 
             /* Get result */
 
-            url = exaremeQueryUrl+"/"+key+"/result";
+            url = miningExaremeQueryUrl +"/"+key+"/result";
             results = new StringBuilder();
             code = sendPost(url, query, results);
 

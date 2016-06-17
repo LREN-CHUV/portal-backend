@@ -68,8 +68,10 @@
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
                 <frontend.redirect>http://frontend/home</frontend.redirect>
-                <workflow.experimentUrl>http://hbps1.chuv.ch:8087/experiment</workflow.experimentUrl>
-                <workflow.listMethodsUrl>http://hbps1.chuv.ch:8087/list-methods</workflow.listMethodsUrl>
+                <workflow.experimentUrl>http://dockerhost:8087/experiment</workflow.experimentUrl>
+                <workflow.listMethodsUrl>http://dockerhost:8087/list-methods</workflow.listMethodsUrl>
+                <workflow.miningMipUrl>http://dockerhost:8087/mining</workflow.miningMipUrl>
+                <workflow.miningExaremeUrl>http://dockerhost:8087/mining/query</workflow.miningExaremeUrl>
                 <flyway.url>${connection.url}</flyway.url>
                 <flyway.user>${connection.username}</flyway.user>
                 <flyway.password>${connection.password}</flyway.password>
