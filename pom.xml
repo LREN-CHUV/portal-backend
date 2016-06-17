@@ -187,11 +187,6 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes><include>**/*.csv</include></includes>
-                <excludes><exclude>**/*.xml</exclude></excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
                 <includes><include>**/*.xml</include></includes>
                 <excludes><exclude>**/*.csv</exclude></excludes>
                 <filtering>true</filtering>
