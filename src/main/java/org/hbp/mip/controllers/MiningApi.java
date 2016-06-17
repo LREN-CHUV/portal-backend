@@ -81,15 +81,8 @@ public class MiningApi {
             String url = exaremeQueryUrl+"/"+algo;
             StringBuilder results = new StringBuilder();
             int code = sendPost(url, query, results);
-            if (code < 200 || code > 299)
-            {
-                return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
-            }
 
-            /* Get result */
-            String result = results.toString().replaceAll("\\\\", "").replaceAll("\"(.*)\"", "$1");
-
-            return new ResponseEntity<>(result, HttpStatus.valueOf(code));
+            return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
         }
         catch(UnknownHostException uhe) {
             uhe.printStackTrace();
