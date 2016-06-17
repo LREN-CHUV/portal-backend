@@ -43,11 +43,11 @@ public class ExperimentApi {
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    @Value("#{'${workflow.experimentUrl:http://as-dev.cloudapp.net:8087/experiment}'}")
+    @Value("#{'${workflow.experimentUrl:http://hbps1.chuv.ch:8087/experiment}'}")
     private String experimentUrl;
 
 
-    @Value("#{'${workflow.listMethodsUrl:http://as-dev.cloudapp.net:8087/list-methods}'}")
+    @Value("#{'${workflow.listMethodsUrl:http://hbps1.chuv.ch:8087/list-methods}'}")
     private String listMethodsUrl;
 
     @Autowired
