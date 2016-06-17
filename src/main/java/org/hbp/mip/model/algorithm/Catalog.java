@@ -25,4 +25,12 @@ public class Catalog {
     public void setAlgorithms(List<Algorithm> algorithms) {
         this.algorithms = algorithms;
     }
+
+    public List<Algorithm> getValidations() {
+        return validations;
+    }
+
+    public void setValidations(List<Algorithm> validations) {
+        this.validations = validations;
+    }
 }
