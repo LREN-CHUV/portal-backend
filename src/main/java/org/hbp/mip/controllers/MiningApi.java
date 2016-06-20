@@ -81,7 +81,7 @@ public class MiningApi {
                 }
                 else if(algo.getSource().equals(EXAREME_SOURCE))
                 {
-                    return postExaremeMining("WP_STATISTICS", query);
+                    return postExaremeMining("WP_LINEAR_REGRESSION", query);
                 }
             }
         }
