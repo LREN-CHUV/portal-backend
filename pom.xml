@@ -19,25 +19,6 @@
     </parent>
     <profiles>
         <profile>
-            <id>test</id>
-            <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <java.version>1.8</java.version>
-                <connection.driver_class>org.h2.Driver</connection.driver_class>
-                <connection.url>jdbc:h2:mem:test</connection.url>
-                <connection.username>root</connection.username>
-                <connection.password>root</connection.password>
-                <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
-                <schema.deploy>true</schema.deploy>
-                <frontend.redirect>http://frontend/#/home</frontend.redirect>
-                <workflow.experimentUrl>http://hbps1.chuv.ch:8087/experiment</workflow.experimentUrl>
-                <workflow.listMethodsUrl>http://hbps1.chuv.ch:8087/list-methods</workflow.listMethodsUrl>
-                <flyway.url>${connection.url}</flyway.url>
-                <flyway.user>${connection.username}</flyway.user>
-                <flyway.password>${connection.password}</flyway.password>
-            </properties>
-        </profile>
-        <profile>
             <id>prod</id>
             <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,9 +29,7 @@
                 <connection.password>iaezXODVLb1e70I</connection.password>
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
-                <frontend.redirect>https://mip.humanbrainproject.eu/#/home</frontend.redirect>
-                <workflow.experimentUrl>http://hbps1.chuv.ch:8087/experiment</workflow.experimentUrl>
-                <workflow.listMethodsUrl>http://hbps1.chuv.ch:8087/list-methods</workflow.listMethodsUrl>
+                <frontend.redirect>https://mip.humanbrainproject.eu/home</frontend.redirect>
                 <flyway.url>${connection.url}</flyway.url>
                 <flyway.user>${connection.username}</flyway.user>
                 <flyway.password>${connection.password}</flyway.password>
@@ -68,10 +47,6 @@
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
                 <frontend.redirect>http://frontend/home</frontend.redirect>
-                <workflow.experimentUrl>http://dockerhost:8087/experiment</workflow.experimentUrl>
-                <workflow.listMethodsUrl>http://dockerhost:8087/list-methods</workflow.listMethodsUrl>
-                <workflow.miningMipUrl>http://dockerhost:8087/mining</workflow.miningMipUrl>
-                <workflow.miningExaremeUrl>http://dockerhost:8087/mining/query</workflow.miningExaremeUrl>
                 <flyway.url>${connection.url}</flyway.url>
                 <flyway.user>${connection.username}</flyway.user>
                 <flyway.password>${connection.password}</flyway.password>
@@ -89,8 +64,6 @@
                 <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
                 <schema.deploy>false</schema.deploy>
                 <frontend.redirect>http://hbps1.chuv.ch/home</frontend.redirect>
-                <workflow.experimentUrl>http://hbps1.chuv.ch:8087/experiment</workflow.experimentUrl>
-                <workflow.listMethodsUrl>http://hbps1.chuv.ch:8087/list-methods</workflow.listMethodsUrl>
                 <flyway.url>${connection.url}</flyway.url>
                 <flyway.user>${connection.username}</flyway.user>
                 <flyway.password>${connection.password}</flyway.password>
@@ -189,7 +162,10 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes><include>**/*.xml</include></includes>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.json</include>
+                </includes>
                 <excludes><exclude>**/*.csv</exclude></excludes>
                 <filtering>true</filtering>
             </resource>

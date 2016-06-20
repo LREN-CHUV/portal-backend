@@ -33,6 +33,8 @@ public class Algorithm {
 
     private Boolean disable;
 
+    private String source;
+
 
     public String getCode() {
         return code;
@@ -104,5 +106,13 @@ public class Algorithm {
 
     public void setDisable(Boolean disable) {
         this.disable = disable;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

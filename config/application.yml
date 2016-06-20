@@ -40,6 +40,7 @@ server:
     timeout: 2592000
 
 workflow:
+  experimentUrl: http://dockerhost:8087/experiment
   listMethodsUrl: http://dockerhost:8087/list-methods
   miningMipUrl: http://dockerhost:8087/mining
   miningExaremeUrl: http://hbps2.chuv.ch:9090/mining/query
