@@ -8,6 +8,9 @@ import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Experiment;
 import org.hbp.mip.model.Model;
 import org.hbp.mip.model.User;
+import org.hbp.mip.model.algorithm.Algorithm;
+import org.hbp.mip.model.algorithm.Catalog;
+import org.hbp.mip.utils.HTTPUtil;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -24,7 +27,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -36,6 +42,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/experiments", description = "the experiments API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
+
+    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
@@ -371,22 +379,25 @@ public class ExperimentApi {
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws Exception {
 
-        URL obj = new URL(listMethodsUrl);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-
-        int respCode = con.getResponseCode();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(respCode == 200 ? con.getInputStream() : con.getErrorStream()));
-
-        String inputLine;
         StringBuilder response = new StringBuilder();
 
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+        int code = HTTPUtil.sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
         }
-        in.close();
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(respCode));
+        Catalog catalog = new Gson().fromJson(response.toString(), Catalog.class);
+        for (Algorithm algo: catalog.getAlgorithms()) {
+            algo.setSource("ML");
+        }
+
+        InputStream is = MiningApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        Algorithm exaremeGLR = new Gson().fromJson(br, Algorithm.class);
+        exaremeGLR.setSource("exareme");
+        catalog.getAlgorithms().add(exaremeGLR);
+
+        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
     }
 }
