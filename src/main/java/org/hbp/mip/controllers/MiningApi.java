@@ -4,8 +4,10 @@
 
 package org.hbp.mip.controllers;
 
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import io.swagger.annotations.*;
+import org.hbp.mip.model.algorithm.Algorithm;
+import org.hbp.mip.model.algorithm.Catalog;
 import org.hbp.mip.utils.HTTPUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,12 +17,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 
 @RestController
 @RequestMapping(value = "/mining")
 @Api(value = "/mining", description = "Forward mining API")
 public class MiningApi {
+
+    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
+
+    private static final String ML_SOURCE = "ML";
+
+    private static final String EXAREME_SOURCE = "exareme";
 
     @Value("#{'${workflow.listMethodsUrl:http://hbps1.chuv.ch:8087/list-methods}'}")
     private String listMethodsUrl;
@@ -37,9 +48,45 @@ public class MiningApi {
     public ResponseEntity<String> postMining(
             @RequestBody @ApiParam(value = "Query for the data mining", required = true) String query
     ) throws Exception {
-        // TODO : switch between sources
 
-        return null;
+        StringBuilder response = new StringBuilder();
+
+        int code = HTTPUtil.sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+        }
+
+        Catalog catalog = new Gson().fromJson(response.toString(), Catalog.class);
+        for (Algorithm algo: catalog.getAlgorithms()) {
+            algo.setSource(ML_SOURCE);
+        }
+
+        InputStream is = MiningApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        Algorithm exaremeGLR = new Gson().fromJson(br, Algorithm.class);
+        exaremeGLR.setSource(EXAREME_SOURCE);
+        catalog.getAlgorithms().add(exaremeGLR);
+
+        String algoCode = new JsonParser().parse(query).getAsJsonObject()
+                .get("algorithm").getAsJsonObject()
+                .get("code").getAsString();
+
+        for(Algorithm algo : catalog.getAlgorithms())
+        {
+            if (algo.getCode().equals(algoCode))
+            {
+                if(algo.getSource().equals(ML_SOURCE)) {
+                    return postMipMining(query);
+                }
+                else if(algo.getSource().equals(EXAREME_SOURCE))
+                {
+                    return postExaremeMining(algoCode, query);
+                }
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<String> postMipMining(String query) throws Exception {
@@ -56,7 +103,7 @@ public class MiningApi {
     }
 
 
-    public ResponseEntity<String> postExaremeMining(String algo, String query) throws Exception {
+    private ResponseEntity<String> postExaremeMining(String algo, String query) throws Exception {
         try {
 
             /* Launch computation */
