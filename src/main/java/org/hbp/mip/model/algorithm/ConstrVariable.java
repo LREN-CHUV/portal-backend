@@ -13,9 +13,9 @@ public class ConstrVariable {
 
     private Boolean real;
 
-    private Boolean binomial;
+    private Boolean binominal;
 
-    private Boolean polynomial;
+    private Boolean polynominal;
 
 
     public Boolean getReal() {
@@ -26,19 +26,19 @@ public class ConstrVariable {
         this.real = real;
     }
 
-    public Boolean getBinomial() {
-        return binomial;
+    public Boolean getBinominal() {
+        return binominal;
     }
 
-    public void setBinomial(Boolean binomial) {
-        this.binomial = binomial;
+    public void setBinominal(Boolean binominal) {
+        this.binominal = binominal;
     }
 
-    public Boolean getPolynomial() {
-        return polynomial;
+    public Boolean getPolynominal() {
+        return polynominal;
     }
 
-    public void setPolynomial(Boolean polynomial) {
-        this.polynomial = polynomial;
+    public void setPolynominal(Boolean polynominal) {
+        this.polynominal = polynominal;
     }
 }
