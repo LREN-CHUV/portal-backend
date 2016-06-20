@@ -18,6 +18,8 @@ public class Algorithm {
 
     private String label;
 
+    private String name;
+
     private List type;
 
     private String environment;
@@ -50,6 +52,14 @@ public class Algorithm {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List getType() {
