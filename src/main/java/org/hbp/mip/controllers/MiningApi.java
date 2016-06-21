@@ -85,25 +85,6 @@ public class MiningApi {
         String modelSlug = new JsonParser().parse(query).getAsJsonObject()
                 .get("model").getAsString();
 
-        for(Algorithm algo : catalog.getAlgorithms())
-        {
-            if (algo.getCode().equals(algoCode))
-            {
-                if(algo.getSource().equals(ML_SOURCE)) {
-                    return postMipMining(algoCode, modelSlug);
-                }
-                else if(algo.getSource().equals(EXAREME_SOURCE))
-                {
-                    return postExaremeMining("WP_LINEAR_REGRESSION", modelSlug);
-                }
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    private ResponseEntity<String> postMipMining(String algoCode, String modelSlug) throws Exception {
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
 
@@ -121,6 +102,25 @@ public class MiningApi {
                 throw e;
             }
         }
+
+        for(Algorithm algo : catalog.getAlgorithms())
+        {
+            if (algo.getCode().equals(algoCode))
+            {
+                if(algo.getSource().equals(ML_SOURCE)) {
+                    return postMipMining(algoCode, model);
+                }
+                else if(algo.getSource().equals(EXAREME_SOURCE))
+                {
+                    return postExaremeMining("WP_LINEAR_REGRESSION", model);
+                }
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<String> postMipMining(String algoCode, Model model) throws Exception {
 
         SimpleMiningQuery smq = new SimpleMiningQuery();
         smq.setAlgorithm(algoCode);
@@ -156,7 +156,13 @@ public class MiningApi {
 
         try {
             StringBuilder results = new StringBuilder();
-            int code = HTTPUtil.sendPost(miningMipUrl, new Gson().toJson(smq), results);
+            String jsonQuery = new Gson().toJson(smq);
+
+            System.out.println("****************************************");
+            System.out.println("SimpleMining content : " + jsonQuery);
+            System.out.println("****************************************");
+
+            int code = HTTPUtil.sendPost(miningMipUrl, jsonQuery, results);
 
             return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
         }
@@ -167,25 +173,7 @@ public class MiningApi {
     }
 
 
-    private ResponseEntity<String> postExaremeMining(String algoCode, String modelSlug) throws Exception {
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Model model = null;
-
-        try {
-            session.beginTransaction();
-            model = (Model) session.createQuery("FROM Model WHERE slug= :slug")
-                    .setString("slug", modelSlug)
-                    .uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
+    private ResponseEntity<String> postExaremeMining(String algoCode, Model model) throws Exception {
 
         LinkedList<ExaremeQueryElement> queryElements = new LinkedList<>();
         for (Variable var : model.getQuery().getVariables())
@@ -226,6 +214,10 @@ public class MiningApi {
         queryElements.add(formatEl);
 
         String jsonQuery = new Gson().toJson(queryElements);
+
+        System.out.println("****************************************");
+        System.out.println("ExaremeMining content : " + jsonQuery);
+        System.out.println("****************************************");
 
         try {
 
