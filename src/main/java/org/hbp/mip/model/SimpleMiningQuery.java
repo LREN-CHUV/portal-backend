@@ -2,6 +2,7 @@ package org.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
+import org.hbp.mip.model.algorithm.Algorithm;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SimpleMiningQuery {
 
-    private String algorithm;
+    private Algorithm algorithm;
 
     private List<Map<String,String>> variables;
 
@@ -25,11 +26,11 @@ public class SimpleMiningQuery {
     private List<Map<String,String>> filters;
 
 
-    public String getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return algorithm;
     }
 
-    public void setAlgorithm(String algorithm) {
+    public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
     }
 

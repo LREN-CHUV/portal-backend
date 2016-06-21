@@ -108,7 +108,9 @@ public class MiningApi {
             if (algo.getCode().equals(algoCode))
             {
                 if(algo.getSource().equals(ML_SOURCE)) {
-                    return postMipMining(algoCode, model);
+                    Algorithm algorithm = new Gson().fromJson(new JsonParser().parse(query).getAsJsonObject()
+                            .get("algorithm").getAsJsonObject(), Algorithm.class);
+                    return postMipMining(algorithm, model);
                 }
                 else if(algo.getSource().equals(EXAREME_SOURCE))
                 {
@@ -120,10 +122,10 @@ public class MiningApi {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<String> postMipMining(String algoCode, Model model) throws Exception {
+    private ResponseEntity<String> postMipMining(Algorithm algorithm, Model model) throws Exception {
 
         SimpleMiningQuery smq = new SimpleMiningQuery();
-        smq.setAlgorithm(algoCode);
+        smq.setAlgorithm(algorithm);
 
         LinkedList<Map<String,String>> vars = new LinkedList<>();
         for(Variable var : model.getQuery().getVariables())
