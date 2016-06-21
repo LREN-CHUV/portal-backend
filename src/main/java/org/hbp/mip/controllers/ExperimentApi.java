@@ -3,13 +3,12 @@ package org.hbp.mip.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Experiment;
 import org.hbp.mip.model.Model;
 import org.hbp.mip.model.User;
-import org.hbp.mip.model.algorithm.Algorithm;
-import org.hbp.mip.model.algorithm.Catalog;
 import org.hbp.mip.utils.HTTPUtil;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
@@ -386,17 +385,14 @@ public class ExperimentApi {
             return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
         }
 
-        Catalog catalog = new Gson().fromJson(response.toString(), Catalog.class);
-        for (Algorithm algo: catalog.getAlgorithms()) {
-            algo.setSource("ML");
-        }
+        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
 
-        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStream is = MiningApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
-        Algorithm exaremeGLR = new Gson().fromJson(br, Algorithm.class);
-        exaremeGLR.setSource("exareme");
-        catalog.getAlgorithms().add(exaremeGLR);
+        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+
+        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
 
         return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
     }
