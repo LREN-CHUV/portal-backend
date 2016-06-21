@@ -391,7 +391,7 @@ public class ExperimentApi {
             algo.setSource("ML");
         }
 
-        InputStream is = MiningApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         Algorithm exaremeGLR = new Gson().fromJson(br, Algorithm.class);
