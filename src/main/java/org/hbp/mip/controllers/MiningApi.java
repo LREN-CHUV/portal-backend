@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import io.swagger.annotations.*;
+import org.hbp.mip.model.ExaremeQueryElement;
 import org.hbp.mip.model.Model;
 import org.hbp.mip.model.SimpleMiningQuery;
 import org.hbp.mip.model.Variable;
@@ -167,13 +168,72 @@ public class MiningApi {
 
 
     private ResponseEntity<String> postExaremeMining(String algoCode, String modelSlug) throws Exception {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Model model = null;
+
+        try {
+            session.beginTransaction();
+            model = (Model) session.createQuery("FROM Model WHERE slug= :slug")
+                    .setString("slug", modelSlug)
+                    .uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e)
+        {
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+                throw e;
+            }
+        }
+
+        LinkedList<ExaremeQueryElement> queryElements = new LinkedList<>();
+        for (Variable var : model.getQuery().getVariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("variable");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getCovariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("covariables");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getGrouping())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("groupings");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+
+        ExaremeQueryElement tableEl = new ExaremeQueryElement();
+        tableEl.setName("showtable");
+        tableEl.setDesc("");
+        tableEl.setValue("TotalResults");
+        queryElements.add(tableEl);
+
+        ExaremeQueryElement formatEl = new ExaremeQueryElement();
+        formatEl.setName("format");
+        formatEl.setDesc("");
+        formatEl.setValue("True");
+        queryElements.add(formatEl);
+
+        String jsonQuery = new Gson().toJson(queryElements);
+
         try {
 
             /* Launch computation */
 
             String url = miningExaremeQueryUrl +"/"+algoCode+"/?format=true";
             StringBuilder results = new StringBuilder();
-            int code = HTTPUtil.sendPost(url, modelSlug, results);
+            int code = HTTPUtil.sendPost(url, jsonQuery, results);
             if (code < 200 || code > 299)
             {
                 return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
@@ -190,7 +250,7 @@ public class MiningApi {
             while (progress < 100) {
                 Thread.sleep(200);
                 results = new StringBuilder();
-                code = HTTPUtil.sendPost(url, modelSlug, results);
+                code = HTTPUtil.sendPost(url, jsonQuery, results);
                 if (code < 200 || code > 299)
                 {
                     return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
@@ -202,7 +262,7 @@ public class MiningApi {
 
             url = miningExaremeQueryUrl +"/"+key+"/result";
             results = new StringBuilder();
-            code = HTTPUtil.sendPost(url, modelSlug, results);
+            code = HTTPUtil.sendPost(url, jsonQuery, results);
 
             return new ResponseEntity<>(results.toString(), HttpStatus.valueOf(code));
         }
