@@ -1,13 +1,10 @@
 package org.hbp.mip.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.hbp.mip.MIPApplication;
-import org.hbp.mip.model.Experiment;
-import org.hbp.mip.model.Model;
-import org.hbp.mip.model.User;
+import org.hbp.mip.model.*;
+import org.hbp.mip.utils.HTTPUtil;
 import org.hbp.mip.utils.HibernateUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -20,11 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.util.*;
+import java.net.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,18 +34,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
 
+    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
+
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    @Value("#{'${workflow.experimentUrl:http://hbps1.chuv.ch:8087/experiment}'}")
+    @Value("#{'${workflow.experimentUrl:http://dockerhost:8087/experiment}'}")
     private String experimentUrl;
 
-
-    @Value("#{'${workflow.listMethodsUrl:http://hbps1.chuv.ch:8087/list-methods}'}")
+    @Value("#{'${workflow.listMethodsUrl:http://dockerhost:8087/list-methods}'}")
     private String listMethodsUrl;
+
+    @Value("#{'${workflow.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    private String miningExaremeQueryUrl;
 
     @Autowired
     MIPApplication mipApplication;
@@ -155,10 +156,115 @@ public class ExperimentApi {
         }
 
         try {
-            sendPost(experiment);
+            if(isExaremeAlgo(experiment))
+            {
+                sendExaremePost(experiment);
+            }
+            else
+            {
+                sendPost(experiment);
+            }
         } catch (MalformedURLException mue) {} // ignore
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
+    }
+
+    private void sendExaremePost(Experiment experiment) {
+
+        Model model = experiment.getModel();
+        String algoCode = "WP_LINEAR_REGRESSION";
+
+        LinkedList<ExaremeQueryElement> queryElements = new LinkedList<>();
+        for (Variable var : model.getQuery().getVariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("variable");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getCovariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("covariables");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getGrouping())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("groupings");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+
+        ExaremeQueryElement tableEl = new ExaremeQueryElement();
+        tableEl.setName("showtable");
+        tableEl.setDesc("");
+        tableEl.setValue("TotalResults");
+        queryElements.add(tableEl);
+
+        ExaremeQueryElement formatEl = new ExaremeQueryElement();
+        formatEl.setName("format");
+        formatEl.setDesc("");
+        formatEl.setValue("True");
+        queryElements.add(formatEl);
+
+        String jsonQuery = new Gson().toJson(queryElements);
+
+        new Thread() {
+            public void run() {
+                try {
+                    String url = miningExaremeQueryUrl + "/" + algoCode;
+                    StringBuilder results = new StringBuilder();
+                    int code = HTTPUtil.sendPost(url, jsonQuery, results);
+
+                    experiment.setResult(results.toString().replace("\0", ""));
+                    experiment.setHasError(code >= 400);
+                    experiment.setHasServerError(code >= 500);
+
+                    if(!isJSONValid(experiment.getResult()))
+                    {
+                        experiment.setResult("Unsupported variables !");
+                    }
+                } catch (Exception e) {
+                    experiment.setHasError(true);
+                    experiment.setHasServerError(true);
+                    experiment.setResult(e.getMessage());
+                }
+
+                experiment.setFinished(new Date());
+
+                try {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    Transaction transaction = session.beginTransaction();
+                    session.update(experiment);
+                    transaction.commit();
+                    session.close();
+                } catch (DataException e) {
+                    throw e;
+                }
+
+            }
+        }.start();
+    }
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JsonParser().parse(test);
+        } catch (JsonParseException jpe)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isExaremeAlgo(Experiment experiment)  {
+        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
+        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
+        return algoCode.equals("glm_exareme");
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
@@ -371,22 +477,22 @@ public class ExperimentApi {
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws Exception {
 
-        URL obj = new URL(listMethodsUrl);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-
-        int respCode = con.getResponseCode();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(respCode == 200 ? con.getInputStream() : con.getErrorStream()));
-
-        String inputLine;
         StringBuilder response = new StringBuilder();
 
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+        int code = HTTPUtil.sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
         }
-        in.close();
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(respCode));
+        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
+
+        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+
+        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+
+        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
     }
 }
