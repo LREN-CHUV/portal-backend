@@ -11,6 +11,13 @@
     <name>backend-services</name>
     <description>Medical Informatics Platform : backend restful services</description>
 
+	<distributionManagement>
+	    <repository>
+	        <id>central</id>
+	        <name>8a59c6752bef-releases</name>
+	        <url>http://hbps1.chuv.ch/artifactory/libs-release-local</url>
+	    </repository>
+	</distributionManagement>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -202,7 +209,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <configuration>
                     <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
                     <encoding>UTF-8</encoding>
@@ -212,22 +219,28 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+			<plugin>
+				<groupId>de.juplo</groupId>
+				<artifactId>hibernate-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<export>false</export>
+					<show>true</show>
+					<format>true</format>
+				</configuration>
+			</plugin>
             <plugin>
-                <groupId>de.juplo</groupId>
-                <artifactId>hibernate4-maven-plugin</artifactId>
-                <version>1.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>export</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
