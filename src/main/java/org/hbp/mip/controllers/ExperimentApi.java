@@ -217,58 +217,32 @@ public class ExperimentApi {
         new Thread() {
             public void run() {
                 try {
-
-                    /* Launch computation */
-
-                    String url = miningExaremeQueryUrl + "/" + algoCode + "/?format=true";
+                    String url = miningExaremeQueryUrl + "/" + algoCode;
                     StringBuilder results = new StringBuilder();
                     int code = HTTPUtil.sendPost(url, jsonQuery, results);
-                    if (code < 200 || code > 299) {
-                        experiment.setHasError(true);
-                        experiment.setHasServerError(true);
-                        experiment.setResult("Exareme returned code : " + code);
-                    }
-
-                    JsonParser parser = new JsonParser();
-                    String key = parser.parse(results.toString()).getAsJsonObject().get("queryKey").getAsString();
-
-                    /* Wait for result */
-
-                    url = miningExaremeQueryUrl + "/" + key + "/status";
-                    double progress = 0;
-
-                    while (progress < 100) {
-                        Thread.sleep(200);
-                        results = new StringBuilder();
-                        code = HTTPUtil.sendPost(url, jsonQuery, results);
-                        if (code < 200 || code > 299) {
-                            experiment.setHasError(true);
-                            experiment.setHasServerError(true);
-                            experiment.setResult("Exareme returned code : " + code);
-                        }
-                        progress = parser.parse(results.toString()).getAsJsonObject().get("status").getAsDouble();
-                    }
-
-                    /* Get result */
-
-                    url = miningExaremeQueryUrl + "/" + key + "/result";
-                    results = new StringBuilder();
-                    code = HTTPUtil.sendPost(url, jsonQuery, results);
 
                     experiment.setResult(results.toString().replace("\0", ""));
                     experiment.setHasError(code >= 400);
                     experiment.setHasServerError(code >= 500);
-
-                } catch (UnknownHostException uhe) {
-                    uhe.printStackTrace();
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(uhe.getMessage());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    experiment.setHasError(true);
+                    experiment.setHasServerError(true);
+                    experiment.setResult(e.getMessage());
                 }
+
+                experiment.setFinished(new Date());
+
+                try {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    Transaction transaction = session.beginTransaction();
+                    session.update(experiment);
+                    transaction.commit();
+                    session.close();
+                } catch (DataException e) {
+                    throw e;
+                }
+
             }
         }.start();
     }
