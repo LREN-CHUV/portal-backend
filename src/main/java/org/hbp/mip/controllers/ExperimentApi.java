@@ -224,8 +224,12 @@ public class ExperimentApi {
                     experiment.setResult(results.toString().replace("\0", ""));
                     experiment.setHasError(code >= 400);
                     experiment.setHasServerError(code >= 500);
+
+                    if(!isJSONValid(experiment.getResult()))
+                    {
+                        experiment.setResult("Unsupported variables !");
+                    }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     experiment.setHasError(true);
                     experiment.setHasServerError(true);
                     experiment.setResult(e.getMessage());
@@ -245,6 +249,16 @@ public class ExperimentApi {
 
             }
         }.start();
+    }
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JsonParser().parse(test);
+        } catch (JsonParseException jpe)
+        {
+            return false;
+        }
+        return true;
     }
 
     private boolean isExaremeAlgo(Experiment experiment)  {
