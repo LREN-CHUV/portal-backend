@@ -192,9 +192,6 @@
                 <executions>
                     <execution>
                         <phase>compile</phase>
-                        <goals>
-                            <goal>export</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
