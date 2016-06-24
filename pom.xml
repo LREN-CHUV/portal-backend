@@ -162,12 +162,6 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.json</include>
-                </includes>
-                <excludes><exclude>**/*.csv</exclude></excludes>
-                <filtering>true</filtering>
             </resource>
         </resources>
 

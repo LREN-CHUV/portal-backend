@@ -155,7 +155,7 @@ public class CSVUtil {
     private static List<String[]> getRows(String filename) {
         List<String[]> rows = new LinkedList<>();
         try {
-            InputStream is = Dataset.class.getClassLoader().getResourceAsStream(filename);
+            InputStream is = CSVUtil.class.getClassLoader().getResourceAsStream(filename);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             String[] firstRow = br.readLine().split(SEPARATOR, -1);  // 1st row -> headers
