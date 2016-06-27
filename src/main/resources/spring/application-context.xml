@@ -15,7 +15,7 @@
 		<constructor-arg value="/login/hbp"></constructor-arg>
 		<property name="authenticationSuccessHandler">
 			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
-				<property name="defaultTargetUrl" value="${frontend.redirect}" />
+				<property name="defaultTargetUrl" value="http://frontend/home" />
 			</bean>
 		</property>
 		<property name="restTemplate">
