@@ -176,6 +176,12 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <properties>
+        <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
+        <asciidoctorj.version>1.5.4</asciidoctorj.version>
+    </properties>
+
     <build>
         <resources>
             <resource>
@@ -232,10 +238,30 @@
                 <version>1.0.0</version>
                 <configuration>
                     <swaggerInput>http://localhost:8080/services/v2/api-docs</swaggerInput>
-                    <outputDir>${project.build.directory}/asciidoc</outputDir>
+                    <outputFile>${project.build.directory}/asciidoc/api</outputFile>
                     <config>
                         <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
                     </config>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-pdf</artifactId>
+                        <version>${asciidoctorj.pdf.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
+                    <backend>pdf</backend>
+                    <attributes>
+                        <toc/>
+                        <idseparator>-</idseparator>
+                    </attributes>
                 </configuration>
             </plugin>
         </plugins>
