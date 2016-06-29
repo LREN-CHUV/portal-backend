@@ -346,9 +346,6 @@ public class ExperimentApi {
             throw e;
         }
 
-        if (experiment == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
@@ -388,9 +385,6 @@ public class ExperimentApi {
             throw e;
         }
 
-        if (experiment == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
