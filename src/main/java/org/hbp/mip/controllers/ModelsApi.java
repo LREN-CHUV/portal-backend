@@ -166,7 +166,7 @@ public class ModelsApi {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String slug = slg.slugify(model.getTitle());
+            String slug = slg != null ? slg.slugify(model.getTitle()) : null;
 
             i = 0;
             do {
@@ -260,45 +260,48 @@ public class ModelsApi {
                 }
             }
 
-            List<Variable> vars = new LinkedList<>();
-            for (Variable var : q.getVariables()) {
-                Variable v = new Variable();
-                v.setCode(var.getCode());
-                vars.add(v);
+            if(q != null) {
+
+                List<Variable> vars = new LinkedList<>();
+                for (Variable var : q.getVariables()) {
+                    Variable v = new Variable();
+                    v.setCode(var.getCode());
+                    vars.add(v);
+                }
+
+                List<Variable> covs = new LinkedList<>();
+                for (Variable cov : q.getCovariables()) {
+                    Variable v = new Variable();
+                    v.setCode(cov.getCode());
+                    covs.add(v);
+                }
+
+                List<Variable> grps = new LinkedList<>();
+                for (Variable grp : q.getGrouping()) {
+                    Variable v = new Variable();
+                    v.setCode(grp.getCode());
+                    grps.add(v);
+                }
+
+                List<Filter> fltrs = new LinkedList<>();
+                for (Filter fltr : q.getFilters()) {
+                    Filter f = new Filter();
+                    f.setId(fltr.getId());
+                    f.setOperator(fltr.getOperator());
+                    f.setValues(fltr.getValues());
+                    f.setVariable(fltr.getVariable());
+                    fltrs.add(f);
+                }
+
+                org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
+                myQuery.setId(q.getId());
+                myQuery.setVariables(vars);
+                myQuery.setCovariables(covs);
+                myQuery.setGrouping(grps);
+                myQuery.setFilters(fltrs);
+
+                model.setQuery(myQuery);
             }
-
-            List<Variable> covs = new LinkedList<>();
-            for (Variable cov : q.getCovariables()) {
-                Variable v = new Variable();
-                v.setCode(cov.getCode());
-                covs.add(v);
-            }
-
-            List<Variable> grps = new LinkedList<>();
-            for (Variable grp : q.getGrouping()) {
-                Variable v = new Variable();
-                v.setCode(grp.getCode());
-                grps.add(v);
-            }
-
-            List<Filter> fltrs = new LinkedList<>();
-            for (Filter fltr : q.getFilters()) {
-                Filter f = new Filter();
-                f.setId(fltr.getId());
-                f.setOperator(fltr.getOperator());
-                f.setValues(fltr.getValues());
-                f.setVariable(fltr.getVariable());
-                fltrs.add(f);
-            }
-
-            org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
-            myQuery.setId(q.getId());
-            myQuery.setVariables(vars);
-            myQuery.setCovariables(covs);
-            myQuery.setGrouping(grps);
-            myQuery.setFilters(fltrs);
-
-            model.setQuery(myQuery);
 
             Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
             model.setDataset(ds);
