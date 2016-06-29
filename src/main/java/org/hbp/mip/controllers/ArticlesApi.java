@@ -134,7 +134,7 @@ public class ArticlesApi {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String slug = slg != null ? slg.slugify(article.getTitle()) : null;
+            String slug = slg != null ? slg.slugify(article.getTitle()) : "";
 
             i = 0;
             do {

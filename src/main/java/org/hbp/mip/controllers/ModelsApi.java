@@ -161,12 +161,13 @@ public class ModelsApi {
             } while(count > 0);
 
             Slugify slg = null;
+            String slug = "";
             try {
                 slg = new Slugify();
+                slug = slg.slugify(model.getTitle());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String slug = slg != null ? slg.slugify(model.getTitle()) : null;
 
             i = 0;
             do {
