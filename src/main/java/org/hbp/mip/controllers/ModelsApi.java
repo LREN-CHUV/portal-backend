@@ -6,6 +6,7 @@ package org.hbp.mip.controllers;
 
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
 import org.hbp.mip.utils.CSVUtil;
@@ -27,6 +28,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/models", description = "the models API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
+
+    private Logger logger = Logger.getLogger(this.getClass());
 
     @Autowired
     MIPApplication mipApplication;
@@ -166,7 +169,7 @@ public class ModelsApi {
                 slg = new Slugify();
                 slug = slg.slugify(model.getTitle());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.trace(e);
             }
 
             i = 0;

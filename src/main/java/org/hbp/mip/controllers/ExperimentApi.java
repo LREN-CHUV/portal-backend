@@ -2,6 +2,7 @@ package org.hbp.mip.controllers;
 
 import com.google.gson.*;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
 import org.hbp.mip.utils.HTTPUtil;
@@ -33,6 +34,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/experiments", description = "the experiments API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
+
+    private Logger logger = Logger.getLogger(this.getClass());
 
     private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
@@ -69,7 +72,7 @@ public class ExperimentApi {
                     // create query
                     try {
                         con.setRequestMethod("POST");
-                    } catch (ProtocolException pe) {} // ignore; won't happen
+                    } catch (ProtocolException pe) { logger.trace(pe); } // ignore; won't happen
                     con.addRequestProperty("Content-Type", "application/json");
                     con.setRequestProperty("Content-Length", Integer.toString(query.length()));
                     con.setFollowRedirects(true);
@@ -99,6 +102,8 @@ public class ExperimentApi {
 
                 } catch (IOException ioe) {
                     // write error to
+                    logger.trace(ioe);
+                    logger.warn("Experiment failed to run properly !");
                     experiment.setHasError(true);
                     experiment.setHasServerError(true);
                     experiment.setResult(ioe.getMessage());
@@ -153,7 +158,8 @@ public class ExperimentApi {
             {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            logger.trace(e);
+            logger.warn("Cannot create experiment to run ! This is probably caused by a bad request !");
             // 400 here probably
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -167,7 +173,7 @@ public class ExperimentApi {
             {
                 sendPost(experiment);
             }
-        } catch (MalformedURLException mue) {} // ignore
+        } catch (MalformedURLException mue) { logger.trace(mue.getMessage()); } // ignore
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
@@ -233,6 +239,8 @@ public class ExperimentApi {
                         experiment.setResult("Unsupported variables !");
                     }
                 } catch (Exception e) {
+                    logger.trace(e);
+                    logger.warn("Failed to run Exareme algorithm !");
                     experiment.setHasError(true);
                     experiment.setHasServerError(true);
                     experiment.setResult(e.getMessage());
@@ -259,6 +267,7 @@ public class ExperimentApi {
             new JsonParser().parse(test);
         } catch (JsonParseException jpe)
         {
+            logger.trace(jpe); // This is the normal behavior when the input string is not JSON-ified
             return false;
         }
         return true;
@@ -280,6 +289,8 @@ public class ExperimentApi {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
+            logger.trace(iae);
+            logger.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
@@ -318,6 +329,8 @@ public class ExperimentApi {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
+            logger.trace(iae);
+            logger.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
@@ -357,6 +370,8 @@ public class ExperimentApi {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
+            logger.trace(iae);
+            logger.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 

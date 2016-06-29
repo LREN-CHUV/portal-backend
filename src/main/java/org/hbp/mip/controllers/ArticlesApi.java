@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
@@ -30,6 +31,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/articles", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {
+
+    private Logger logger = Logger.getLogger(this.getClass());
 
     @Autowired
     MIPApplication mipApplication;
@@ -132,7 +135,7 @@ public class ArticlesApi {
             try {
                 slg = new Slugify();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.trace(e);
             }
             String slug = slg != null ? slg.slugify(article.getTitle()) : "";
 
