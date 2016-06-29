@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import org.apache.log4j.Logger;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.CORSFilter;
 import org.hbp.mip.utils.HibernateUtil;
@@ -91,6 +92,8 @@ import java.security.Principal;
 @EnableSwagger2
 @Api(value = "/", description = "MIP API")
 public class MIPApplication extends WebSecurityConfigurerAdapter {
+
+    private Logger logger = Logger.getLogger(this.getClass());
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
@@ -181,9 +184,9 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             cookie.setPath("/");
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.trace(e);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.trace(e);
         }
         return principal;
     }

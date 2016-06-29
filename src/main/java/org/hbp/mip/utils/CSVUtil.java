@@ -1,5 +1,6 @@
 package org.hbp.mip.utils;
 
+import org.apache.log4j.Logger;
 import org.hbp.mip.model.Dataset;
 import org.hbp.mip.model.Query;
 import org.hbp.mip.model.Variable;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
  */
 public class CSVUtil {
 
+    private static Logger logger = Logger.getLogger(CSVUtil.class);
+
     private static final String SEPARATOR = ",";
 
     public static Dataset parseValues(String filename, Query query)
@@ -26,7 +29,7 @@ public class CSVUtil {
         List<String[]> rows = getRows(filename);
 
         Dataset result = new Dataset();
-        String code = GenerateDSCode(query);
+        String code = generateDSCode(query);
         Date date = new Date();
         List<String> header = new LinkedList<>();
         List<String> grouping = new LinkedList<>();
@@ -140,7 +143,7 @@ public class CSVUtil {
                 data.put(c, ll);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.trace(e);
         }
         result.setCode(code);
         result.setDate(date);
@@ -167,7 +170,8 @@ public class CSVUtil {
             isr.close();
             is.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.trace(e);
+            logger.warn("A problem occured while trying to read a CSV file !");
         }
 
         return rows;
@@ -181,7 +185,7 @@ public class CSVUtil {
         return -1;
     }
 
-    private static String GenerateDSCode(Query query) {
+    private static String generateDSCode(Query query) {
         String prefix = "DS";
         String queryStr = Integer.toString(query.hashCode());
         String memId;
