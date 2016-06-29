@@ -149,7 +149,10 @@ public class ExperimentApi {
             transaction.commit();
 
         } catch (Exception e) {
-            transaction.rollback();
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
             e.printStackTrace();
             // 400 here probably
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -291,7 +294,10 @@ public class ExperimentApi {
             session.getTransaction().commit();
         } catch (Exception e) {
             // 404 here probably
-            session.getTransaction().rollback();
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
             throw e;
         }
 
@@ -333,7 +339,10 @@ public class ExperimentApi {
             transaction.commit();
         } catch (Exception e) {
             // 404 here probably
-            transaction.rollback();
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
             throw e;
         }
 
@@ -372,7 +381,10 @@ public class ExperimentApi {
             transaction.commit();
         } catch (Exception e) {
             // 404 here probably
-            transaction.rollback();
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
             throw e;
         }
 
@@ -442,7 +454,10 @@ public class ExperimentApi {
             // 404 here probably
             throw e;
         } finally {
-            session.getTransaction().rollback();
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
         }
 
         return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
