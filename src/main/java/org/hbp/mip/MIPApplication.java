@@ -222,7 +222,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/frontend/**", "/webjars/**").permitAll()
+                .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint("/login/hbp"))
                 .and().logout().logoutSuccessUrl("/login/hbp").permitAll()
