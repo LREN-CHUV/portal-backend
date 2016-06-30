@@ -166,11 +166,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         try {
             String userJSON = mapper.writeValueAsString(getUser());
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
+            cookie.setSecure(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-        } catch (JsonProcessingException e) {
-            LOGGER.trace(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
             LOGGER.trace(e);
         }
         return principal;

@@ -180,6 +180,9 @@
         <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
+        <sonar.host.url>http://dockerhost:9000</sonar.host.url>
+        <sonar.projectName>MIP Backend</sonar.projectName>
+        <sonar.sources>src/main/java/</sonar.sources>
     </properties>
 
     <build>
@@ -263,6 +266,11 @@
                         <idseparator>-</idseparator>
                     </attributes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.0.1</version>
             </plugin>
         </plugins>
     </build>

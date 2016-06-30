@@ -26,12 +26,12 @@ public class Article {
 
     @NotNull
     @Size(min = 1, max = 255)
-    private String title = null;
+    private String title;
 
     private String status = null;
 
-    @Column(columnDefinition = "text")
-    private String _abstract = null;
+    @Column(columnDefinition = "text", name = "abstract")
+    private String abstractText = null;
 
     @Column(columnDefinition = "text")
     private String content = null;
@@ -58,6 +58,7 @@ public class Article {
         /*
         *  Empty constructor is needed by Hibernate
         */
+        title = "";
     }
 
 
@@ -90,11 +91,11 @@ public class Article {
 
     @JsonProperty("abstract")
     public String getAbstract() {
-        return _abstract;
+        return abstractText;
     }
 
-    public void setAbstract(String _abstract) {
-        this._abstract = _abstract;
+    public void setAbstract(String abstractText) {
+        this.abstractText = abstractText;
     }
 
 
