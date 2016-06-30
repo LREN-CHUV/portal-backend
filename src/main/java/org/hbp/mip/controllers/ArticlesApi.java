@@ -60,11 +60,6 @@ public class ArticlesApi {
         else
         {
             queryString += " AND (status='published' or u.username= :username)";
-            if(team != null && team)
-            {
-                // TODO: decide if this is needed
-                //queryString += " AND u.team= :team";
-            }
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -102,7 +97,7 @@ public class ArticlesApi {
         User user = mipApplication.getUser();
 
         article.setCreatedAt(new Date());
-        if (article.getStatus().equals("published")) {
+        if ("published".equals(article.getStatus())) {
             article.setPublishedAt(new Date());
         }
         article.setCreatedBy(user);
@@ -131,13 +126,7 @@ public class ArticlesApi {
                 }
             } while(count > 0);
 
-            Slugify slg = null;
-            try {
-                slg = new Slugify();
-            } catch (IOException e) {
-                LOGGER.trace(e);
-            }
-            String slug = slg != null ? slg.slugify(article.getTitle()) : "";
+            String slug = new Slugify().slugify(article.getTitle());
 
             i = 0;
             do {
@@ -159,8 +148,9 @@ public class ArticlesApi {
 
             session.save(article);
             session.getTransaction().commit();
-        } catch (Exception e)
-        {
+        } catch (IOException e) {
+        LOGGER.trace(e);
+        } catch (Exception e) {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
@@ -194,7 +184,7 @@ public class ArticlesApi {
 
             session.getTransaction().commit();
 
-            if (!article.getStatus().equals("published") && !article.getCreatedBy().getUsername().equals(user.getUsername()))
+            if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
             {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }

@@ -60,11 +60,6 @@ public class ModelsApi {
         else
         {
             queryString += " AND (m.valid=true or u.username= :username)";
-            if(team != null && team)
-            {
-                // TODO: decide if this is needed
-                //queryString += " AND u.team= :team";
-            }
         }
 
         queryString += " ORDER BY m.createdAt DESC";
@@ -95,7 +90,7 @@ public class ModelsApi {
         }
 
         for(Model model:models){
-            String ds_code = model.getDataset().getCode();
+            String dsCode = model.getDataset().getCode();
 
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             Dataset dataset = null;
@@ -103,7 +98,7 @@ public class ModelsApi {
                 session.beginTransaction();
                 dataset = (Dataset) session
                         .createQuery("from Dataset where code= :code")
-                        .setString("code", ds_code)
+                        .setString("code", dsCode)
                         .uniqueResult();
                 session.getTransaction().commit();
             } catch (Exception e)
@@ -163,14 +158,7 @@ public class ModelsApi {
                 }
             } while(count > 0);
 
-            Slugify slg = null;
-            String slug = "";
-            try {
-                slg = new Slugify();
-                slug = slg.slugify(model.getTitle());
-            } catch (IOException e) {
-                LOGGER.trace(e);
-            }
+            String slug = new Slugify().slugify(model.getTitle());
 
             i = 0;
             do {
@@ -196,6 +184,8 @@ public class ModelsApi {
 
             session.save(model);
             session.getTransaction().commit();
+        } catch (IOException e) {
+            LOGGER.trace(e);
         } catch (Exception e)
         {
             if(session.getTransaction() != null)
@@ -219,7 +209,6 @@ public class ModelsApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
-        Query query;
 
         try {
             session.beginTransaction();
@@ -387,41 +376,7 @@ public class ModelsApi {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @ApiOperation(value = "Copy a model", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Model copied"), @ApiResponse(code = 404, message = "Not found") })
-    @RequestMapping(value = "/{slug}/copies", method = RequestMethod.POST)
-    public ResponseEntity<Model> copyAModel(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model
-    )  {
-
-        User user = mipApplication.getUser();
-
-        String originalSlug = model.getSlug();
-        String copySlug;
-        do {
-            copySlug = originalSlug+" copy_"+randomStr(20);
-        } while (getAModel(copySlug) == null);
-        model.setSlug(copySlug);
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
-            session.beginTransaction();
-            session.save(model);
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.CREATED).ok(model);
-    }
-
-    private String randomStr(int length) {
+    private static String randomStr(int length) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
         StringBuilder sb = new StringBuilder();
         Random random = new Random();

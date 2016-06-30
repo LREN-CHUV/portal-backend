@@ -55,6 +55,9 @@ public class Article {
 
 
     public Article() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

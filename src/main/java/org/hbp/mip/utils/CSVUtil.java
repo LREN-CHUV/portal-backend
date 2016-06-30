@@ -24,6 +24,12 @@ public class CSVUtil {
 
     private static final String SEPARATOR = ",";
 
+    private CSVUtil()
+    {
+        /* Hide implicit public constructor */
+        throw new IllegalAccessError("CSVUtil class");
+    }
+
     public static Dataset parseValues(String filename, Query query)
     {
         List<String[]> rows = getRows(filename);

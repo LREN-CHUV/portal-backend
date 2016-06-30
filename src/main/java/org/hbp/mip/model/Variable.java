@@ -59,6 +59,9 @@ public class Variable {
 
 
     public Variable() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

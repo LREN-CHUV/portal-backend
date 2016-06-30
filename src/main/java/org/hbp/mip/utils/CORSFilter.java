@@ -18,7 +18,11 @@ public class CORSFilter implements Filter {
         chain.doFilter(req, res);
     }
 
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+        /* Nothing to do */
+    }
 
-    public void destroy() {}
+    public void destroy() {
+        /* Nothing to do */
+    }
 }

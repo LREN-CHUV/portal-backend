@@ -34,6 +34,9 @@ public class Filter {
 
 
     public Filter() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

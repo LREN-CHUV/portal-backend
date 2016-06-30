@@ -78,6 +78,9 @@ public class Experiment {
     private boolean resultsViewed = false;
 
     public Experiment() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
     public String computeQuery() {

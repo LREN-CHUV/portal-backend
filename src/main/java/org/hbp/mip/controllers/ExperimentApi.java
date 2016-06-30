@@ -62,44 +62,21 @@ public class ExperimentApi {
 
         // this runs in the background. For future optimization: use a thread pool
         new Thread() {
+            @Override
             public void run() {
                 try {
-                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
                     String query = experiment.computeQuery();
-                    System.out.println("Running experiment: " + query);
-
-                    // create query
-                    try {
-                        con.setRequestMethod("POST");
-                    } catch (ProtocolException pe) { LOGGER.trace(pe); } // ignore; won't happen
-                    con.addRequestProperty("Content-Type", "application/json");
-                    con.setRequestProperty("Content-Length", Integer.toString(query.length()));
-                    con.setFollowRedirects(true);
-                    con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
-
-                    // write body of query
-                    con.setDoOutput(true);
-                    DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-                    wr.write(query.getBytes("UTF8"));
-                    wr.flush();
-                    wr.close();
-
-                    // get response
-                    InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine + '\n');
-                    }
-                    in.close();
+                    HttpURLConnection con = createConnection(obj, query);
+                    writeQueryBody(con, query);
+                    String response = readResponse(con);
 
                     // write to experiment
-                    experiment.setResult(response.toString().replace("\0", ""));
+                    experiment.setResult(response.replace("\0", ""));
                     experiment.setHasError(con.getResponseCode() >= 400);
                     experiment.setHasServerError(con.getResponseCode() >= 500);
 
+                } catch (ProtocolException pe) {
+                    LOGGER.trace(pe);
                 } catch (IOException ioe) {
                     // write error to
                     LOGGER.trace(ioe);
@@ -124,6 +101,36 @@ public class ExperimentApi {
 
             }
         }.start();
+    }
+
+    private static String readResponse(HttpURLConnection con) throws IOException {
+        InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine + '\n');
+        }
+        in.close();
+        return response.toString();
+    }
+
+    private static void writeQueryBody(HttpURLConnection con, String query) throws IOException {
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.write(query.getBytes("UTF8"));
+        wr.flush();
+        wr.close();
+    }
+
+    private static HttpURLConnection createConnection(URL url, String query) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.addRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Content-Length", Integer.toString(query.length()));
+        con.setInstanceFollowRedirects(true);
+        con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
+        con.setDoOutput(true);
+        return con;
     }
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -183,7 +190,7 @@ public class ExperimentApi {
         Model model = experiment.getModel();
         String algoCode = "WP_LINEAR_REGRESSION";
 
-        LinkedList<ExaremeQueryElement> queryElements = new LinkedList<>();
+        List<ExaremeQueryElement> queryElements = new LinkedList<>();
         for (Variable var : model.getQuery().getVariables())
         {
             ExaremeQueryElement el = new ExaremeQueryElement();
@@ -224,6 +231,7 @@ public class ExperimentApi {
         String jsonQuery = new Gson().toJson(queryElements);
 
         new Thread() {
+            @Override
             public void run() {
                 try {
                     String url = miningExaremeQueryUrl + "/" + algoCode;
@@ -276,7 +284,7 @@ public class ExperimentApi {
     private boolean isExaremeAlgo(Experiment experiment)  {
         JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
         String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
-        return algoCode.equals("glm_exareme");
+        return "glm_exareme".equals(algoCode);
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
@@ -436,7 +444,7 @@ public class ExperimentApi {
 
             baseQuery += mine ? "e.createdBy = :user" : "(e.createdBy = :user OR e.shared is true)";
 
-            if (modelSlug == null || modelSlug.equals("")) {
+            if (modelSlug == null || "".equals(modelSlug)) {
                 hibernateQuery = session.createQuery(baseQuery);
             } else {
                 hibernateQuery = session.createQuery(baseQuery + " AND e.model.slug = :slug");
@@ -489,7 +497,7 @@ public class ExperimentApi {
         @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
     ) {
 
-        if (maxResultCount <= 0 && (modelSlug == null || modelSlug.equals(""))) {
+        if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
             return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
         }
 
@@ -499,7 +507,7 @@ public class ExperimentApi {
     @ApiOperation(value = "List available methods and validations", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity<String> listAvailableMethodsAndValidations() throws Exception {
+    public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
 
         StringBuilder response = new StringBuilder();
 
