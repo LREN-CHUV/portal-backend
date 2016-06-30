@@ -32,6 +32,9 @@ public class Group {
 
 
     public Group() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 
@@ -68,17 +71,6 @@ public class Group {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
-    }
-
-
-    public Group clone()
-    {
-        Group g = new Group();
-        g.setCode(this.getCode());
-        g.setLabel(this.getLabel());
-        g.setParent(this.getParent());
-        g.setGroups(this.getGroups());
-        return g;
     }
 
 }

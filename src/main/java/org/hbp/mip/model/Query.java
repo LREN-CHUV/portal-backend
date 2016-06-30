@@ -52,6 +52,9 @@ public class Query {
 
 
     public Query() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

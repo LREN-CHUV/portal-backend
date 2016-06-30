@@ -22,6 +22,9 @@ public class Tag {
 
 
     public Tag() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

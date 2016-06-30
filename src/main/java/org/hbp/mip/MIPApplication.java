@@ -3,21 +3,6 @@
  * Based on gregturn code at : 'https://github.com/spring-guides/tut-spring-boot-oauth2'.
  */
 
-/*
- * Copyright 2012-2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.hbp.mip;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -93,7 +78,7 @@ import java.security.Principal;
 @Api(value = "/", description = "MIP API")
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(MIPApplication.class);
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
@@ -184,9 +169,9 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             cookie.setPath("/");
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
-            logger.trace(e);
+            LOGGER.trace(e);
         } catch (UnsupportedEncodingException e) {
-            logger.trace(e);
+            LOGGER.trace(e);
         }
         return principal;
     }
@@ -277,8 +262,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-        HttpSessionCsrfTokenRepository repository = httpSessionCsrfTokenRepository;
-        return repository;
+        return httpSessionCsrfTokenRepository;
     }
 
 }

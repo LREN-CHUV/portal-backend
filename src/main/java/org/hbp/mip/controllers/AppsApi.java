@@ -33,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/apps", description = "the apps API")
 public class AppsApi {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(AppsApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -109,7 +109,7 @@ public class AppsApi {
         }
         catch (ConstraintViolationException cve)
         {
-            logger.trace(cve);
+            LOGGER.trace(cve);
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
@@ -118,7 +118,7 @@ public class AppsApi {
         }
         catch (NonUniqueObjectException nuoe)
         {
-            logger.trace(nuoe);
+            LOGGER.trace(nuoe);
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();

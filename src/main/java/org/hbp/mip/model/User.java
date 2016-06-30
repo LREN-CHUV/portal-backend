@@ -88,6 +88,9 @@ public class User {
 
 
     public User() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 
@@ -133,7 +136,7 @@ public class User {
         p = Pattern.compile("title=([\\w ]+)");
         m = p.matcher(userInfo);
         if (m.find()) {
-            if (m.group(1).equals("Mr")) {
+            if ("Mr".equals(m.group(1))) {
                 this.gender = "Male";
             } else {
                 this.gender = "Female";

@@ -41,6 +41,9 @@ public class Config {
 
 
     public Config() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 
