@@ -96,6 +96,7 @@ public class ExperimentApi {
                     transaction.commit();
                     session.close();
                 } catch (DataException e) {
+                    LOGGER.trace(e);
                     throw e;
                 }
 
@@ -263,6 +264,7 @@ public class ExperimentApi {
                     transaction.commit();
                     session.close();
                 } catch (DataException e) {
+                    LOGGER.trace(e);
                     throw e;
                 }
 
@@ -447,7 +449,8 @@ public class ExperimentApi {
             if (modelSlug == null || "".equals(modelSlug)) {
                 hibernateQuery = session.createQuery(baseQuery);
             } else {
-                hibernateQuery = session.createQuery(baseQuery + " AND e.model.slug = :slug");
+                baseQuery += " AND e.model.slug = :slug";
+                hibernateQuery = session.createQuery(baseQuery);
                 hibernateQuery.setParameter("slug", modelSlug);
             }
             hibernateQuery.setParameter("user", user);
@@ -469,6 +472,7 @@ public class ExperimentApi {
             }
         } catch (Exception e) {
             // 404 here probably
+            LOGGER.trace(e);
             throw e;
         } finally {
             if(session.getTransaction() != null)
