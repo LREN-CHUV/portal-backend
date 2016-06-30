@@ -93,7 +93,7 @@ import java.security.Principal;
 @Api(value = "/", description = "MIP API")
 public class MIPApplication extends WebSecurityConfigurerAdapter {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(MIPApplication.class);
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
@@ -184,9 +184,9 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
             cookie.setPath("/");
             response.addCookie(cookie);
         } catch (JsonProcessingException e) {
-            logger.trace(e);
+            LOGGER.trace(e);
         } catch (UnsupportedEncodingException e) {
-            logger.trace(e);
+            LOGGER.trace(e);
         }
         return principal;
     }

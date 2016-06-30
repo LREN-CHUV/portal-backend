@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class CSVUtil {
 
-    private static Logger logger = Logger.getLogger(CSVUtil.class);
+    private static final Logger LOGGER = Logger.getLogger(CSVUtil.class);
 
     private static final String SEPARATOR = ",";
 
@@ -143,7 +143,7 @@ public class CSVUtil {
                 data.put(c, ll);
             }
         } catch (IOException e) {
-            logger.trace(e);
+            LOGGER.trace(e);
         }
         result.setCode(code);
         result.setDate(date);
@@ -170,8 +170,8 @@ public class CSVUtil {
             isr.close();
             is.close();
         } catch (IOException e) {
-            logger.trace(e);
-            logger.warn("A problem occured while trying to read a CSV file !");
+            LOGGER.trace(e);
+            LOGGER.warn("A problem occured while trying to read a CSV file !");
         }
 
         return rows;

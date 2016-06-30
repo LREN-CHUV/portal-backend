@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -169,7 +169,7 @@ public class ModelsApi {
                 slg = new Slugify();
                 slug = slg.slugify(model.getTitle());
             } catch (IOException e) {
-                logger.trace(e);
+                LOGGER.trace(e);
             }
 
             i = 0;

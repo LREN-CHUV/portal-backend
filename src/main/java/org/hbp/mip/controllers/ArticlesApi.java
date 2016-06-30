@@ -32,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -135,7 +135,7 @@ public class ArticlesApi {
             try {
                 slg = new Slugify();
             } catch (IOException e) {
-                logger.trace(e);
+                LOGGER.trace(e);
             }
             String slug = slg != null ? slg.slugify(article.getTitle()) : "";
 
