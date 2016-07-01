@@ -4,13 +4,15 @@ import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
-import org.hbp.mip.model.*;
+import org.hbp.mip.model.Experiment;
+import org.hbp.mip.model.Model;
+import org.hbp.mip.model.User;
 import org.hbp.mip.utils.HTTPUtil;
 import org.hbp.mip.utils.HibernateUtil;
+import org.hbp.mip.utils.JSONUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.*;
-import java.util.Date;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +49,8 @@ public class ExperimentApi {
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
+    private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
+
     @Value("#{'${workflow.experimentUrl:http://dockerhost:8087/experiment}'}")
     private String experimentUrl;
 
@@ -57,82 +63,6 @@ public class ExperimentApi {
     @Autowired
     MIPApplication mipApplication;
 
-    private void sendPost(Experiment experiment) throws MalformedURLException {
-        URL obj = new URL(experimentUrl);
-
-        // this runs in the background. For future optimization: use a thread pool
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String query = experiment.computeQuery();
-                    HttpURLConnection con = createConnection(obj, query);
-                    writeQueryBody(con, query);
-                    String response = readResponse(con);
-
-                    // write to experiment
-                    experiment.setResult(response.replace("\0", ""));
-                    experiment.setHasError(con.getResponseCode() >= 400);
-                    experiment.setHasServerError(con.getResponseCode() >= 500);
-
-                } catch (ProtocolException pe) {
-                    LOGGER.trace(pe);
-                } catch (IOException ioe) {
-                    // write error to
-                    LOGGER.trace(ioe);
-                    LOGGER.warn("Experiment failed to run properly !");
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(ioe.getMessage());
-                }
-
-                experiment.setFinished(new Date());
-
-                // finally
-                try {
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    Transaction transaction = session.beginTransaction();
-                    session.update(experiment);
-                    transaction.commit();
-                    session.close();
-                } catch (DataException e) {
-                    LOGGER.trace(e);
-                    throw e;
-                }
-
-            }
-        }.start();
-    }
-
-    private static String readResponse(HttpURLConnection con) throws IOException {
-        InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine + '\n');
-        }
-        in.close();
-        return response.toString();
-    }
-
-    private static void writeQueryBody(HttpURLConnection con, String query) throws IOException {
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.write(query.getBytes("UTF8"));
-        wr.flush();
-        wr.close();
-    }
-
-    private static HttpURLConnection createConnection(URL url, String query) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.addRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Content-Length", Integer.toString(query.length()));
-        con.setInstanceFollowRedirects(true);
-        con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
-        con.setDoOutput(true);
-        return con;
-    }
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -175,125 +105,21 @@ public class ExperimentApi {
         try {
             if(isExaremeAlgo(experiment))
             {
-                sendExaremePost(experiment);
+                sendExaremeExperiment(experiment);
             }
             else
             {
-                sendPost(experiment);
+                sendExperiment(experiment);
             }
         } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
-    private void sendExaremePost(Experiment experiment) {
-
-        Model model = experiment.getModel();
-        String algoCode = "WP_LINEAR_REGRESSION";
-
-        List<ExaremeQueryElement> queryElements = new LinkedList<>();
-        for (Variable var : model.getQuery().getVariables())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("variable");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-        for (Variable var : model.getQuery().getCovariables())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("covariables");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-        for (Variable var : model.getQuery().getGrouping())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("groupings");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-
-        ExaremeQueryElement tableEl = new ExaremeQueryElement();
-        tableEl.setName("showtable");
-        tableEl.setDesc("");
-        tableEl.setValue("TotalResults");
-        queryElements.add(tableEl);
-
-        ExaremeQueryElement formatEl = new ExaremeQueryElement();
-        formatEl.setName("format");
-        formatEl.setDesc("");
-        formatEl.setValue("True");
-        queryElements.add(formatEl);
-
-        String jsonQuery = new Gson().toJson(queryElements);
-
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String url = miningExaremeQueryUrl + "/" + algoCode;
-                    StringBuilder results = new StringBuilder();
-                    int code = HTTPUtil.sendPost(url, jsonQuery, results);
-
-                    experiment.setResult(results.toString().replace("\0", ""));
-                    experiment.setHasError(code >= 400);
-                    experiment.setHasServerError(code >= 500);
-
-                    if(!isJSONValid(experiment.getResult()))
-                    {
-                        experiment.setResult("Unsupported variables !");
-                    }
-                } catch (Exception e) {
-                    LOGGER.trace(e);
-                    LOGGER.warn("Failed to run Exareme algorithm !");
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(e.getMessage());
-                }
-
-                experiment.setFinished(new Date());
-
-                try {
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    Transaction transaction = session.beginTransaction();
-                    session.update(experiment);
-                    transaction.commit();
-                    session.close();
-                } catch (DataException e) {
-                    LOGGER.trace(e);
-                    throw e;
-                }
-
-            }
-        }.start();
-    }
-
-    public boolean isJSONValid(String test) {
-        try {
-            new JsonParser().parse(test);
-        } catch (JsonParseException jpe)
-        {
-            LOGGER.trace(jpe); // This is the normal behavior when the input string is not JSON-ified
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isExaremeAlgo(Experiment experiment)  {
-        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
-        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
-        return "glm_exareme".equals(algoCode);
-    }
-
     @ApiOperation(value = "get an experiment", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
-
         Experiment experiment;
         UUID experimentUuid;
         try {
@@ -372,8 +198,132 @@ public class ExperimentApi {
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
+    @ApiOperation(value = "get an experiment", response = Experiment.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
+    public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        return doMarkExperimentAsShared(uuid, true);
+    }
 
+    @ApiOperation(value = "get an experiment", response = Experiment.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
+    public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        return doMarkExperimentAsShared(uuid, false);
+    }
+
+    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
+    public ResponseEntity<String> listExperiments(
+            @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
+    ) {
+        return doListExperiments(true, maxResultCount, null);
+    }
+
+    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
+    public ResponseEntity<String> listExperiments(
+            @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
+            @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
+    ) {
+
+        if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
+            return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
+        }
+
+        return doListExperiments(false, maxResultCount, modelSlug);
+    }
+
+    @ApiOperation(value = "List available methods and validations", response = String.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(path = "/methods", method = RequestMethod.GET)
+    public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
+
+        StringBuilder response = new StringBuilder();
+
+        int code = HTTPUtil.sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+        }
+
+        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
+
+        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+
+        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+
+        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+    }
+
+    private void sendExperiment(Experiment experiment) throws MalformedURLException {
+        URL obj = new URL(experimentUrl);
+
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String query = experiment.computeQuery();
+                    HttpURLConnection con = createConnection(obj, query);
+                    writeQueryBody(con, query);
+                    String response = readResponse(con);
+
+                    // write to experiment
+                    experiment.setResult(response.replace("\0", ""));
+                    experiment.setHasError(con.getResponseCode() >= 400);
+                    experiment.setHasServerError(con.getResponseCode() >= 500);
+
+                } catch (ProtocolException pe) {
+                    LOGGER.trace(pe);
+                } catch (IOException ioe) {
+                    // write error to
+                    LOGGER.trace(ioe);
+                    LOGGER.warn("Experiment failed to run properly !");
+                    experiment.setHasError(true);
+                    experiment.setHasServerError(true);
+                    experiment.setResult(ioe.getMessage());
+                }
+                experiment.finish();
+            }
+        }.start();
+    }
+
+    private void sendExaremeExperiment(Experiment experiment) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String query = experiment.computeExaremeQuery();
+                    String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+                    StringBuilder results = new StringBuilder();
+                    int code = HTTPUtil.sendPost(url, query, results);
+
+                    experiment.setResult(results.toString().replace("\0", ""));
+                    experiment.setHasError(code >= 400);
+                    experiment.setHasServerError(code >= 500);
+
+                    if(!JSONUtil.isJSONValid(experiment.getResult()))
+                    {
+                        experiment.setResult("Unsupported variables !");
+                    }
+                } catch (Exception e) {
+                    LOGGER.trace(e);
+                    LOGGER.warn("Failed to run Exareme algorithm !");
+                    experiment.setHasError(true);
+                    experiment.setHasServerError(true);
+                    experiment.setResult(e.getMessage());
+                }
+                experiment.finish();
+            }
+        }.start();
+    }
+
+    public ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
         Experiment experiment;
         UUID experimentUuid;
         User user = mipApplication.getUser();
@@ -411,21 +361,6 @@ public class ExperimentApi {
         }
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
-    }
-
-
-    @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
-    public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
-        return doMarkExperimentAsShared(uuid, true);
-    }
-
-    @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
-    public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
-        return doMarkExperimentAsShared(uuid, false);
     }
 
     public ResponseEntity<String> doListExperiments(
@@ -484,51 +419,40 @@ public class ExperimentApi {
         return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
-    public ResponseEntity<String> listExperiments(
-        @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
-    ) {
-        return doListExperiments(true, maxResultCount, null);
-    }
-
-    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
-    public ResponseEntity<String> listExperiments(
-        @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
-        @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
-    ) {
-
-        if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
-            return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
-        }
-
-        return doListExperiments(false, maxResultCount, modelSlug);
-    }
-
-    @ApiOperation(value = "List available methods and validations", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
-
+    private static String readResponse(HttpURLConnection con) throws IOException {
+        InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+        String inputLine;
         StringBuilder response = new StringBuilder();
-
-        int code = HTTPUtil.sendGet(listMethodsUrl, response);
-        if (code < 200 || code > 299) {
-            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine + '\n');
         }
-
-        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
-
-        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-
-        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-
-        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+        in.close();
+        return response.toString();
     }
+
+    private static void writeQueryBody(HttpURLConnection con, String query) throws IOException {
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.write(query.getBytes("UTF8"));
+        wr.flush();
+        wr.close();
+    }
+
+    private static HttpURLConnection createConnection(URL url, String query) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.addRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Content-Length", Integer.toString(query.length()));
+        con.setInstanceFollowRedirects(true);
+        con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
+        con.setDoOutput(true);
+        return con;
+    }
+
+    private static boolean isExaremeAlgo(Experiment experiment)  {
+        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
+        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
+        return "glm_exareme".equals(algoCode);
+    }
+
 }
