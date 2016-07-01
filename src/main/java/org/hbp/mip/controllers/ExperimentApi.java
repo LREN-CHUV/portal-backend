@@ -19,11 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
-import java.net.HttpURLConnection;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -260,110 +260,7 @@ public class ExperimentApi {
         return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
     }
 
-    private void sendExperiment(Experiment experiment) throws MalformedURLException {
-        URL obj = new URL(experimentUrl);
-
-        // this runs in the background. For future optimization: use a thread pool
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String query = experiment.computeQuery();
-                    HttpURLConnection con = createConnection(obj, query);
-                    writeQueryBody(con, query);
-                    String response = readResponse(con);
-
-                    // write to experiment
-                    experiment.setResult(response.replace("\0", ""));
-                    experiment.setHasError(con.getResponseCode() >= 400);
-                    experiment.setHasServerError(con.getResponseCode() >= 500);
-
-                } catch (ProtocolException pe) {
-                    LOGGER.trace(pe);
-                } catch (IOException ioe) {
-                    // write error to
-                    LOGGER.trace(ioe);
-                    LOGGER.warn("Experiment failed to run properly !");
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(ioe.getMessage());
-                }
-                experiment.finish();
-            }
-        }.start();
-    }
-
-    private void sendExaremeExperiment(Experiment experiment) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String query = experiment.computeExaremeQuery();
-                    String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
-                    StringBuilder results = new StringBuilder();
-                    int code = HTTPUtil.sendPost(url, query, results);
-
-                    experiment.setResult(results.toString().replace("\0", ""));
-                    experiment.setHasError(code >= 400);
-                    experiment.setHasServerError(code >= 500);
-
-                    if(!JSONUtil.isJSONValid(experiment.getResult()))
-                    {
-                        experiment.setResult("Unsupported variables !");
-                    }
-                } catch (Exception e) {
-                    LOGGER.trace(e);
-                    LOGGER.warn("Failed to run Exareme algorithm !");
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(e.getMessage());
-                }
-                experiment.finish();
-            }
-        }.start();
-    }
-
-    public ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
-        Experiment experiment;
-        UUID experimentUuid;
-        User user = mipApplication.getUser();
-        try {
-            experimentUuid = UUID.fromString(uuid);
-        } catch (IllegalArgumentException iae) {
-            LOGGER.trace(iae);
-            LOGGER.warn("An invalid Experiment UUID was received !");
-            return ResponseEntity.badRequest().body("Invalid Experiment UUID");
-        }
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-
-            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
-            hibernateQuery.setParameter("uuid", experimentUuid);
-            experiment = (Experiment) hibernateQuery.uniqueResult();
-
-            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
-                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
-
-            experiment.setShared(shared);
-            session.update(experiment);
-
-            transaction.commit();
-        } catch (Exception e) {
-            // 404 here probably
-            if(transaction != null)
-            {
-                transaction.rollback();
-            }
-            throw e;
-        }
-
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
-    }
-
-    public ResponseEntity<String> doListExperiments(
+    private ResponseEntity<String> doListExperiments(
             boolean mine,
             int maxResultCount,
             String modelSlug
@@ -419,34 +316,107 @@ public class ExperimentApi {
         return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
     }
 
-    private static String readResponse(HttpURLConnection con) throws IOException {
-        InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine + '\n');
+    private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
+        Experiment experiment;
+        UUID experimentUuid;
+        User user = mipApplication.getUser();
+        try {
+            experimentUuid = UUID.fromString(uuid);
+        } catch (IllegalArgumentException iae) {
+            LOGGER.trace(iae);
+            LOGGER.warn("An invalid Experiment UUID was received !");
+            return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
-        in.close();
-        return response.toString();
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+
+            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
+            hibernateQuery.setParameter("uuid", experimentUuid);
+            experiment = (Experiment) hibernateQuery.uniqueResult();
+
+            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
+                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
+
+            experiment.setShared(shared);
+            session.update(experiment);
+
+            transaction.commit();
+        } catch (Exception e) {
+            // 404 here probably
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
+            throw e;
+        }
+
+        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
-    private static void writeQueryBody(HttpURLConnection con, String query) throws IOException {
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.write(query.getBytes("UTF8"));
-        wr.flush();
-        wr.close();
+    private void sendExperiment(Experiment experiment) throws MalformedURLException {
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread() {
+            @Override
+            public void run() {
+                    String url = experimentUrl;
+                    String query = experiment.computeQuery();
+
+                    // Results are stored in the experiment object
+                try {
+                    executeExperiment(url, query, experiment);
+                } catch (IOException e) {
+                    LOGGER.trace(e);
+                    LOGGER.warn("Experiment failed to run properly !");
+                    setExperimentError(e, experiment);
+                }
+
+                experiment.finish();
+            }
+        }.start();
     }
 
-    private static HttpURLConnection createConnection(URL url, String query) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.addRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Content-Length", Integer.toString(query.length()));
-        con.setInstanceFollowRedirects(true);
-        con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
-        con.setDoOutput(true);
-        return con;
+    private void sendExaremeExperiment(Experiment experiment) {
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread() {
+            @Override
+            public void run() {
+                String query = experiment.computeExaremeQuery();
+                String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+
+                // Results are stored in the experiment object
+                try {
+                    executeExperiment(url, query, experiment);
+                } catch (IOException e) {
+                    LOGGER.trace(e);
+                    LOGGER.warn("Exareme experiment failed to run properly !");
+                    setExperimentError(e, experiment);
+                }
+
+                if(!JSONUtil.isJSONValid(experiment.getResult()))
+                    {
+                        experiment.setResult("Unsupported variables !");
+                    }
+
+                experiment.finish();
+            }
+        }.start();
+    }
+
+    private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
+        StringBuilder results = new StringBuilder();
+        int code = HTTPUtil.sendPost(url, query, results);
+        experiment.setResult(results.toString().replace("\0", ""));
+        experiment.setHasError(code >= 400);
+        experiment.setHasServerError(code >= 500);
+    }
+
+    private static void setExperimentError(IOException e, Experiment experiment) {
+        experiment.setHasError(true);
+        experiment.setHasServerError(true);
+        experiment.setResult(e.getMessage());
     }
 
     private static boolean isExaremeAlgo(Experiment experiment)  {

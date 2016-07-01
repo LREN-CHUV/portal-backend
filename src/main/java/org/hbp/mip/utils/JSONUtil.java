@@ -11,6 +11,11 @@ public class JSONUtil {
 
     private static final Logger LOGGER = Logger.getLogger(JSONUtil.class);
 
+    private JSONUtil() {
+        /* Hide implicit public constructor */
+        throw new IllegalAccessError("JSONUtil class");
+    }
+
     public static boolean isJSONValid(String test) {
         try {
             new JsonParser().parse(test);
