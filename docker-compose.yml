@@ -1,7 +1,10 @@
-backend:
-  container_name: backend
-  build: ./src/docker/run/
-  volumes:
-    - ./target:/opt/portal/target
-  ports:
-    - "8080:8080"
+version: '2'
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./src/docker/run/Dockerfile
+    ports:
+      - "8080:8080"

@@ -1,4 +1,4 @@
 FROM frolvlad/alpine-oraclejdk8:slim
 
-WORKDIR /opt/portal/target
-CMD ["java", "-jar", "backend-services-0.1.0.jar"]
+COPY ./target/backend-services-DOCKER_BUILD.jar backend.jar
+CMD ["java", "-jar", "backend.jar"]
