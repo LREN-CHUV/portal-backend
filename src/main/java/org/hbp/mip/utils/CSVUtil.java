@@ -1,5 +1,6 @@
 package org.hbp.mip.utils;
 
+import org.apache.log4j.Logger;
 import org.hbp.mip.model.Dataset;
 import org.hbp.mip.model.Query;
 import org.hbp.mip.model.Variable;
@@ -19,14 +20,22 @@ import java.util.stream.Collectors;
  */
 public class CSVUtil {
 
+    private static final Logger LOGGER = Logger.getLogger(CSVUtil.class);
+
     private static final String SEPARATOR = ",";
+
+    private CSVUtil()
+    {
+        /* Hide implicit public constructor */
+        throw new IllegalAccessError("CSVUtil class");
+    }
 
     public static Dataset parseValues(String filename, Query query)
     {
         List<String[]> rows = getRows(filename);
 
         Dataset result = new Dataset();
-        String code = GenerateDSCode(query);
+        String code = generateDSCode(query);
         Date date = new Date();
         List<String> header = new LinkedList<>();
         List<String> grouping = new LinkedList<>();
@@ -140,7 +149,7 @@ public class CSVUtil {
                 data.put(c, ll);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.trace(e);
         }
         result.setCode(code);
         result.setDate(date);
@@ -155,7 +164,7 @@ public class CSVUtil {
     private static List<String[]> getRows(String filename) {
         List<String[]> rows = new LinkedList<>();
         try {
-            InputStream is = Dataset.class.getClassLoader().getResourceAsStream(filename);
+            InputStream is = CSVUtil.class.getClassLoader().getResourceAsStream(filename);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             String[] firstRow = br.readLine().split(SEPARATOR, -1);  // 1st row -> headers
@@ -167,7 +176,8 @@ public class CSVUtil {
             isr.close();
             is.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.trace(e);
+            LOGGER.warn("A problem occured while trying to read a CSV file !");
         }
 
         return rows;
@@ -181,7 +191,7 @@ public class CSVUtil {
         return -1;
     }
 
-    private static String GenerateDSCode(Query query) {
+    private static String generateDSCode(Query query) {
         String prefix = "DS";
         String queryStr = Integer.toString(query.hashCode());
         String memId;

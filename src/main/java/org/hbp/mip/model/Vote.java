@@ -33,6 +33,9 @@ public class Vote {
 
 
     public Vote() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

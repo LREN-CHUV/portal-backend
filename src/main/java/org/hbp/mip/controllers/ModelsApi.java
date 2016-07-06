@@ -6,6 +6,7 @@ package org.hbp.mip.controllers;
 
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
 import org.hbp.mip.utils.CSVUtil;
@@ -27,6 +28,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/models", description = "the models API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
+
+    private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -57,11 +60,6 @@ public class ModelsApi {
         else
         {
             queryString += " AND (m.valid=true or u.username= :username)";
-            if(team != null && team)
-            {
-                // TODO: decide if this is needed
-                //queryString += " AND u.team= :team";
-            }
         }
 
         queryString += " ORDER BY m.createdAt DESC";
@@ -92,7 +90,7 @@ public class ModelsApi {
         }
 
         for(Model model:models){
-            String ds_code = model.getDataset().getCode();
+            String dsCode = model.getDataset().getCode();
 
             session = HibernateUtil.getSessionFactory().getCurrentSession();
             Dataset dataset = null;
@@ -100,7 +98,7 @@ public class ModelsApi {
                 session.beginTransaction();
                 dataset = (Dataset) session
                         .createQuery("from Dataset where code= :code")
-                        .setString("code", ds_code)
+                        .setString("code", dsCode)
                         .uniqueResult();
                 session.getTransaction().commit();
             } catch (Exception e)
@@ -160,13 +158,7 @@ public class ModelsApi {
                 }
             } while(count > 0);
 
-            Slugify slg = null;
-            try {
-                slg = new Slugify();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String slug = slg.slugify(model.getTitle());
+            String slug = new Slugify().slugify(model.getTitle());
 
             i = 0;
             do {
@@ -192,6 +184,8 @@ public class ModelsApi {
 
             session.save(model);
             session.getTransaction().commit();
+        } catch (IOException e) {
+            LOGGER.trace(e);
         } catch (Exception e)
         {
             if(session.getTransaction() != null)
@@ -215,7 +209,6 @@ public class ModelsApi {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
-        Query query;
 
         try {
             session.beginTransaction();
@@ -260,45 +253,48 @@ public class ModelsApi {
                 }
             }
 
-            List<Variable> vars = new LinkedList<>();
-            for (Variable var : q.getVariables()) {
-                Variable v = new Variable();
-                v.setCode(var.getCode());
-                vars.add(v);
+            if(q != null) {
+
+                List<Variable> vars = new LinkedList<>();
+                for (Variable var : q.getVariables()) {
+                    Variable v = new Variable();
+                    v.setCode(var.getCode());
+                    vars.add(v);
+                }
+
+                List<Variable> covs = new LinkedList<>();
+                for (Variable cov : q.getCovariables()) {
+                    Variable v = new Variable();
+                    v.setCode(cov.getCode());
+                    covs.add(v);
+                }
+
+                List<Variable> grps = new LinkedList<>();
+                for (Variable grp : q.getGrouping()) {
+                    Variable v = new Variable();
+                    v.setCode(grp.getCode());
+                    grps.add(v);
+                }
+
+                List<Filter> fltrs = new LinkedList<>();
+                for (Filter fltr : q.getFilters()) {
+                    Filter f = new Filter();
+                    f.setId(fltr.getId());
+                    f.setOperator(fltr.getOperator());
+                    f.setValues(fltr.getValues());
+                    f.setVariable(fltr.getVariable());
+                    fltrs.add(f);
+                }
+
+                org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
+                myQuery.setId(q.getId());
+                myQuery.setVariables(vars);
+                myQuery.setCovariables(covs);
+                myQuery.setGrouping(grps);
+                myQuery.setFilters(fltrs);
+
+                model.setQuery(myQuery);
             }
-
-            List<Variable> covs = new LinkedList<>();
-            for (Variable cov : q.getCovariables()) {
-                Variable v = new Variable();
-                v.setCode(cov.getCode());
-                covs.add(v);
-            }
-
-            List<Variable> grps = new LinkedList<>();
-            for (Variable grp : q.getGrouping()) {
-                Variable v = new Variable();
-                v.setCode(grp.getCode());
-                grps.add(v);
-            }
-
-            List<Filter> fltrs = new LinkedList<>();
-            for (Filter fltr : q.getFilters()) {
-                Filter f = new Filter();
-                f.setId(fltr.getId());
-                f.setOperator(fltr.getOperator());
-                f.setValues(fltr.getValues());
-                f.setVariable(fltr.getVariable());
-                fltrs.add(f);
-            }
-
-            org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
-            myQuery.setId(q.getId());
-            myQuery.setVariables(vars);
-            myQuery.setCovariables(covs);
-            myQuery.setGrouping(grps);
-            myQuery.setFilters(fltrs);
-
-            model.setQuery(myQuery);
 
             Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
             model.setDataset(ds);
@@ -380,41 +376,7 @@ public class ModelsApi {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @ApiOperation(value = "Copy a model", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Model copied"), @ApiResponse(code = 404, message = "Not found") })
-    @RequestMapping(value = "/{slug}/copies", method = RequestMethod.POST)
-    public ResponseEntity<Model> copyAModel(
-            @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
-            @RequestBody @ApiParam(value = "Model to update", required = true) Model model
-    )  {
-
-        User user = mipApplication.getUser();
-
-        String originalSlug = model.getSlug();
-        String copySlug;
-        do {
-            copySlug = originalSlug+" copy_"+randomStr(20);
-        } while (getAModel(copySlug) == null);
-        model.setSlug(copySlug);
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
-            session.beginTransaction();
-            session.save(model);
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.CREATED).ok(model);
-    }
-
-    private String randomStr(int length) {
+    private static String randomStr(int length) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
         StringBuilder sb = new StringBuilder();
         Random random = new Random();

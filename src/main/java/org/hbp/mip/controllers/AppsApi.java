@@ -5,6 +5,7 @@
 package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.App;
 import org.hbp.mip.model.User;
@@ -31,6 +32,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/apps", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/apps", description = "the apps API")
 public class AppsApi {
+
+    private static final Logger LOGGER = Logger.getLogger(AppsApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -106,6 +109,7 @@ public class AppsApi {
         }
         catch (ConstraintViolationException cve)
         {
+            LOGGER.trace(cve);
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
@@ -114,6 +118,7 @@ public class AppsApi {
         }
         catch (NonUniqueObjectException nuoe)
         {
+            LOGGER.trace(nuoe);
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();

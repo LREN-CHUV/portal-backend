@@ -3,27 +3,13 @@
  * Based on gregturn code at : 'https://github.com/spring-guides/tut-spring-boot-oauth2'.
  */
 
-/*
- * Copyright 2012-2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.hbp.mip;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import org.apache.log4j.Logger;
 import org.hbp.mip.model.User;
 import org.hbp.mip.utils.CORSFilter;
 import org.hbp.mip.utils.HibernateUtil;
@@ -91,6 +77,8 @@ import java.security.Principal;
 @EnableSwagger2
 @Api(value = "/", description = "MIP API")
 public class MIPApplication extends WebSecurityConfigurerAdapter {
+
+    private static final Logger LOGGER = Logger.getLogger(MIPApplication.class);
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
@@ -178,12 +166,11 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         try {
             String userJSON = mapper.writeValueAsString(getUser());
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
+            cookie.setSecure(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            LOGGER.trace(e);
         }
         return principal;
     }
@@ -222,7 +209,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/frontend/**", "/webjars/**").permitAll()
+                .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint("/login/hbp"))
                 .and().logout().logoutSuccessUrl("/login/hbp").permitAll()
@@ -274,8 +261,7 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-        HttpSessionCsrfTokenRepository repository = httpSessionCsrfTokenRepository;
-        return repository;
+        return httpSessionCsrfTokenRepository;
     }
 
 }

@@ -5,12 +5,19 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
+import org.apache.log4j.Logger;
+import org.hbp.mip.utils.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.annotations.*;
+import org.hibernate.exception.DataException;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -19,6 +26,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "`experiment`")
 public class Experiment {
+
+    private static final Logger LOGGER = Logger.getLogger(Experiment.class);
 
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
@@ -78,6 +87,9 @@ public class Experiment {
     private boolean resultsViewed = false;
 
     public Experiment() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
     public String computeQuery() {
@@ -89,6 +101,63 @@ public class Experiment {
         outgoingQuery.add("filters", gson.toJsonTree(model.getQuery().getFilters()));
         outgoingQuery.add("grouping", gson.toJsonTree(model.getQuery().getGrouping()));
         return outgoingQuery.toString();
+    }
+
+    public String computeExaremeQuery() {
+        List<ExaremeQueryElement> queryElements = new LinkedList<>();
+        for (Variable var : model.getQuery().getVariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("variable");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getCovariables())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("covariables");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+        for (Variable var : model.getQuery().getGrouping())
+        {
+            ExaremeQueryElement el = new ExaremeQueryElement();
+            el.setName("groupings");
+            el.setDesc("");
+            el.setValue(var.getCode());
+            queryElements.add(el);
+        }
+
+        ExaremeQueryElement tableEl = new ExaremeQueryElement();
+        tableEl.setName("showtable");
+        tableEl.setDesc("");
+        tableEl.setValue("TotalResults");
+        queryElements.add(tableEl);
+
+        ExaremeQueryElement formatEl = new ExaremeQueryElement();
+        formatEl.setName("format");
+        formatEl.setDesc("");
+        formatEl.setValue("True");
+        queryElements.add(formatEl);
+
+        return new Gson().toJson(queryElements);
+    }
+
+    public void finish() {
+        this.setFinished(new Date());
+
+        try {
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            Transaction transaction = session.beginTransaction();
+            session.update(this);
+            transaction.commit();
+            session.close();
+        } catch (DataException e) {
+            LOGGER.trace(e);
+            throw e;
+        }
     }
 
     public String getValidations() {

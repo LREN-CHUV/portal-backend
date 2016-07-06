@@ -59,6 +59,9 @@ public class Model {
 
 
     public Model() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

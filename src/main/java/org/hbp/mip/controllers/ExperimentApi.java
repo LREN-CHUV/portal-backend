@@ -2,23 +2,28 @@ package org.hbp.mip.controllers;
 
 import com.google.gson.*;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
-import org.hbp.mip.model.*;
+import org.hbp.mip.model.Experiment;
+import org.hbp.mip.model.Model;
+import org.hbp.mip.model.User;
 import org.hbp.mip.utils.HTTPUtil;
 import org.hbp.mip.utils.HibernateUtil;
+import org.hbp.mip.utils.JSONUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
-import java.net.*;
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +39,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
 
+    private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
+
     private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
     private static final Gson gson = new GsonBuilder()
@@ -41,6 +48,8 @@ public class ExperimentApi {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
+
+    private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
 
     @Value("#{'${workflow.experimentUrl:http://dockerhost:8087/experiment}'}")
     private String experimentUrl;
@@ -54,72 +63,6 @@ public class ExperimentApi {
     @Autowired
     MIPApplication mipApplication;
 
-    private void sendPost(Experiment experiment) throws MalformedURLException {
-        URL obj = new URL(experimentUrl);
-
-        // this runs in the background. For future optimization: use a thread pool
-        new Thread() {
-            public void run() {
-                try {
-                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-                    String query = experiment.computeQuery();
-                    System.out.println("Running experiment: " + query);
-
-                    // create query
-                    try {
-                        con.setRequestMethod("POST");
-                    } catch (ProtocolException pe) {} // ignore; won't happen
-                    con.addRequestProperty("Content-Type", "application/json");
-                    con.setRequestProperty("Content-Length", Integer.toString(query.length()));
-                    con.setFollowRedirects(true);
-                    con.setReadTimeout(3600000); // 1 hour: 60*60*1000 ms
-
-                    // write body of query
-                    con.setDoOutput(true);
-                    DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-                    wr.write(query.getBytes("UTF8"));
-                    wr.flush();
-                    wr.close();
-
-                    // get response
-                    InputStream stream = con.getResponseCode() < 400 ? con.getInputStream() : con.getErrorStream();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine + '\n');
-                    }
-                    in.close();
-
-                    // write to experiment
-                    experiment.setResult(response.toString().replace("\0", ""));
-                    experiment.setHasError(con.getResponseCode() >= 400);
-                    experiment.setHasServerError(con.getResponseCode() >= 500);
-
-                } catch (IOException ioe) {
-                    // write error to
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(ioe.getMessage());
-                }
-
-                experiment.setFinished(new Date());
-
-                // finally
-                try {
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    Transaction transaction = session.beginTransaction();
-                    session.update(experiment);
-                    transaction.commit();
-                    session.close();
-                } catch (DataException e) {
-                    throw e;
-                }
-
-            }
-        }.start();
-    }
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -149,8 +92,12 @@ public class ExperimentApi {
             transaction.commit();
 
         } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
+            LOGGER.trace(e);
+            LOGGER.warn("Cannot create experiment to run ! This is probably caused by a bad request !");
             // 400 here probably
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -158,125 +105,28 @@ public class ExperimentApi {
         try {
             if(isExaremeAlgo(experiment))
             {
-                sendExaremePost(experiment);
+                sendExaremeExperiment(experiment);
             }
             else
             {
-                sendPost(experiment);
+                sendExperiment(experiment);
             }
-        } catch (MalformedURLException mue) {} // ignore
+        } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
-    }
-
-    private void sendExaremePost(Experiment experiment) {
-
-        Model model = experiment.getModel();
-        String algoCode = "WP_LINEAR_REGRESSION";
-
-        LinkedList<ExaremeQueryElement> queryElements = new LinkedList<>();
-        for (Variable var : model.getQuery().getVariables())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("variable");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-        for (Variable var : model.getQuery().getCovariables())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("covariables");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-        for (Variable var : model.getQuery().getGrouping())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("groupings");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-
-        ExaremeQueryElement tableEl = new ExaremeQueryElement();
-        tableEl.setName("showtable");
-        tableEl.setDesc("");
-        tableEl.setValue("TotalResults");
-        queryElements.add(tableEl);
-
-        ExaremeQueryElement formatEl = new ExaremeQueryElement();
-        formatEl.setName("format");
-        formatEl.setDesc("");
-        formatEl.setValue("True");
-        queryElements.add(formatEl);
-
-        String jsonQuery = new Gson().toJson(queryElements);
-
-        new Thread() {
-            public void run() {
-                try {
-                    String url = miningExaremeQueryUrl + "/" + algoCode;
-                    StringBuilder results = new StringBuilder();
-                    int code = HTTPUtil.sendPost(url, jsonQuery, results);
-
-                    experiment.setResult(results.toString().replace("\0", ""));
-                    experiment.setHasError(code >= 400);
-                    experiment.setHasServerError(code >= 500);
-
-                    if(!isJSONValid(experiment.getResult()))
-                    {
-                        experiment.setResult("Unsupported variables !");
-                    }
-                } catch (Exception e) {
-                    experiment.setHasError(true);
-                    experiment.setHasServerError(true);
-                    experiment.setResult(e.getMessage());
-                }
-
-                experiment.setFinished(new Date());
-
-                try {
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    Transaction transaction = session.beginTransaction();
-                    session.update(experiment);
-                    transaction.commit();
-                    session.close();
-                } catch (DataException e) {
-                    throw e;
-                }
-
-            }
-        }.start();
-    }
-
-    public boolean isJSONValid(String test) {
-        try {
-            new JsonParser().parse(test);
-        } catch (JsonParseException jpe)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isExaremeAlgo(Experiment experiment)  {
-        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
-        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
-        return algoCode.equals("glm_exareme");
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
-
         Experiment experiment;
         UUID experimentUuid;
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
+            LOGGER.trace(iae);
+            LOGGER.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
@@ -291,7 +141,10 @@ public class ExperimentApi {
             session.getTransaction().commit();
         } catch (Exception e) {
             // 404 here probably
-            session.getTransaction().rollback();
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
             throw e;
         }
 
@@ -312,6 +165,8 @@ public class ExperimentApi {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
+            LOGGER.trace(iae);
+            LOGGER.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
@@ -333,55 +188,15 @@ public class ExperimentApi {
             transaction.commit();
         } catch (Exception e) {
             // 404 here probably
-            transaction.rollback();
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
             throw e;
         }
 
-        if (experiment == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
-
-    public ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
-
-        Experiment experiment;
-        UUID experimentUuid;
-        User user = mipApplication.getUser();
-        try {
-            experimentUuid = UUID.fromString(uuid);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.badRequest().body("Invalid Experiment UUID");
-        }
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-
-            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
-            hibernateQuery.setParameter("uuid", experimentUuid);
-            experiment = (Experiment) hibernateQuery.uniqueResult();
-
-            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
-                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
-
-            experiment.setShared(shared);
-            session.update(experiment);
-
-            transaction.commit();
-        } catch (Exception e) {
-            // 404 here probably
-            transaction.rollback();
-            throw e;
-        }
-
-        if (experiment == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
-    }
-
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -397,7 +212,55 @@ public class ExperimentApi {
         return doMarkExperimentAsShared(uuid, false);
     }
 
-    public ResponseEntity<String> doListExperiments(
+    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
+    public ResponseEntity<String> listExperiments(
+            @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
+    ) {
+        return doListExperiments(true, maxResultCount, null);
+    }
+
+    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
+    public ResponseEntity<String> listExperiments(
+            @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
+            @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
+    ) {
+
+        if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
+            return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
+        }
+
+        return doListExperiments(false, maxResultCount, modelSlug);
+    }
+
+    @ApiOperation(value = "List available methods and validations", response = String.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
+    @RequestMapping(path = "/methods", method = RequestMethod.GET)
+    public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
+
+        StringBuilder response = new StringBuilder();
+
+        int code = HTTPUtil.sendGet(listMethodsUrl, response);
+        if (code < 200 || code > 299) {
+            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+        }
+
+        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
+
+        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+
+        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+
+        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+    }
+
+    private ResponseEntity<String> doListExperiments(
             boolean mine,
             int maxResultCount,
             String modelSlug
@@ -415,10 +278,11 @@ public class ExperimentApi {
 
             baseQuery += mine ? "e.createdBy = :user" : "(e.createdBy = :user OR e.shared is true)";
 
-            if (modelSlug == null || modelSlug.equals("")) {
+            if (modelSlug == null || "".equals(modelSlug)) {
                 hibernateQuery = session.createQuery(baseQuery);
             } else {
-                hibernateQuery = session.createQuery(baseQuery + " AND e.model.slug = :slug");
+                baseQuery += " AND e.model.slug = :slug";
+                hibernateQuery = session.createQuery(baseQuery);
                 hibernateQuery.setParameter("slug", modelSlug);
             }
             hibernateQuery.setParameter("user", user);
@@ -440,59 +304,125 @@ public class ExperimentApi {
             }
         } catch (Exception e) {
             // 404 here probably
+            LOGGER.trace(e);
             throw e;
         } finally {
-            session.getTransaction().rollback();
+            if(session.getTransaction() != null)
+            {
+                session.getTransaction().rollback();
+            }
         }
 
         return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
-    public ResponseEntity<String> listExperiments(
-        @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
-    ) {
-        return doListExperiments(true, maxResultCount, null);
-    }
-
-    @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
-    public ResponseEntity<String> listExperiments(
-        @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
-        @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
-    ) {
-
-        if (maxResultCount <= 0 && (modelSlug == null || modelSlug.equals(""))) {
-            return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
+    private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
+        Experiment experiment;
+        UUID experimentUuid;
+        User user = mipApplication.getUser();
+        try {
+            experimentUuid = UUID.fromString(uuid);
+        } catch (IllegalArgumentException iae) {
+            LOGGER.trace(iae);
+            LOGGER.warn("An invalid Experiment UUID was received !");
+            return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
-        return doListExperiments(false, maxResultCount, modelSlug);
-    }
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
 
-    @ApiOperation(value = "List available methods and validations", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
-    @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity<String> listAvailableMethodsAndValidations() throws Exception {
+            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
+            hibernateQuery.setParameter("uuid", experimentUuid);
+            experiment = (Experiment) hibernateQuery.uniqueResult();
 
-        StringBuilder response = new StringBuilder();
+            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
+                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
 
-        int code = HTTPUtil.sendGet(listMethodsUrl, response);
-        if (code < 200 || code > 299) {
-            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
+            experiment.setShared(shared);
+            session.update(experiment);
+
+            transaction.commit();
+        } catch (Exception e) {
+            // 404 here probably
+            if(transaction != null)
+            {
+                transaction.rollback();
+            }
+            throw e;
         }
 
-        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
-
-        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-
-        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-
-        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
+
+    private void sendExperiment(Experiment experiment) throws MalformedURLException {
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread() {
+            @Override
+            public void run() {
+                    String url = experimentUrl;
+                    String query = experiment.computeQuery();
+
+                    // Results are stored in the experiment object
+                try {
+                    executeExperiment(url, query, experiment);
+                } catch (IOException e) {
+                    LOGGER.trace(e);
+                    LOGGER.warn("Experiment failed to run properly !");
+                    setExperimentError(e, experiment);
+                }
+
+                experiment.finish();
+            }
+        }.start();
+    }
+
+    private void sendExaremeExperiment(Experiment experiment) {
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread() {
+            @Override
+            public void run() {
+                String query = experiment.computeExaremeQuery();
+                String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+
+                // Results are stored in the experiment object
+                try {
+                    executeExperiment(url, query, experiment);
+                } catch (IOException e) {
+                    LOGGER.trace(e);
+                    LOGGER.warn("Exareme experiment failed to run properly !");
+                    setExperimentError(e, experiment);
+                }
+
+                if(!JSONUtil.isJSONValid(experiment.getResult()))
+                    {
+                        experiment.setResult("Unsupported variables !");
+                    }
+
+                experiment.finish();
+            }
+        }.start();
+    }
+
+    private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
+        StringBuilder results = new StringBuilder();
+        int code = HTTPUtil.sendPost(url, query, results);
+        experiment.setResult(results.toString().replace("\0", ""));
+        experiment.setHasError(code >= 400);
+        experiment.setHasServerError(code >= 500);
+    }
+
+    private static void setExperimentError(IOException e, Experiment experiment) {
+        experiment.setHasError(true);
+        experiment.setHasServerError(true);
+        experiment.setResult(e.getMessage());
+    }
+
+    private static boolean isExaremeAlgo(Experiment experiment)  {
+        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
+        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
+        return "glm_exareme".equals(algoCode);
+    }
+
 }

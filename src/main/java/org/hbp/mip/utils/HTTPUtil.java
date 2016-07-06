@@ -2,6 +2,7 @@ package org.hbp.mip.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,20 +12,26 @@ import java.net.URL;
  */
 public class HTTPUtil {
 
-    public static int sendGet(String url, StringBuilder resp) throws Exception {
+    private HTTPUtil()
+    {
+        /* Hide implicit public constructor */
+        throw new IllegalAccessError("HTTPUtil class");
+    }
+
+    public static int sendGet(String url, StringBuilder resp) throws IOException {
         return sendHTTP(url, "", resp, "GET");
     }
 
-    public static int sendPost(String url, String query, StringBuilder resp) throws Exception {
+    public static int sendPost(String url, String query, StringBuilder resp) throws IOException {
         return sendHTTP(url, query, resp, "POST");
     }
 
-    public static int sendHTTP(String url, String query, StringBuilder resp, String httpVerb) throws Exception {
+    public static int sendHTTP(String url, String query, StringBuilder resp, String httpVerb) throws IOException {
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        if(!httpVerb.equals("GET")) {
+        if(!"GET".equals(httpVerb)) {
             con.setRequestMethod(httpVerb);
             if(query != null && query.length() > 0)
             {

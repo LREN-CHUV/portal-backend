@@ -44,6 +44,9 @@ public class App {
 
 
     public App() {
+        /*
+        *  Empty constructor is needed by Hibernate
+        */
     }
 
 

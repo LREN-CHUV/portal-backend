@@ -7,6 +7,7 @@ package org.hbp.mip.controllers;
 
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
+import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
@@ -30,6 +31,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/articles", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {
+
+    private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
     MIPApplication mipApplication;
@@ -57,11 +60,6 @@ public class ArticlesApi {
         else
         {
             queryString += " AND (status='published' or u.username= :username)";
-            if(team != null && team)
-            {
-                // TODO: decide if this is needed
-                //queryString += " AND u.team= :team";
-            }
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -99,7 +97,7 @@ public class ArticlesApi {
         User user = mipApplication.getUser();
 
         article.setCreatedAt(new Date());
-        if (article.getStatus().equals("published")) {
+        if ("published".equals(article.getStatus())) {
             article.setPublishedAt(new Date());
         }
         article.setCreatedBy(user);
@@ -128,13 +126,7 @@ public class ArticlesApi {
                 }
             } while(count > 0);
 
-            Slugify slg = null;
-            try {
-                slg = new Slugify();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String slug = slg.slugify(article.getTitle());
+            String slug = new Slugify().slugify(article.getTitle());
 
             i = 0;
             do {
@@ -156,8 +148,9 @@ public class ArticlesApi {
 
             session.save(article);
             session.getTransaction().commit();
-        } catch (Exception e)
-        {
+        } catch (IOException e) {
+        LOGGER.trace(e);
+        } catch (Exception e) {
             if(session.getTransaction() != null)
             {
                 session.getTransaction().rollback();
@@ -191,7 +184,7 @@ public class ArticlesApi {
 
             session.getTransaction().commit();
 
-            if (!article.getStatus().equals("published") && !article.getCreatedBy().getUsername().equals(user.getUsername()))
+            if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
             {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
