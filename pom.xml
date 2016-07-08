@@ -17,59 +17,17 @@
         <version>1.3.2.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <profiles>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <java.version>1.8</java.version>
-                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
-                <connection.url>jdbc:postgresql://hbpmdw1.chuv.ch:31432/portal</connection.url>
-                <connection.username>portal</connection.username>
-                <connection.password>iaezXODVLb1e70I</connection.password>
-                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
-                <schema.deploy>false</schema.deploy>
-                <frontend.redirect>https://mip.humanbrainproject.eu/home</frontend.redirect>
-                <flyway.url>${connection.url}</flyway.url>
-                <flyway.user>${connection.username}</flyway.user>
-                <flyway.password>${connection.password}</flyway.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <java.version>1.8</java.version>
-                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
-                <connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
-                <connection.username>postgres</connection.username>
-                <connection.password>test</connection.password>
-                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
-                <schema.deploy>false</schema.deploy>
-                <frontend.redirect>http://frontend/home</frontend.redirect>
-                <flyway.url>${connection.url}</flyway.url>
-                <flyway.user>${connection.username}</flyway.user>
-                <flyway.password>${connection.password}</flyway.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>hbps1</id>
-            <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <java.version>1.8</java.version>
-                <connection.driver_class>org.postgresql.Driver</connection.driver_class>
-                <connection.url>jdbc:postgresql://portaldb:5432/postgres</connection.url>
-                <connection.username>postgres</connection.username>
-                <connection.password>test</connection.password>
-                <hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</hibernate.dialect>
-                <schema.deploy>false</schema.deploy>
-                <frontend.redirect>http://hbps1.chuv.ch/home</frontend.redirect>
-                <flyway.url>${connection.url}</flyway.url>
-                <flyway.user>${connection.username}</flyway.user>
-                <flyway.password>${connection.password}</flyway.password>
-            </properties>
-        </profile>
-    </profiles>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
+        <asciidoctorj.version>1.5.4</asciidoctorj.version>
+        <sonar.host.url>http://dockerhost:9000</sonar.host.url>
+        <sonar.projectName>MIP Backend</sonar.projectName>
+        <sonar.sources>src/main/java/</sonar.sources>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -176,14 +134,7 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <properties>
-        <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
-        <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
-        <asciidoctorj.version>1.5.4</asciidoctorj.version>
-        <sonar.host.url>http://dockerhost:9000</sonar.host.url>
-        <sonar.projectName>MIP Backend</sonar.projectName>
-        <sonar.sources>src/main/java/</sonar.sources>
-    </properties>
+
 
     <build>
         <resources>

@@ -22,6 +22,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@SpringApplicationConfiguration(classes=MIPApplication.class, locations={"classpath:spring/application-context.xml"})
+@SpringApplicationConfiguration(classes=MIPApplication.class)
 public class MIPApplicationTests {
 }

@@ -5,18 +5,6 @@
 
 <hibernate-configuration>
     <session-factory>
-        <property name="connection.driver_class">${connection.driver_class}</property>
-        <property name="connection.url">${connection.url}</property>
-        <property name="connection.username">${connection.username}</property>
-        <property name="connection.password">${connection.password}</property>
-        <property name="hibernate.format_sql">true</property>
-        <property name="connection.pool_size">1</property>
-        <property name="hibernate.dialect">${hibernate.dialect}</property>
-        <property name="current_session_context_class">thread</property>
-        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
-        <property name="hibernate.show_sql">false</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
-
         <mapping class="org.hbp.mip.model.Article"/>
         <mapping class="org.hbp.mip.model.Dataset"/>
         <mapping class="org.hbp.mip.model.Model"/>
@@ -31,6 +19,5 @@
         <mapping class="org.hbp.mip.model.Config"/>
         <mapping class="org.hbp.mip.model.App"/>
         <mapping class="org.hbp.mip.model.Vote"/>
-
     </session-factory>
 </hibernate-configuration>
