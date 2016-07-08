@@ -1,20 +1,10 @@
+version: '2'
 
-portaldb:
-  image: postgres:9.5.3
-  container_name: portaldb
-  ports:
-    - "55432:5432"
-  volumes:
-    - ./src/test/db/sql:/docker-entrypoint-initdb.d/
-  environment:
-    POSTGRES_PASSWORD: test
-
-portal-backend:
-  build: ./src/docker/build
-  volumes:
-    - ./src/test/docker/:/opt/portal/config/
-    - ./target/:/opt/portal/lib/
-  links:
-    - portaldb
-  ports:
-    - "8080:8080"
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./src/docker/run/Dockerfile
+    ports:
+      - "8080:8080"

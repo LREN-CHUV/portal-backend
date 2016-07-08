@@ -1,13 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
-if groups $USER | grep &>/dev/null '\bdocker\b'; then
-  DOCKER_COMPOSE="docker-compose"
-else
-  DOCKER_COMPOSE="sudo docker-compose"
-fi
-
-# TODO: Cannot clean otherwise the build fails because of Hibernate schema generation
-mvn package
-cp target/mip.jar src/docker/build/
-
-$DOCKER_COMPOSE build
+./halt.sh
+docker-compose -f ./docker-compose_build.yml build
+docker-compose -f ./docker-compose_build.yml up
