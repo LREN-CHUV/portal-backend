@@ -32,6 +32,7 @@ public class Experiment {
             .create();
 
     @Autowired
+    @Transient
     ExperimentRepository experimentRepository;
 
     @Id
