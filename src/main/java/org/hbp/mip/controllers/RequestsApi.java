@@ -29,10 +29,7 @@ public class RequestsApi {
     public ResponseEntity<Dataset> postRequests(
             @RequestBody @ApiParam(value = "Query to process", required = true) Query query
     )  {
-
-        Dataset dataset = CSVUtil.parseValues(DATA_FILE, query);
-
-        return ResponseEntity.ok(dataset);
+        return ResponseEntity.ok(new CSVUtil().parseValues(DATA_FILE, query));
     }
 
 }

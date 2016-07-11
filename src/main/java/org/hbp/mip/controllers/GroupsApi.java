@@ -9,8 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.hbp.mip.model.Group;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.GroupRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,32 +23,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/groups", description = "the groups API")
 public class GroupsApi {
 
+    private static final String ROOT_CODE = "root";
+
+    @Autowired
+    GroupRepository groupRepository;
+
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Group> getTheRootGroup()  {
-
-        String rootCode = "root";
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Group group = null;
-        try{
-            session.beginTransaction();
-            group = (Group) session
-                    .createQuery("FROM Group WHERE code= :code")
-                    .setString("code", rootCode)
-                    .uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(group);
+        return ResponseEntity.ok(groupRepository.findOne(ROOT_CODE));
     }
 
 

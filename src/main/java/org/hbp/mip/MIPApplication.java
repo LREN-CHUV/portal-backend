@@ -11,9 +11,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.hbp.mip.model.User;
+import org.hbp.mip.repositories.UserRepository;
 import org.hbp.mip.utils.CORSFilter;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -84,6 +83,9 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
 
+    @Autowired
+    UserRepository userRepository;
+
 
     public static void main(String[] args) {
         SpringApplication.run(MIPApplication.class, args);
@@ -107,26 +109,10 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
      * @return
      */
     public synchronized User getUser() {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         User user = new User(getUserInfos());
-        try {
-            session.beginTransaction();
-            Boolean agreeNDA = (Boolean) session
-                    .createQuery("SELECT agreeNDA FROM User WHERE username= :username")
-                    .setString("username", user.getUsername())
-                    .uniqueResult();
-            user.setAgreeNDA(agreeNDA);
-            session.merge(user);
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
+        User foundUser = userRepository.findOne(user.getUsername());
+        user.setAgreeNDA(foundUser.getAgreeNDA());
+        userRepository.save(user);
         return user;
     }
 
@@ -173,28 +159,11 @@ public class MIPApplication extends WebSecurityConfigurerAdapter {
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
         String username = getUser().getUsername();
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try {
-            session.beginTransaction();
-            User user = (User) session
-                    .createQuery("from User where username= :username")
-                    .setString("username", username)
-                    .uniqueResult();
-            if (user != null) {
-                user.setAgreeNDA(agreeNDA);
-                session.update(user);
-            }
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        User user = userRepository.findOne(username);
+        if (user != null) {
+            user.setAgreeNDA(agreeNDA);
+            userRepository.save(user);
         }
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

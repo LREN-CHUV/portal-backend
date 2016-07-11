@@ -8,12 +8,7 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.App;
-import org.hbp.mip.model.User;
-import org.hbp.mip.model.Vote;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.NonUniqueObjectException;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.AppRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.ConstraintViolationException;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -38,29 +29,15 @@ public class AppsApi {
     @Autowired
     MIPApplication mipApplication;
 
+    @Autowired
+    AppRepository appRepository;
+
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List> getApps(
+    public ResponseEntity<Iterable> getApps(
     ) {
-        List apps = new LinkedList<>();
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try {
-            session.beginTransaction();
-            Query query = session.createQuery("FROM App");
-            apps = query.list();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(apps);
+        return ResponseEntity.ok(appRepository.findAll());
     }
 
     @ApiOperation(value = "Post a vote")
@@ -71,68 +48,38 @@ public class AppsApi {
             @ApiParam(value = "value", required = true) @PathVariable("value") Integer value
     ) {
 
-        User user = mipApplication.getUser();
+        /*User user = mipApplication.getUser();
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try {
-            session.beginTransaction();
+        Vote vote = (Vote) session.createQuery("" +
+                "SELECT v FROM Vote v, User u, App a " +
+                "WHERE u=v.user " +
+                "AND a=v.app " +
+                "AND u.username= :username " +
+                "AND a.id= :app_id")
+                .setString("username", user.getUsername())
+                .setLong("app_id", id)
+                .uniqueResult();
+        App app = (App) session.createQuery("FROM App where id= :id").setLong("id", id).uniqueResult();
 
-            Vote vote = (Vote) session.createQuery("" +
-                    "SELECT v FROM Vote v, User u, App a " +
-                    "WHERE u=v.user " +
-                    "AND a=v.app " +
-                    "AND u.username= :username " +
-                    "AND a.id= :app_id")
-                    .setString("username", user.getUsername())
-                    .setLong("app_id", id)
-                    .uniqueResult();
-            App app = (App) session.createQuery("FROM App where id= :id").setLong("id", id).uniqueResult();
+        if (vote != null) {
+            vote.setValue(value);
 
-            if (vote != null) {
-                vote.setValue(value);
-
-                session.update(vote);
-                session.getTransaction().commit();
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            else
-            {
-                vote = new Vote();
-                vote.setUser(user);
-                vote.setValue(value);
-                vote.setApp(app);
-
-                session.save(vote);
-                session.getTransaction().commit();
-                return new ResponseEntity<>(HttpStatus.CREATED);
-            }
+            session.update(vote);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        catch (ConstraintViolationException cve)
+        else
         {
-            LOGGER.trace(cve);
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        catch (NonUniqueObjectException nuoe)
-        {
-            LOGGER.trace(nuoe);
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            vote = new Vote();
+            vote.setUser(user);
+            vote.setValue(value);
+            vote.setApp(app);
+
+            session.save(vote);
+            session.getTransaction().commit();
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }*/
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
     }
 }

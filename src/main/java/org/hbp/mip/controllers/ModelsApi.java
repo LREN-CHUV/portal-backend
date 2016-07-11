@@ -9,10 +9,10 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.*;
+import org.hbp.mip.repositories.DatasetRepository;
+import org.hbp.mip.repositories.ModelRepository;
+import org.hbp.mip.repositories.QueryRepository;
 import org.hbp.mip.utils.CSVUtil;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,19 +34,28 @@ public class ModelsApi {
     @Autowired
     MIPApplication mipApplication;
 
+    @Autowired
+    DatasetRepository datasetRepository;
+
+    @Autowired
+    ModelRepository modelRepository;
+
+    @Autowired
+    QueryRepository queryRepository;
+
     private static final String DATA_FILE = "data/values.csv";
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Model>> getModels(
+    public ResponseEntity<Iterable> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
 
-        User user = mipApplication.getUser();
+        /*User user = mipApplication.getUser();
 
         String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.username";
         if(valid != null && valid)
@@ -64,56 +73,27 @@ public class ModelsApi {
 
         queryString += " ORDER BY m.createdAt DESC";
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Model> models = new LinkedList<>();
-        try{
-            session.beginTransaction();
-            Query query = session.createQuery(queryString);
-            if(valid != null)
-            {
-                query.setBoolean("valid", valid);
-            }
-            query.setString("username", user.getUsername());
-            if(limit != null)
-            {
-                query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
-            }
-            models = query.list();
-            session.getTransaction().commit();
-        } catch (Exception e)
+        Query query = session.createQuery(queryString);
+        if(valid != null)
         {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
+            query.setBoolean("valid", valid);
         }
+        query.setString("username", user.getUsername());
+        if(limit != null)
+        {
+            query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
+        }
+        models = query.list();
+
 
         for(Model model:models){
-            String dsCode = model.getDataset().getCode();
-
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Dataset dataset = null;
-            try{
-                session.beginTransaction();
-                dataset = (Dataset) session
-                        .createQuery("from Dataset where code= :code")
-                        .setString("code", dsCode)
-                        .uniqueResult();
-                session.getTransaction().commit();
-            } catch (Exception e)
-            {
-                if(session.getTransaction() != null)
-                {
-                    session.getTransaction().rollback();
-                    throw e;
-                }
-            }
-
-            model.setDataset(dataset);
+            model.setDataset(datasetRepository.findOne(model.getDataset().getCode()));
         }
 
-        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
+        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);*/
+
+        return new ResponseEntity<>(HttpStatus.OK).ok(modelRepository.findAll());
     }
 
 
@@ -135,65 +115,51 @@ public class ModelsApi {
         }
 
         Long count;
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
-            session.beginTransaction();
+        int i = 0;
+        do{
+            i++;
+            count = modelRepository.countByTitle(model.getTitle());
 
-            int i = 0;
-            do{
-                i++;
-                count = (Long) session
-                        .createQuery("select count(*) from Model where title= :title")
-                        .setString("title", model.getTitle())
-                        .uniqueResult();
-
-                if(count > 0)
-                {
-                    String title = model.getTitle();
-                    if(i > 1)
-                    {
-                        title = title.substring(0, title.length()-4);
-                    }
-                    model.setTitle(title + " (" + i + ")");
-                }
-            } while(count > 0);
-
-            String slug = new Slugify().slugify(model.getTitle());
-
-            i = 0;
-            do {
-                i++;
-                count = (Long) session
-                        .createQuery("select count(*) from Model where slug= :slug")
-                        .setString("slug", slug)
-                        .uniqueResult();
-                if(count > 0)
-                {
-                    if(i > 1)
-                    {
-                        slug = slug.substring(0, slug.length()-2);
-                    }
-                    slug += "-"+i;
-                }
-                model.setSlug(slug);
-            } while(count > 0);
-
-            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
-            map.put("text", model.getTitle());
-            model.getConfig().setTitle(map);
-
-            session.save(model);
-            session.getTransaction().commit();
-        } catch (IOException e) {
-            LOGGER.trace(e);
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
+            if(count > 0)
             {
-                session.getTransaction().rollback();
-                throw e;
+                String title = model.getTitle();
+                if(i > 1)
+                {
+                    title = title.substring(0, title.length()-4);
+                }
+                model.setTitle(title + " (" + i + ")");
             }
+        } while(count > 0);
+
+        String slug = null;
+        try {
+            slug = new Slugify().slugify(model.getTitle());
+        } catch (IOException e) {
+            slug = "";
+            LOGGER.trace(e);
         }
+
+        i = 0;
+        boolean alreadyExists;
+        do {
+            i++;
+            alreadyExists = modelRepository.exists(slug);
+            if(count > 0)
+            {
+                if(i > 1)
+                {
+                    slug = slug.substring(0, slug.length()-2);
+                }
+                slug += "-"+i;
+            }
+            model.setSlug(slug);
+        } while(alreadyExists);
+
+        Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+        map.put("text", model.getTitle());
+        model.getConfig().setTitle(map);
+
+        modelRepository.save(model);
 
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
@@ -207,51 +173,18 @@ public class ModelsApi {
 
         User user = mipApplication.getUser();
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Model model = null;
 
-        try {
-            session.beginTransaction();
-            model = (Model) session
-                    .createQuery("FROM Model WHERE slug= :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-            session.getTransaction().commit();
-
-            if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
-            {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-
-        } catch (Exception e)
+        model = modelRepository.findOne(slug);
+        if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
         {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-
         if(model != null) {
-            session = HibernateUtil.getSessionFactory().getCurrentSession();
             org.hbp.mip.model.Query q = null;
 
-            try {
-                session.beginTransaction();
-                q = (org.hbp.mip.model.Query) session
-                        .createQuery("FROM Query WHERE id= :id")
-                        .setLong("id", model.getQuery().getId())
-                        .uniqueResult();
-                session.getTransaction().commit();
-            } catch (Exception e)
-            {
-                if(session.getTransaction() != null)
-                {
-                    session.getTransaction().rollback();
-                    throw e;
-                }
-            }
+            q = queryRepository.findOne(model.getQuery().getId());
 
             if(q != null) {
 
@@ -296,7 +229,7 @@ public class ModelsApi {
                 model.setQuery(myQuery);
             }
 
-            Dataset ds = CSVUtil.parseValues(DATA_FILE, model.getQuery());
+            Dataset ds = new CSVUtil().parseValues(DATA_FILE, model.getQuery());
             model.setDataset(ds);
 
         }
@@ -313,14 +246,11 @@ public class ModelsApi {
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
 
-        User user = mipApplication.getUser();
+        /*User user = mipApplication.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         try{
-            session.beginTransaction();
-
             String author = (String) session
                     .createQuery("select U.username from User U, Model M where M.createdBy = U.username and M.slug = :slug")
                     .setString("slug", slug)
@@ -371,7 +301,7 @@ public class ModelsApi {
                 session.getTransaction().rollback();
                 throw e;
             }
-        }
+        }*/
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

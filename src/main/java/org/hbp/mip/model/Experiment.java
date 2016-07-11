@@ -6,15 +6,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import org.apache.log4j.Logger;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.annotations.*;
-import org.hibernate.exception.DataException;
+import org.hbp.mip.repositories.ExperimentRepository;
+import org.hibernate.annotations.Cascade;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +30,9 @@ public class Experiment {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
+
+    @Autowired
+    ExperimentRepository experimentRepository;
 
     @Id
     @Column(columnDefinition = "uuid")
@@ -147,17 +146,7 @@ public class Experiment {
 
     public void finish() {
         this.setFinished(new Date());
-
-        try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            Transaction transaction = session.beginTransaction();
-            session.update(this);
-            transaction.commit();
-            session.close();
-        } catch (DataException e) {
-            LOGGER.trace(e);
-            throw e;
-        }
+        experimentRepository.save(this);
     }
 
     public String getValidations() {
