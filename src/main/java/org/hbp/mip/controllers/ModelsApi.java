@@ -35,6 +35,9 @@ public class ModelsApi {
     MIPApplication mipApplication;
 
     @Autowired
+    CSVUtil csvUtil;
+
+    @Autowired
     DatasetRepository datasetRepository;
 
     @Autowired
@@ -229,7 +232,7 @@ public class ModelsApi {
                 model.setQuery(myQuery);
             }
 
-            Dataset ds = new CSVUtil().parseValues(DATA_FILE, model.getQuery());
+            Dataset ds = csvUtil.parseValues(DATA_FILE, model.getQuery());
             model.setDataset(ds);
 
         }

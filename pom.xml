@@ -85,6 +85,11 @@
             <version>4.3.8.Final</version>
         </dependency>
         <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.8.Final</version>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.187</version>
@@ -121,8 +126,6 @@
         </dependency>
     </dependencies>
 
-
-
     <pluginRepositories>
         <pluginRepository>
             <id>jcenter-snapshots</id>
@@ -138,8 +141,6 @@
             <url>http://jcenter.bintray.com</url>
         </pluginRepository>
     </pluginRepositories>
-
-
 
     <build>
         <resources>
