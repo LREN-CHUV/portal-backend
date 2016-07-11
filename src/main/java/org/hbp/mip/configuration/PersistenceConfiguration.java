@@ -21,6 +21,7 @@ import java.util.Properties;
 @EnableJpaRepositories("org.hbp.mip.repositories")
 @EntityScan(basePackages = "org.hbp.mip.model")
 public class PersistenceConfiguration {
+
     @Autowired
     DataSource dataSource;
 
