@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 
 @Configuration
-@EnableJpaRepositories("org.hbp.mip.repositories")
+@EnableJpaRepositories(value = "org.hbp.mip.repositories")
 @EntityScan(basePackages = "org.hbp.mip.model")
 public class PersistenceConfiguration {
 
@@ -34,7 +34,6 @@ public class PersistenceConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("org.hbp.mip.model");
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
