@@ -27,6 +27,8 @@
         <sonar.host.url>http://dockerhost:9000</sonar.host.url>
         <sonar.projectName>MIP Backend</sonar.projectName>
         <sonar.sources>src/main/java/</sonar.sources>
+        <flyway.url>jdbc:postgresql://db:5432/postgres</flyway.url>
+        <flyway.user>postgres</flyway.user>
     </properties>
 
     <dependencies>

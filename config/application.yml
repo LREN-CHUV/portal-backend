@@ -2,9 +2,9 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://portaldb:5432/postgres
+    url: jdbc:postgresql://db:5432/postgres
     username: postgres
-    password: test
+    password: pass
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

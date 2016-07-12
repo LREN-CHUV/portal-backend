@@ -4,8 +4,21 @@ services:
   backend_build:
     container_name: backend_build
     build: ./src/docker/build/
+    depends_on:
+      - "db"
     volumes:
       - ./:/opt/portal/
       - .m2:/root/.m2/
     ports:
       - "8080:8080"
+    links:
+      - "db"
+  db:
+    container_name: db
+    image: postgres:9.5.3
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgres/data
+    environment:
+      POSTGRES_USER: postgres

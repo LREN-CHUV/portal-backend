@@ -6,5 +6,18 @@ services:
     build:
       context: .
       dockerfile: ./src/docker/run/Dockerfile
+    depends_on:
+      - "db"
     ports:
       - "8080:8080"
+    links:
+      - "db"
+  db:
+      container_name: db
+      image: postgres:9.5.3
+      ports:
+        - "5432:5432"
+      volumes:
+        - ./data:/var/lib/postgres/data
+      environment:
+        POSTGRES_USER: postgres
