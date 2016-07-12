@@ -9,6 +9,9 @@ spring:
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQL9Dialect
+  resources:
+      chain:
+        enabled: true
 
 security:
   enabled: false
@@ -28,11 +31,6 @@ hbp:
 logging:
   level:
     org.springframework.security: DEBUG
-
-spring:
-  resources:
-    chain:
-      enabled: true
 
 server:
   contextPath: /services

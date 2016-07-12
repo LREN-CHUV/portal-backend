@@ -12,6 +12,8 @@ services:
       - "8080:8080"
     links:
       - "db"
+    volumes:
+      - ./config:/config
   db:
     container_name: db
     image: postgres:9.5.3
