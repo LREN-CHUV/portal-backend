@@ -9,7 +9,11 @@ until psql -h "db" -U "postgres" -c '\l'; do
   sleep 1
 done
 
-mvn flyway:baseline flyway:migrate
+if [$(psql -h "db" -U "postgres" -c "\dt" | grep schema_version | wc -l) == 0]; then
+  mvn flyway:baseline
+fi
+
+mvn flyway:migrate
 
 # Uncomment to generate a PDF API documentation
 # mvn swagger2markup:convertSwagger2markup asciidoctor:process-asciidoc
