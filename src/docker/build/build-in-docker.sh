@@ -9,7 +9,7 @@ until psql -h "db" -U "postgres" -c '\l'; do
   sleep 1
 done
 
-if [$(psql -h "db" -U "postgres" -c "\dt" | grep schema_version | wc -l) == 0]; then
+if [ $(psql -h "db" -U "postgres" -c "\dt" | grep schema_version | wc -l) == 0 ]; then
   mvn flyway:baseline
 fi
 

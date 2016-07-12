@@ -3,4 +3,8 @@
 ./halt.sh
 docker-compose -f ./docker-compose_build.yml build
 docker-compose -f ./docker-compose_build.yml up -d
-docker-compose stop db
+
+until [ -e ./target/backend-services-DOCKER_BUILD.jar ]; do
+  echo 'Waiting...'
+  sleep 1
+done
