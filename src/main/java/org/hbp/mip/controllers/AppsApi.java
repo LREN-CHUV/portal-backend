@@ -8,7 +8,10 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.hbp.mip.MIPApplication;
 import org.hbp.mip.model.App;
+import org.hbp.mip.model.User;
+import org.hbp.mip.model.Vote;
 import org.hbp.mip.repositories.AppRepository;
+import org.hbp.mip.repositories.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,9 @@ public class AppsApi {
     @Autowired
     AppRepository appRepository;
 
+    @Autowired
+    VoteRepository voteRepository;
+
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
@@ -48,23 +54,14 @@ public class AppsApi {
             @ApiParam(value = "value", required = true) @PathVariable("value") Integer value
     ) {
 
-        /*User user = mipApplication.getUser();
+        User user = mipApplication.getUser();
+        App app = appRepository.findOne(id);
 
-        Vote vote = (Vote) session.createQuery("" +
-                "SELECT v FROM Vote v, User u, App a " +
-                "WHERE u=v.user " +
-                "AND a=v.app " +
-                "AND u.username= :username " +
-                "AND a.id= :app_id")
-                .setString("username", user.getUsername())
-                .setLong("app_id", id)
-                .uniqueResult();
-        App app = (App) session.createQuery("FROM App where id= :id").setLong("id", id).uniqueResult();
+        Vote vote = voteRepository.find(user, app).iterator().next();
 
         if (vote != null) {
             vote.setValue(value);
-
-            session.update(vote);
+            voteRepository.save(vote);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         else
@@ -73,13 +70,9 @@ public class AppsApi {
             vote.setUser(user);
             vote.setValue(value);
             vote.setApp(app);
-
-            session.save(vote);
-            session.getTransaction().commit();
+            voteRepository.save(vote);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        }*/
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        }
 
     }
 }
