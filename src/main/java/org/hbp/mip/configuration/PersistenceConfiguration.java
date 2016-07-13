@@ -1,12 +1,10 @@
 package org.hbp.mip.configuration;
 
 import org.hbp.mip.utils.CSVUtil;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,6 +22,9 @@ import java.util.Properties;
 @EntityScan(basePackages = "org.hbp.mip.model")
 public class PersistenceConfiguration {
 
+    @Autowired
+    DataSource dataSource;
+
     @Bean
     public CSVUtil csvUtil() {
         return new CSVUtil();
@@ -32,7 +33,7 @@ public class PersistenceConfiguration {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(dataSource);
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
@@ -43,14 +44,5 @@ public class PersistenceConfiguration {
         Properties properties = new Properties();
         properties.setProperty("hibernate.show_sql", "true");
         return properties;
-    }
-
-    @ConfigurationProperties("spring.datasource")
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        return DataSourceBuilder
-                .create()
-                .build();
     }
 }
