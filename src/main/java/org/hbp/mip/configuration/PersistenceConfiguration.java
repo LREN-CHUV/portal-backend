@@ -1,10 +1,12 @@
 package org.hbp.mip.configuration;
 
 import org.hbp.mip.utils.CSVUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -22,8 +24,17 @@ import java.util.Properties;
 @EntityScan(basePackages = "org.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Autowired
-    DataSource dataSource;
+    @Value("#{'${spring.datasource.username:postgres}'}")
+    String dbUser;
+
+    @Value("#{'${spring.datasource.password:pass}'}")
+    String dbPass;
+
+    @Value("#{'${spring.datasource.url:jdbc:postgresql://db:5432/postgres}'}")
+    String dbUrl;
+
+    @Value("#{'${spring.datasource.driver-class-name:org.postgresql.Driver}'}")
+    String dbDriver;
 
     @Bean
     public CSVUtil csvUtil() {
@@ -33,7 +44,7 @@ public class PersistenceConfiguration {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
+        em.setDataSource(dataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
@@ -44,5 +55,17 @@ public class PersistenceConfiguration {
         Properties properties = new Properties();
         properties.setProperty("hibernate.show_sql", "true");
         return properties;
+    }
+
+    @Bean
+    @Primary
+    public DataSource dataSource() {
+        return DataSourceBuilder
+                .create()
+                .username(dbUser)
+                .password(dbPass)
+                .url(dbUrl)
+                .driverClassName(dbDriver)
+                .build();
     }
 }
