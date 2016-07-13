@@ -1,8 +1,8 @@
 package org.hbp.mip.configuration;
 
 import org.hbp.mip.utils.CSVUtil;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,18 +23,6 @@ import java.util.Properties;
 @EnableJpaRepositories(value = "org.hbp.mip.repositories")
 @EntityScan(basePackages = "org.hbp.mip.model")
 public class PersistenceConfiguration {
-
-    @Value("#{'${spring.datasource.username:postgres}'}")
-    String dbUser;
-
-    @Value("#{'${spring.datasource.password:pass}'}")
-    String dbPass;
-
-    @Value("#{'${spring.datasource.url:jdbc:postgresql://db:5432/postgres}'}")
-    String dbUrl;
-
-    @Value("#{'${spring.datasource.driver-class-name:org.postgresql.Driver}'}")
-    String dbDriver;
 
     @Bean
     public CSVUtil csvUtil() {
@@ -57,15 +45,12 @@ public class PersistenceConfiguration {
         return properties;
     }
 
+    @ConfigurationProperties("spring.datasource")
     @Bean
     @Primary
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create()
-                .username(dbUser)
-                .password(dbPass)
-                .url(dbUrl)
-                .driverClassName(dbDriver)
                 .build();
     }
 }
