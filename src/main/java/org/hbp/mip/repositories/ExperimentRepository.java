@@ -1,6 +1,7 @@
 package org.hbp.mip.repositories;
 
 import org.hbp.mip.model.Experiment;
+import org.hbp.mip.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
@@ -10,4 +11,6 @@ import java.util.UUID;
  */
 
 public interface ExperimentRepository extends CrudRepository<Experiment, UUID> {
+    Iterable<Experiment> findByUser(User user);
+    Iterable<Experiment> findShared(Boolean shared);
 }

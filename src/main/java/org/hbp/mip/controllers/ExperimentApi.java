@@ -1,5 +1,6 @@
 package org.hbp.mip.controllers;
 
+import com.google.common.collect.Iterables;
 import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -209,53 +211,32 @@ public class ExperimentApi {
             int maxResultCount,
             String modelSlug
     ) {
-        /*List<Experiment> experiments = new LinkedList<>();
         User user = mipApplication.getUser();
+        Iterable<Experiment> experiments = null;
 
-        try {
-            Query hibernateQuery;
-            String baseQuery = "from Experiment as e WHERE ";
+        Iterable<Experiment> myExperiments = experimentRepository.findByUser(user);
+        if(!mine)
+        {
+            Iterable<Experiment> sharedExperiments = experimentRepository.findShared(true);
+            experiments = Iterables.concat(myExperiments, sharedExperiments);
+        }
 
-            baseQuery += mine ? "e.createdBy = :user" : "(e.createdBy = :user OR e.shared is true)";
-
-            if (modelSlug == null || "".equals(modelSlug)) {
-                hibernateQuery = session.createQuery(baseQuery);
-            } else {
-                baseQuery += " AND e.model.slug = :slug";
-                hibernateQuery = session.createQuery(baseQuery);
-                hibernateQuery.setParameter("slug", modelSlug);
-            }
-            hibernateQuery.setParameter("user", user);
-
-            if (maxResultCount > 0)
-                hibernateQuery.setMaxResults(maxResultCount);
-
-            for (Object experiment: hibernateQuery.list()) {
-                if (experiment instanceof Experiment) { // should definitely be true
-                    Experiment experiment1 = (Experiment) experiment;
-                    // remove some fields because it is costly and not useful to send them over the network
-                    experiment1.setResult(null);
-                    experiment1.setAlgorithms(null);
-                    experiment1.setValidations(null);
-                    experiments.add(experiment1);
-
-                }
-
-            }
-        } catch (Exception e) {
-            // 404 here probably
-            LOGGER.trace(e);
-            throw e;
-        } finally {
-            if(session.getTransaction() != null)
+        if (modelSlug != null && !"".equals(modelSlug)) {
+            for(Iterator<Experiment> i = myExperiments.iterator(); i.hasNext(); )
             {
-                session.getTransaction().rollback();
+                Experiment e = i.next();
+                e.setResult(null);
+                e.setAlgorithms(null);
+                e.setValidations(null);
+                if(!e.getModel().getSlug().equals(modelSlug))
+                {
+                    i.remove();
+                }
             }
         }
 
-        return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);*/
+        return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
 
-        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
