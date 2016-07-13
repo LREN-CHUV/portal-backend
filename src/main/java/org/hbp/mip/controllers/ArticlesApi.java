@@ -161,55 +161,36 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
 
-        /*User user = mipApplication.getUser();
-        try{
-            String author = (String) session
-                    .createQuery("select U.username from User U, Article A where A.createdBy = U.username and A.slug = :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
+        User user = mipApplication.getUser();
 
-            if(!user.getUsername().equals(author))
-            {
-                session.getTransaction().commit();
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
+        String author = articleRepository.findOne(slug).getCreatedBy().getUsername();
 
-            String oldTitle = (String) session
-                    .createQuery("select title from Article where slug= :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-
-            String newTitle = article.getTitle();
-
-            if(!newTitle.equals(oldTitle)) {
-                Long count;
-                int i = 0;
-                do {
-                    i++;
-                    newTitle = article.getTitle();
-                    count = (Long) session
-                            .createQuery("select count(*) from Article where title= :title")
-                            .setString("title", newTitle)
-                            .uniqueResult();
-                    if (count > 0 && !newTitle.equals(oldTitle)) {
-                        if (i > 1) {
-                            newTitle = newTitle.substring(0, newTitle.length() - 4);
-                        }
-                        article.setTitle(newTitle + " (" + i + ")");
-                    }
-                } while (count > 0 && !newTitle.equals(oldTitle));
-            }
-
-            session.update(article);
-            session.getTransaction().commit();
-        } catch (Exception e)
+        if(!user.getUsername().equals(author))
         {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        String oldTitle = articleRepository.findOne(slug).getTitle();
+
+        String newTitle = article.getTitle();
+
+        if(!newTitle.equals(oldTitle)) {
+            Long count;
+            int i = 0;
+            do {
+                i++;
+                newTitle = article.getTitle();
+                count = articleRepository.countByTitle(newTitle);
+                if (count > 0 && !newTitle.equals(oldTitle)) {
+                    if (i > 1) {
+                        newTitle = newTitle.substring(0, newTitle.length() - 4);
+                    }
+                    article.setTitle(newTitle + " (" + i + ")");
+                }
+            } while (count > 0 && !newTitle.equals(oldTitle));
+        }
+
+        articleRepository.save(article);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
