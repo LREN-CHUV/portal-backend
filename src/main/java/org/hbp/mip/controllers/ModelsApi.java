@@ -58,45 +58,36 @@ public class ModelsApi {
             @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
 
-        /*User user = mipApplication.getUser();
+        User user = mipApplication.getUser();
+        Iterable<Model> models = null;
 
-        String queryString = "SELECT m FROM Model m, User u WHERE m.createdBy=u.username";
-        if(valid != null && valid)
-        {
-            queryString += " AND m.valid= :valid";
-        }
         if(own != null && own)
         {
-            queryString += " AND u.username= :username";
+            modelRepository.findByCreatedByOrderByCreatedAt(user);
         }
         else
         {
-            queryString += " AND (m.valid=true or u.username= :username)";
+            modelRepository.findByValidOrCreatedByOrderByCreatedAt(true, user);
         }
 
-        queryString += " ORDER BY m.createdAt DESC";
-
-        List<Model> models = new LinkedList<>();
-        Query query = session.createQuery(queryString);
-        if(valid != null)
+        if(valid != null && models != null)
         {
-            query.setBoolean("valid", valid);
+            for (Iterator<Model> i = models.iterator(); i.hasNext(); )
+            {
+                Model m = i.next();
+                if(valid != m.getValid())
+                {
+                    i.remove();
+                }
+            }
         }
-        query.setString("username", user.getUsername());
-        if(limit != null)
-        {
-            query.setMaxResults(limit);  // Pagination : Use query.setFirstResult(...) to set begining index
-        }
-        models = query.list();
-
 
         for(Model model:models){
             model.setDataset(datasetRepository.findOne(model.getDataset().getCode()));
         }
 
-        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);*/
+        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
 
-        return new ResponseEntity<>(HttpStatus.OK).ok(modelRepository.findAll());
     }
 
 
