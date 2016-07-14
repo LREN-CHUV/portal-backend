@@ -6,9 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import org.apache.log4j.Logger;
-import org.hbp.mip.repositories.ExperimentRepository;
 import org.hibernate.annotations.Cascade;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -30,10 +28,6 @@ public class Experiment {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
-
-    @Autowired
-    @Transient
-    ExperimentRepository experimentRepository;
 
     @Id
     @Column(columnDefinition = "uuid")
@@ -143,11 +137,6 @@ public class Experiment {
         queryElements.add(formatEl);
 
         return new Gson().toJson(queryElements);
-    }
-
-    public void finish() {
-        this.setFinished(new Date());
-        experimentRepository.save(this);
     }
 
     public String getValidations() {

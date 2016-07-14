@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -267,10 +268,10 @@ public class ExperimentApi {
         new Thread() {
             @Override
             public void run() {
-                    String url = experimentUrl;
-                    String query = experiment.computeQuery();
+                String url = experimentUrl;
+                String query = experiment.computeQuery();
 
-                    // Results are stored in the experiment object
+                // Results are stored in the experiment object
                 try {
                     executeExperiment(url, query, experiment);
                 } catch (IOException e) {
@@ -278,8 +279,7 @@ public class ExperimentApi {
                     LOGGER.warn("Experiment failed to run properly !");
                     setExperimentError(e, experiment);
                 }
-
-                experiment.finish();
+                finishExpermient(experiment);
             }
         }.start();
     }
@@ -305,10 +305,15 @@ public class ExperimentApi {
                     {
                         experiment.setResult("Unsupported variables !");
                     }
-
-                experiment.finish();
+                finishExpermient(experiment);
             }
         }.start();
+    }
+
+    private void finishExpermient(Experiment experiment)
+    {
+        experiment.setFinished(new Date());
+        experimentRepository.save(experiment);
     }
 
     private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
