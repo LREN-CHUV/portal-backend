@@ -244,62 +244,43 @@ public class ModelsApi {
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
 
-        /*User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
 
-        try{
-            String author = (String) session
-                    .createQuery("select U.username from User U, Model M where M.createdBy = U.username and M.slug = :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
+        Model oldModel = modelRepository.findOne(slug);
 
-            if(!user.getUsername().equals(author))
-            {
-                session.getTransaction().commit();
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
+        String author = oldModel.getCreatedBy().getUsername();
 
-            String oldTitle = (String) session
-                    .createQuery("select title from Model where slug= :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-
-            String newTitle = model.getTitle();
-
-            if(!newTitle.equals(oldTitle)) {
-                Long count;
-                int i = 0;
-                do {
-                    i++;
-                    newTitle = model.getTitle();
-                    count = (Long) session
-                            .createQuery("select count(*) from Model where title= :title")
-                            .setString("title", newTitle)
-                            .uniqueResult();
-                    if (count > 0 && !newTitle.equals(oldTitle)) {
-                        if (i > 1) {
-                            newTitle = newTitle.substring(0, newTitle.length() - 4);
-                        }
-                        model.setTitle(newTitle + " (" + i + ")");
-                    }
-                } while (count > 0 && !newTitle.equals(oldTitle));
-            }
-
-            Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
-            map.put("text", model.getTitle());
-            model.getConfig().setTitle(map);
-
-            session.update(model);
-            session.getTransaction().commit();
-        } catch (Exception e)
+        if(!user.getUsername().equals(author))
         {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        String oldTitle = oldModel.getTitle();
+        String newTitle = model.getTitle();
+
+        if(!newTitle.equals(oldTitle)) {
+            Long count;
+            int i = 0;
+            do {
+                i++;
+                newTitle = model.getTitle();
+                count = modelRepository.countByTitle(newTitle);
+                if (count > 0 && !newTitle.equals(oldTitle)) {
+                    if (i > 1) {
+                        newTitle = newTitle.substring(0, newTitle.length() - 4);
+                    }
+                    model.setTitle(newTitle + " (" + i + ")");
+                }
+            } while (count > 0 && !newTitle.equals(oldTitle));
+        }
+
+        Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+        map.put("text", model.getTitle());
+        model.getConfig().setTitle(map);
+
+        modelRepository.save(model);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
