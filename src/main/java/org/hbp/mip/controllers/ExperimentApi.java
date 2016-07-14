@@ -214,10 +214,10 @@ public class ExperimentApi {
         User user = mipApplication.getUser();
         Iterable<Experiment> experiments = null;
 
-        Iterable<Experiment> myExperiments = experimentRepository.findByUser(user);
+        Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
         if(!mine)
         {
-            Iterable<Experiment> sharedExperiments = experimentRepository.findShared(true);
+            Iterable<Experiment> sharedExperiments = experimentRepository.findByShared(true);
             experiments = Iterables.concat(myExperiments, sharedExperiments);
         }
 

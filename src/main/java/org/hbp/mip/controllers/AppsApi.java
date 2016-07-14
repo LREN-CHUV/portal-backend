@@ -57,7 +57,7 @@ public class AppsApi {
         User user = mipApplication.getUser();
         App app = appRepository.findOne(id);
 
-        Vote vote = voteRepository.find(user, app).iterator().next();
+        Vote vote = voteRepository.findByUserAndApp(user, app).iterator().next();
 
         if (vote != null) {
             vote.setValue(value);

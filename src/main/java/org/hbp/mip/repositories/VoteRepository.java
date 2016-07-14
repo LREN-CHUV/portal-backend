@@ -10,5 +10,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 
 public interface VoteRepository extends CrudRepository<Vote, Long> {
-    Iterable<Vote> find(User user, App app);
+    Iterable<Vote> findByUserAndApp(User user, App app);
 }
