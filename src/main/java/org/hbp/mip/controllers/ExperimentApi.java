@@ -1,6 +1,6 @@
 package org.hbp.mip.controllers;
 
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -215,28 +215,28 @@ public class ExperimentApi {
         Iterable<Experiment> experiments = null;
 
         Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
+        List<Experiment> expList = Lists.newLinkedList(myExperiments);
         if(!mine)
         {
             Iterable<Experiment> sharedExperiments = experimentRepository.findByShared(true);
-            experiments = Iterables.concat(myExperiments, sharedExperiments);
+            List<Experiment> sharedExpList = Lists.newLinkedList(sharedExperiments);
+            expList.addAll(sharedExpList);
         }
 
         if (modelSlug != null && !"".equals(modelSlug)) {
-            for(Iterator<Experiment> i = myExperiments.iterator(); i.hasNext(); )
+            for(Experiment e : expList)
             {
-                Experiment e = i.next();
                 e.setResult(null);
                 e.setAlgorithms(null);
                 e.setValidations(null);
                 if(!e.getModel().getSlug().equals(modelSlug))
                 {
-                    i.remove();
+                    expList.remove(e);
                 }
             }
         }
 
-        return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
-
+        return new ResponseEntity<>(gson.toJson(expList), HttpStatus.OK);
     }
 
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
