@@ -11,6 +11,7 @@ import org.hbp.mip.model.App;
 import org.hbp.mip.model.User;
 import org.hbp.mip.model.Vote;
 import org.hbp.mip.repositories.AppRepository;
+import org.hbp.mip.repositories.UserRepository;
 import org.hbp.mip.repositories.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Iterator;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -38,6 +41,9 @@ public class AppsApi {
     @Autowired
     VoteRepository voteRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
@@ -53,26 +59,26 @@ public class AppsApi {
             @ApiParam(value = "id", required = true) @PathVariable("id") Integer id,
             @ApiParam(value = "value", required = true) @PathVariable("value") Integer value
     ) {
-
-        User user = securityConfiguration.getUser();
+        User user = userRepository.findOne(securityConfiguration.getUser().getUsername());
         App app = appRepository.findOne(id);
+        Vote vote;
 
-        Vote vote = voteRepository.findByUserAndApp(user, app).iterator().next();
-
-        if (vote != null) {
-            vote.setValue(value);
-            voteRepository.save(vote);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Iterator<Vote> voteIter = voteRepository.findByUserAndApp(user, app).iterator();
+        if(voteIter.hasNext())
+        {
+            vote = voteIter.next();
         }
         else
         {
             vote = new Vote();
             vote.setUser(user);
-            vote.setValue(value);
             vote.setApp(app);
-            voteRepository.save(vote);
-            return new ResponseEntity<>(HttpStatus.CREATED);
         }
+
+        vote.setValue(value);
+        voteRepository.save(vote);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
 }
