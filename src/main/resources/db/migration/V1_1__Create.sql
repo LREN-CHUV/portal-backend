@@ -66,7 +66,7 @@ ALTER TABLE app OWNER TO postgres;
 
 CREATE TABLE article (
     slug character varying(255) NOT NULL,
-    _abstract text,
+    abstract text,
     content text,
     createdat timestamp without time zone,
     publishedat timestamp without time zone,

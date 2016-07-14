@@ -9,6 +9,7 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.*;
+import org.hbp.mip.repositories.ConfigRepository;
 import org.hbp.mip.repositories.DatasetRepository;
 import org.hbp.mip.repositories.ModelRepository;
 import org.hbp.mip.repositories.QueryRepository;
@@ -46,6 +47,9 @@ public class ModelsApi {
     @Autowired
     QueryRepository queryRepository;
 
+    @Autowired
+    ConfigRepository configRepository;
+
     private static final String DATA_FILE = "data/values.csv";
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
@@ -75,15 +79,12 @@ public class ModelsApi {
             for (Iterator<Model> i = models.iterator(); i.hasNext(); )
             {
                 Model m = i.next();
+                m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
                 if(valid != m.getValid())
                 {
                     i.remove();
                 }
             }
-        }
-
-        for(Model model:models){
-            model.setDataset(datasetRepository.findOne(model.getDataset().getCode()));
         }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
@@ -153,6 +154,9 @@ public class ModelsApi {
         map.put("text", model.getTitle());
         model.getConfig().setTitle(map);
 
+        configRepository.save(model.getConfig());
+        queryRepository.save(model.getQuery());
+        datasetRepository.save(model.getDataset());
         modelRepository.save(model);
 
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
