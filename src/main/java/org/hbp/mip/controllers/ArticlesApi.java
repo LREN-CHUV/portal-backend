@@ -115,9 +115,11 @@ public class ArticlesApi {
         }
 
         i = 0;
+        boolean alreadyExists;
         do {
             i++;
-            if(articleRepository.exists(slug))
+            alreadyExists = articleRepository.exists(slug);
+            if(alreadyExists)
             {
                 if(i > 1)
                 {
@@ -126,7 +128,7 @@ public class ArticlesApi {
                 slug += "-"+i;
             }
             article.setSlug(slug);
-        } while(count > 0);
+        } while(alreadyExists);
         articleRepository.save(article);
 
         return new ResponseEntity<>(HttpStatus.CREATED);

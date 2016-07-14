@@ -139,7 +139,7 @@ public class ModelsApi {
         do {
             i++;
             alreadyExists = modelRepository.exists(slug);
-            if(count > 0)
+            if(alreadyExists)
             {
                 if(i > 1)
                 {
