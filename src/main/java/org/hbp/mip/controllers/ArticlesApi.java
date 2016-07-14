@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -45,34 +46,31 @@ public class ArticlesApi {
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
 
-        /*User user = mipApplication.getUser();
+        User user = mipApplication.getUser();
+        Iterable<Article> articles;
 
-        String queryString = "SELECT a FROM Article a, User u WHERE a.createdBy=u.username";
-        if(status != null)
-        {
-            queryString += " AND status= :status";
-        }
         if(own != null && own)
         {
-            queryString += " AND u.username= :username";
+             articles = articleRepository.findByCreatedBy(user);
         }
         else
         {
-            queryString += " AND (status='published' or u.username= :username)";
+            articles = articleRepository.findByStatusOrCreatedBy("published", user);
         }
 
-        List articles = new LinkedList<>();
-        Query query = session.createQuery(queryString);
-        if (status != null) {
-            query.setString("status", status);
+        if(status != null)
+        {
+            for(Iterator<Article> i = articles.iterator(); i.hasNext();)
+            {
+                Article a = i.next();
+                if(!status.equals(a.getStatus()))
+                {
+                    i.remove();
+                }
+            }
         }
-        query.setString("username", user.getUsername());
-        articles = query.list();
-        session.getTransaction().commit();
 
-        return ResponseEntity.ok(articles);*/
-
-        return ResponseEntity.ok(articleRepository.findAll());
+        return ResponseEntity.ok(articles);
     }
 
 
@@ -108,7 +106,7 @@ public class ArticlesApi {
             }
         } while(count > 0);
 
-        String slug = null;
+        String slug;
         try {
             slug = new Slugify().slugify(article.getTitle());
         } catch (IOException e) {

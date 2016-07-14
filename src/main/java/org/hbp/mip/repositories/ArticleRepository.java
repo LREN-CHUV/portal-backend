@@ -1,6 +1,7 @@
 package org.hbp.mip.repositories;
 
 import org.hbp.mip.model.Article;
+import org.hbp.mip.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -9,4 +10,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ArticleRepository extends CrudRepository<Article, String> {
     Long countByTitle(String title);
+    Iterable<Article> findByCreatedBy(User user);
+    Iterable<Article> findByStatusOrCreatedBy(String status, User user);
 }
