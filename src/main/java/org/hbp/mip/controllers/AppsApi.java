@@ -6,7 +6,7 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.App;
 import org.hbp.mip.model.User;
 import org.hbp.mip.model.Vote;
@@ -30,7 +30,7 @@ public class AppsApi {
     private static final Logger LOGGER = Logger.getLogger(AppsApi.class);
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
 
     @Autowired
     AppRepository appRepository;
@@ -54,7 +54,7 @@ public class AppsApi {
             @ApiParam(value = "value", required = true) @PathVariable("value") Integer value
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         App app = appRepository.findOne(id);
 
         Vote vote = voteRepository.findByUserAndApp(user, app).iterator().next();

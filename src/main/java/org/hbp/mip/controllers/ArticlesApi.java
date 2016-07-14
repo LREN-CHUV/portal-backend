@@ -8,7 +8,7 @@ package org.hbp.mip.controllers;
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
 import org.hbp.mip.repositories.ArticleRepository;
@@ -32,7 +32,7 @@ public class ArticlesApi {
     private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
 
     @Autowired
     ArticleRepository articleRepository;
@@ -46,7 +46,7 @@ public class ArticlesApi {
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         Iterable<Article> articles;
 
         if(own != null && own)
@@ -81,7 +81,7 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to create", required = true) @Valid Article article
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         article.setCreatedAt(new Date());
         if ("published".equals(article.getStatus())) {
@@ -140,7 +140,7 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         Article article;
         article = articleRepository.findOne(slug);
         if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
@@ -159,7 +159,7 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         String author = articleRepository.findOne(slug).getCreatedBy().getUsername();
 

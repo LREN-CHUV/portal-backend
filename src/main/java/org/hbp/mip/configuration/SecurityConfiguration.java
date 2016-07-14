@@ -1,5 +1,12 @@
 package org.hbp.mip.configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiParam;
+import org.apache.log4j.Logger;
+import org.hbp.mip.controllers.ArticlesApi;
+import org.hbp.mip.model.User;
+import org.hbp.mip.repositories.UserRepository;
 import org.hbp.mip.utils.CORSFilter;
 import org.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +17,12 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -19,6 +30,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -26,6 +38,10 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -36,6 +52,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.Principal;
 
 /**
  * Created by mirco on 11.07.16.
@@ -43,10 +62,16 @@ import java.io.IOException;
 
 @Configuration
 @EnableOAuth2Client
+@RestController
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Value("#{'${hbp.client.pre-established-redirect-uri:/login/hbp}'}")
     String loginUrl;
@@ -63,7 +88,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs", "/**").permitAll()
+                .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
                 .and().logout().logoutSuccessUrl(loginUrl).permitAll()
@@ -127,6 +152,58 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
+    }
+
+    public String getUserInfos() {
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
+        return userAuthentication.getDetails().toString();
+    }
+
+    /**
+     * returns the user for the current session.
+     * <p>
+     * the "synchronized" keyword is there to avoid a bug that the transaction is supposed to protect me from.
+     * To test if your solution to removing it works, do the following:
+     * - clean DB from scratch
+     * - restart DB and backend (no session or anything like that)
+     * - log in using the front end
+     * - check you have no 500 error in the network logs.
+     *
+     * @return
+     */
+    public synchronized User getUser() {
+        User user = new User(getUserInfos());
+        user.setAgreeNDA(user.getAgreeNDA());
+        userRepository.save(user);
+        return user;
+    }
+
+    @RequestMapping(path = "/user", method = RequestMethod.GET)
+    public Principal user(Principal principal, HttpServletResponse response) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            String userJSON = mapper.writeValueAsString(getUser());
+            Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            LOGGER.trace(e);
+        }
+        return principal;
+    }
+
+    @RequestMapping(path = "/user", method = RequestMethod.POST)
+    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
+        String username = getUser().getUsername();
+        User user = userRepository.findOne(username);
+        if (user != null) {
+            user.setAgreeNDA(agreeNDA);
+            userRepository.save(user);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.Experiment;
 import org.hbp.mip.model.User;
 import org.hbp.mip.repositories.ExperimentRepository;
@@ -58,7 +58,7 @@ public class ExperimentApi {
     private String miningExaremeQueryUrl;
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
 
     @Autowired
     ModelRepository modelRepository;
@@ -75,7 +75,7 @@ public class ExperimentApi {
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         experiment.setAlgorithms(incomingQuery.get("algorithms").toString());
         experiment.setValidations(incomingQuery.get("validations").toString());
@@ -127,7 +127,7 @@ public class ExperimentApi {
 
         Experiment experiment;
         UUID experimentUuid;
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
@@ -211,7 +211,7 @@ public class ExperimentApi {
             int maxResultCount,
             String modelSlug
     ) {
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         Iterable<Experiment> experiments = null;
 
         Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
@@ -242,7 +242,7 @@ public class ExperimentApi {
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
         Experiment experiment;
         UUID experimentUuid;
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {

@@ -7,7 +7,7 @@ package org.hbp.mip.controllers;
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.*;
 import org.hbp.mip.repositories.DatasetRepository;
 import org.hbp.mip.repositories.ModelRepository;
@@ -32,7 +32,7 @@ public class ModelsApi {
     private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
 
     @Autowired
     CSVUtil csvUtil;
@@ -58,7 +58,7 @@ public class ModelsApi {
             @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         Iterable<Model> models = null;
 
         if(own != null && own)
@@ -98,7 +98,7 @@ public class ModelsApi {
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
     )  {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
         model.setCreatedBy(user);
@@ -165,7 +165,7 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     )  {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         Model model = null;
 
