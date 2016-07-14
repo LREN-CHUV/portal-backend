@@ -67,11 +67,11 @@ public class ModelsApi {
 
         if(own != null && own)
         {
-            modelRepository.findByCreatedByOrderByCreatedAt(user);
+            models = modelRepository.findByCreatedByOrderByCreatedAt(user);
         }
         else
         {
-            modelRepository.findByValidOrCreatedByOrderByCreatedAt(true, user);
+            models = modelRepository.findByValidOrCreatedByOrderByCreatedAt(true, user);
         }
 
         if(valid != null && models != null)
