@@ -174,7 +174,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     public synchronized User getUser() {
         User user = new User(getUserInfos());
-        user.setAgreeNDA(user.getAgreeNDA());
+        User foundUser = userRepository.findOne(user.getUsername());
+        if(foundUser != null)
+        {
+            user.setAgreeNDA(foundUser.getAgreeNDA());
+        }
         userRepository.save(user);
         return user;
     }
@@ -197,8 +201,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
-        String username = getUser().getUsername();
-        User user = userRepository.findOne(username);
+        User user = getUser();
         if (user != null) {
             user.setAgreeNDA(agreeNDA);
             userRepository.save(user);
