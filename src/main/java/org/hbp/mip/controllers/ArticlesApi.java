@@ -90,7 +90,7 @@ public class ArticlesApi {
         article.setCreatedBy(user);
 
         long count = 1;
-        for(int i = 0; count > 0; i++)
+        for(int i = 1; count > 0; i++)
         {
             count = articleRepository.countByTitle(article.getTitle());
 
@@ -114,7 +114,7 @@ public class ArticlesApi {
         }
 
         boolean alreadyExists = true;
-        for(int i = 0; alreadyExists; i++)
+        for(int i = 1; alreadyExists; i++)
         {
             alreadyExists = articleRepository.exists(slug);
             if(alreadyExists)
@@ -174,7 +174,7 @@ public class ArticlesApi {
 
         if(!newTitle.equals(oldTitle)) {
             long count = 1;
-            for(int i = 0; count > 0 && !newTitle.equals(oldTitle); i++)
+            for(int i = 1; count > 0 && !newTitle.equals(oldTitle); i++)
             {
                 newTitle = article.getTitle();
                 count = articleRepository.countByTitle(newTitle);

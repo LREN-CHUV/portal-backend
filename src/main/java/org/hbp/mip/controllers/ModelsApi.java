@@ -110,7 +110,7 @@ public class ModelsApi {
         }
 
         long count = 1;
-        for(int i = 0; count > 0; i++)
+        for(int i = 1; count > 0; i++)
         {
             count = modelRepository.countByTitle(model.getTitle());
 
@@ -134,7 +134,7 @@ public class ModelsApi {
         }
 
         boolean alreadyExists = true;
-        for(int i = 0; alreadyExists; i++)
+        for(int i = 1; alreadyExists; i++)
         {
             alreadyExists = modelRepository.exists(slug);
             if(alreadyExists)
@@ -207,7 +207,7 @@ public class ModelsApi {
 
         if(!newTitle.equals(oldTitle)) {
             long count = 1;
-            for(int i = 0; count > 0 && !newTitle.equals(oldTitle); i++)
+            for(int i = 1; count > 0 && !newTitle.equals(oldTitle); i++)
             {
                 newTitle = model.getTitle();
                 count = modelRepository.countByTitle(newTitle);
