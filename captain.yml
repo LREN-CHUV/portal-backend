@@ -5,7 +5,6 @@ backend-build:
     - echo 'Building backend-build'
   post:
     - docker run --rm -v $(pwd):/opt/portal/ -v $(pwd)/.m2:/root/.m2/ hbpmip/backend-build
-    - cp $(pwd)/target/backend-services-DOCKER_BUILD.jar $(pwd)/src/docker/run/
     - echo 'Finished building backend-build'
   test:
     - tests.sh
@@ -16,10 +15,7 @@ backend:
   pre:
     - echo 'Building backend'
     - cp -r $(pwd)/target $(pwd)/src/docker/run/target/
-    - docker run -d --name db -p 5432:5432 -v $(pwd)/pgdata:/var/lib/postgresql/data/pgdata -e "POSTGRES_USER=postgres" -e "PGDATA=/var/lib/postgresql/data/pgdata" postgres:9.5.3
   post:
-    - docker run --rm --name backend -v $(pwd)/config:/config hbpmip/backend echo 'backend is running'
-    - docker stop db && docker rm -f db
     - rm -r $(pwd)/src/docker/run/target/
     - echo 'Finished building backend'
   test:
