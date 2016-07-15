@@ -177,6 +177,29 @@ public class ModelsApi {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+        if(model != null)
+        {
+            List<String> yAxisVars = configRepository.findOne(model.getConfig().getId()).getyAxisVariables();
+            Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
+            model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
+
+            List<Variable> vars = queryRepository.findOne(model.getQuery().getId()).getVariables();
+            Collection<Variable> varsColl = new LinkedHashSet<>(vars);
+            model.getQuery().setVariables(new LinkedList<>(varsColl));
+
+            List<Variable> grpgs = queryRepository.findOne(model.getQuery().getId()).getGrouping();
+            Collection<Variable> grpgsColl = new LinkedHashSet<>(grpgs);
+            model.getQuery().setGrouping(new LinkedList<>(grpgsColl));
+
+            List<Variable> covars = queryRepository.findOne(model.getQuery().getId()).getCovariables();
+            Collection<Variable> covarsColl = new LinkedHashSet<>(covars);
+            model.getQuery().setCovariables(new LinkedList<>(covarsColl));
+
+            List<Filter> fltrs = queryRepository.findOne(model.getQuery().getId()).getFilters();
+            Collection<Filter> fltrsColl = new LinkedHashSet<>(fltrs);
+            model.getQuery().setFilters(new LinkedList<>(fltrsColl));
+        }
+
         return new ResponseEntity<>(HttpStatus.OK).ok(model);
     }
 
