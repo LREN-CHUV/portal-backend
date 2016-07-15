@@ -259,6 +259,9 @@ public class ModelsApi {
         map.put("text", model.getTitle());
         model.getConfig().setTitle(map);
 
+        configRepository.save(model.getConfig());
+        queryRepository.save(model.getQuery());
+        datasetRepository.save(model.getDataset());
         modelRepository.save(model);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
