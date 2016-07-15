@@ -1,6 +1,6 @@
 backend-build:
   build: ./src/docker/build/Dockerfile
-  image: hbpmip/backend-build
+  image: hbpmip/portal-backend-build
   pre:
     - echo 'Building backend-build'
   post:
@@ -11,7 +11,7 @@ backend-build:
 
 backend:
   build: ./src/docker/run/Dockerfile
-  image: hbpmip/backend
+  image: hbpmip/portal-backend
   pre:
     - echo 'Building backend'
     - cp -r $(pwd)/target $(pwd)/src/docker/run/target/
