@@ -1,0 +1,22 @@
+backend-build:
+  build: ./src/docker/build/Dockerfile
+  image: hbpmip/backend-build
+  pre:
+    - echo 'Building backend-build'
+  post:
+    - docker run --rm -v $(pwd):/opt/portal/ -v $(pwd)/.m2:/root/.m2/ hbpmip/backend-build
+    - echo 'Finished building backend-build'
+  test:
+    - tests.sh
+
+backend:
+  build: ./src/docker/run/Dockerfile
+  image: hbpmip/backend
+  pre:
+    - echo 'Building backend'
+    - cp -r $(pwd)/target $(pwd)/src/docker/run/target/
+  post:
+    - rm -r $(pwd)/src/docker/run/target/
+    - echo 'Finished building backend'
+  test:
+    - tests.sh

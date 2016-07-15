@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM java:openjdk-8u92-jdk-alpine
 
 VOLUME /config
 
