@@ -1,32 +1,17 @@
 ## Introduction
 
-This is the MIP implementation.
+This is the MIP backend.
 
 ## Usage
 
-Build the project with `./build` and run it with `./run`.
+* Build and run the project (including clean target): `./go.sh`
+* Build the project (including clean target): `./build.sh`
+* Run the project: `./run.sh`
+* Show live logs: `./log.sh` (CTRL+C to quit)
+* Stop and remove the running container: `./halt.sh`
+* Clean Maven cache, etc: `./clean.sh`
 
-## API Documentation using Swagger (Springfox)
+## Generate PDF API documentation on build
 
-The API documentation is available at `<BASE URL>/swagger-ui.html`. A JSON version is available at `<BASE URL>/v2/api-docs`
-
-## TODO
-
-* Implement SoapUI tests;
-* Clean code (both back-end front-end);
-* Sync with original Swagger description;
-* Externalize configuration (DB parameters, security enabled/disabled, ...);
-* Make user tests with multiple users;
-* Fix bugs.
-
-## BUGS
-
-* Export PDF does not work;
-
-### Maintenance
-
-* To keep an updated API documentation, the developers should keep synchronized both the auto-generated swagger file (from Java annotations) with the hand written one. You can follow this method to get a YAML description from the Java-annotated code:
-  * Add annotations to the Java code;
-  * Get JSON from `<BASE URL>/v2/api-docs`;
-  * Convert JSON to YAML on [http://jsontoyaml.com](http://jsontoyaml.com).
-  
+Uncomment the following line in src/docker/build/build-in-docker.sh :
+`mvn swagger2markup:convertSwagger2markup asciidoctor:process-asciidoc`

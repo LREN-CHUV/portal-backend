@@ -1,20 +1,12 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
-# Run the backend in a Docker container and start the database.
-# The current project is compiler inside the Docker container
+docker-compose build
+docker-compose up -d db
 
-if groups $USER | grep &>/dev/null '\bdocker\b'; then
-  DOCKER_COMPOSE="docker-compose"
-else
-  DOCKER_COMPOSE="sudo docker-compose"
-fi
+echo 'Waiting for database to be ready...'
+until [ $(docker-compose exec db psql -U postgres -c "\q" | wc -l) -eq 0 ]; do
+    printf '.'
+    sleep 1
+done
 
-# Create a symlink to the local Maven repository
-[ -L .m2 ] || ln -s -t . ~/.m2
-
-$DOCKER_COMPOSE --file=docker-compose.init.yml --project-name=portal-backend-init up
-
-echo "Need to set the current user as owner of the files generated in target directory..."
-sudo chown -R $USER:$USER ./target
-
-echo "Done"
+docker-compose up -d backend

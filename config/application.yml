@@ -1,9 +1,17 @@
-# Configuration for the portal running inside a Docker container for development
+# Configuration for the portal running inside a Docker container
 
-connection:
-  url: "jdbc:postgresql://portaldb:5432/postgres"
-  username: "postgres"
-  password: "test"
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/postgres
+    username: postgres
+    password: pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQL9Dialect
+  resources:
+      chain:
+        enabled: true
 
 security:
   enabled: false
@@ -17,20 +25,12 @@ hbp:
     tokenName: oauth_token
     authenticationScheme: query
     clientAuthenticationScheme: form
-    # use-current-uri: false  # For both production and HBPS1 deployments
-    # pre-established-redirect-uri: https://mip.humanbrainproject.eu/services/login/hbp  # For production deployment
-    # pre-established-redirect-uri: http://hbps1.chuv.ch/services/login/hbp  # For HBPS1 deployment
   resource:
     userInfoUri: https://services.humanbrainproject.eu/oidc/userinfo
 
 logging:
   level:
     org.springframework.security: DEBUG
-
-spring:
-  resources:
-    chain:
-      enabled: true
 
 server:
   contextPath: /services
@@ -45,3 +45,6 @@ workflow:
   miningMipUrl: http://dockerhost:8087/mining
   miningExaremeUrl: http://hbps2.chuv.ch:9090/mining/query
 
+frontend:
+  redirect:
+    url: http://frontend/home

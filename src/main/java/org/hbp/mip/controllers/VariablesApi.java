@@ -8,12 +8,11 @@ package org.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Value;
 import org.hbp.mip.model.Variable;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.VariableRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -23,10 +22,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/variables", description = "the variables API")
 public class VariablesApi {
 
+    @Autowired
+    VariableRepository variableRepository;
+
     @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List> getVariables(
+    public ResponseEntity<Iterable> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
             @ApiParam(value = "List of subgroups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "subgroup", required = false) String subgroup,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isVariable", required = false) String isVariable,
@@ -34,25 +36,7 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isCovariable", required = false) String isCovariable,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter
     )  {
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List variables = new LinkedList<>();
-        try{
-            session.beginTransaction();
-            variables = session
-                    .createQuery("from Variable")
-                    .list();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(variables);
+        return ResponseEntity.ok(variableRepository.findAll());
     }
 
     @ApiOperation(value = "Get a variable", response = Variable.class)
@@ -61,27 +45,7 @@ public class VariablesApi {
     public ResponseEntity<Variable> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
     )  {
-
-        // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Variable variable = null;
-        try{
-            session.beginTransaction();
-            variable = (Variable) session
-                    .createQuery("from Variable where code= :code")
-                    .setString("code", code)
-                    .uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(variable);
+        return ResponseEntity.ok(variableRepository.findOne(code));
     }
 
 
@@ -92,27 +56,7 @@ public class VariablesApi {
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q
     )  {
-
-        // Query DB
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List values = new LinkedList<>();
-        try{
-            session.beginTransaction();
-            values = session
-                    .createQuery("select values from Variable where code= :code")
-                    .setString("code", code)
-                    .list();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(values);
+        return ResponseEntity.ok(variableRepository.findOne(code).getValues());
     }
 
 

@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  backend_build:
+    container_name: backend_build
+    build: ./src/docker/build/
+    volumes:
+      - ./:/opt/portal/
+      - .m2:/root/.m2/
+    ports:
+      - "8080:8080"

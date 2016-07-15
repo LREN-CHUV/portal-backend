@@ -6,8 +6,8 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.User;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/users", description = "the users API")
 public class UsersApi {
 
+    @Autowired
+    UserRepository userRepository;
 
     @ApiOperation(value = "Get a user", response = User.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -28,25 +30,6 @@ public class UsersApi {
     public ResponseEntity<User> getAUser(
             @ApiParam(value = "username", required = true) @PathVariable("username") String username
     )  {
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        User user = null;
-        try{
-            session.beginTransaction();
-            user = (User) session
-                    .createQuery("from User where username= :username")
-                    .setString("username", username)
-                    .uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userRepository.findOne(username));
     }
 }

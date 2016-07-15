@@ -15,13 +15,20 @@
  */
 package org.hbp.mip;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.support.GenericXmlContextLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@SpringApplicationConfiguration(classes=MIPApplication.class, locations={"classpath:spring/application-context.xml"})
+@ContextConfiguration(loader = GenericXmlContextLoader.class)
 public class MIPApplicationTests {
+
+    @Test
+    public void testHello()
+    {
+        Assert.assertNotNull("test");
+    }
 }

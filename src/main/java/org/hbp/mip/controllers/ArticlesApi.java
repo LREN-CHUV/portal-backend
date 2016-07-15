@@ -8,12 +8,10 @@ package org.hbp.mip.controllers;
 import com.github.slugify.Slugify;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.Article;
 import org.hbp.mip.model.User;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -35,53 +32,43 @@ public class ArticlesApi {
     private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
+
+    @Autowired
+    ArticleRepository articleRepository;
 
     @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List> getArticles(
+    public ResponseEntity<Iterable> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
+        Iterable<Article> articles;
 
-        String queryString = "SELECT a FROM Article a, User u WHERE a.createdBy=u.username";
-        if(status != null)
-        {
-            queryString += " AND status= :status";
-        }
         if(own != null && own)
         {
-            queryString += " AND u.username= :username";
+             articles = articleRepository.findByCreatedBy(user);
         }
         else
         {
-            queryString += " AND (status='published' or u.username= :username)";
+            articles = articleRepository.findByStatusOrCreatedBy("published", user);
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List articles = new LinkedList<>();
-        try {
-            session.beginTransaction();
-            Query query = session.createQuery(queryString);
-            if (status != null) {
-                query.setString("status", status);
-            }
-            query.setString("username", user.getUsername());
-            articles = query.list();
-            session.getTransaction().commit();
-        } catch (Exception e)
+        if(status != null)
         {
-            if(session.getTransaction() != null)
+            for(Iterator<Article> i = articles.iterator(); i.hasNext();)
             {
-                session.getTransaction().rollback();
-                throw e;
+                Article a = i.next();
+                if(!status.equals(a.getStatus()))
+                {
+                    i.remove();
+                }
             }
         }
-
 
         return ResponseEntity.ok(articles);
     }
@@ -94,7 +81,7 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to create", required = true) @Valid Article article
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
         article.setCreatedAt(new Date());
         if ("published".equals(article.getStatus())) {
@@ -102,62 +89,45 @@ public class ArticlesApi {
         }
         article.setCreatedBy(user);
 
-        Long count;
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
-            session.beginTransaction();
+        long count = 1;
+        for(int i = 1; count > 0; i++)
+        {
+            count = articleRepository.countByTitle(article.getTitle());
 
-            int i = 0;
-            do{
-                i++;
-                count = (Long) session
-                        .createQuery("select count(*) from Article where title= :title")
-                        .setString("title", article.getTitle())
-                        .uniqueResult();
-
-                if(count > 0)
-                {
-                    String title = article.getTitle();
-                    if(i > 1)
-                    {
-                        title = title.substring(0, title.length()-4);
-                    }
-                    article.setTitle(title + " (" + i + ")");
-                }
-            } while(count > 0);
-
-            String slug = new Slugify().slugify(article.getTitle());
-
-            i = 0;
-            do {
-                i++;
-                count = (Long) session
-                        .createQuery("select count(*) from Article where slug= :slug")
-                        .setString("slug", slug)
-                        .uniqueResult();
-                if(count > 0)
-                {
-                    if(i > 1)
-                    {
-                        slug = slug.substring(0, slug.length()-2);
-                    }
-                    slug += "-"+i;
-                }
-                article.setSlug(slug);
-            } while(count > 0);
-
-            session.save(article);
-            session.getTransaction().commit();
-        } catch (IOException e) {
-        LOGGER.trace(e);
-        } catch (Exception e) {
-            if(session.getTransaction() != null)
+            if(count > 0)
             {
-                session.getTransaction().rollback();
-                throw e;
+                String title = article.getTitle();
+                if(i > 1)
+                {
+                    title = title.substring(0, title.length()-4);
+                }
+                article.setTitle(title + " (" + i + ")");
             }
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        String slug;
+        try {
+            slug = new Slugify().slugify(article.getTitle());
+        } catch (IOException e) {
+            slug = "";
+            LOGGER.trace(e);
+        }
+
+        boolean alreadyExists = true;
+        for(int i = 1; alreadyExists; i++)
+        {
+            alreadyExists = articleRepository.exists(slug);
+            if(alreadyExists)
+            {
+                if(i > 1)
+                {
+                    slug = slug.substring(0, slug.length()-2);
+                }
+                slug += "-"+i;
+            }
+            article.setSlug(slug);
+        }
+        articleRepository.save(article);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -170,33 +140,13 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
 
-        User user = mipApplication.getUser();
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Article article = null;
-        try{
-            session.beginTransaction();
-
-            article = (Article) session
-                    .createQuery("FROM Article WHERE slug= :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-
-            session.getTransaction().commit();
-
-            if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
-            {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-        } catch (Exception e)
+        User user = securityConfiguration.getUser();
+        Article article;
+        article = articleRepository.findOne(slug);
+        if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
         {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
         return ResponseEntity.ok(article);
     }
 
@@ -209,59 +159,35 @@ public class ArticlesApi {
             @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
 
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        try{
-            session.beginTransaction();
+        String author = articleRepository.findOne(slug).getCreatedBy().getUsername();
 
-            String author = (String) session
-                    .createQuery("select U.username from User U, Article A where A.createdBy = U.username and A.slug = :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-
-            if(!user.getUsername().equals(author))
-            {
-                session.getTransaction().commit();
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-
-            String oldTitle = (String) session
-                    .createQuery("select title from Article where slug= :slug")
-                    .setString("slug", slug)
-                    .uniqueResult();
-
-            String newTitle = article.getTitle();
-
-            if(!newTitle.equals(oldTitle)) {
-                Long count;
-                int i = 0;
-                do {
-                    i++;
-                    newTitle = article.getTitle();
-                    count = (Long) session
-                            .createQuery("select count(*) from Article where title= :title")
-                            .setString("title", newTitle)
-                            .uniqueResult();
-                    if (count > 0 && !newTitle.equals(oldTitle)) {
-                        if (i > 1) {
-                            newTitle = newTitle.substring(0, newTitle.length() - 4);
-                        }
-                        article.setTitle(newTitle + " (" + i + ")");
-                    }
-                } while (count > 0 && !newTitle.equals(oldTitle));
-            }
-
-            session.update(article);
-            session.getTransaction().commit();
-        } catch (Exception e)
+        if(!user.getUsername().equals(author))
         {
-            if(session.getTransaction() != null)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        String oldTitle = articleRepository.findOne(slug).getTitle();
+
+        String newTitle = article.getTitle();
+
+        if(!newTitle.equals(oldTitle)) {
+            long count = 1;
+            for(int i = 1; count > 0 && !newTitle.equals(oldTitle); i++)
             {
-                session.getTransaction().rollback();
-                throw e;
+                newTitle = article.getTitle();
+                count = articleRepository.countByTitle(newTitle);
+                if (count > 0 && !newTitle.equals(oldTitle)) {
+                    if (i > 1) {
+                        newTitle = newTitle.substring(0, newTitle.length() - 4);
+                    }
+                    article.setTitle(newTitle + " (" + i + ")");
+                }
             }
         }
+
+        articleRepository.save(article);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

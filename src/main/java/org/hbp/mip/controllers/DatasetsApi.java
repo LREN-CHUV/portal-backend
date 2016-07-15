@@ -7,8 +7,8 @@ package org.hbp.mip.controllers;
 
 import io.swagger.annotations.*;
 import org.hbp.mip.model.Dataset;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.DatasetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,32 +22,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/datasets", description = "the datasets API")
 public class DatasetsApi {
 
+    @Autowired
+    DatasetRepository datasetRepository;
+
     @ApiOperation(value = "Get a dataset", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Dataset> getADataset(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code
     )  {
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Dataset dataset = null;
-        try{
-            session.beginTransaction();
-            dataset = (Dataset) session
-                    .createQuery("from Dataset where code= :code")
-                    .setString("code", code)
-                    .uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
-        return ResponseEntity.ok(dataset);
+        return ResponseEntity.ok(datasetRepository.findOne(code));
     }
 
 }

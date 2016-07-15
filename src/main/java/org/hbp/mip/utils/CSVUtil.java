@@ -4,7 +4,8 @@ import org.apache.log4j.Logger;
 import org.hbp.mip.model.Dataset;
 import org.hbp.mip.model.Query;
 import org.hbp.mip.model.Variable;
-import org.hibernate.Session;
+import org.hbp.mip.repositories.VariableRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,13 +25,10 @@ public class CSVUtil {
 
     private static final String SEPARATOR = ",";
 
-    private CSVUtil()
-    {
-        /* Hide implicit public constructor */
-        throw new IllegalAccessError("CSVUtil class");
-    }
+    @Autowired
+    VariableRepository variableRepository;
 
-    public static Dataset parseValues(String filename, Query query)
+    public Dataset parseValues(String filename, Query query)
     {
         List<String[]> rows = getRows(filename);
 
@@ -161,7 +159,7 @@ public class CSVUtil {
         return result;
     }
 
-    private static List<String[]> getRows(String filename) {
+    private List<String[]> getRows(String filename) {
         List<String[]> rows = new LinkedList<>();
         try {
             InputStream is = CSVUtil.class.getClassLoader().getResourceAsStream(filename);
@@ -183,7 +181,7 @@ public class CSVUtil {
         return rows;
     }
 
-    private static int find(String code, String[] firstRow) {
+    private int find(String code, String[] firstRow) {
         for (int i = 0; i < firstRow.length; i++) {
             if (firstRow[i].equals(code))
                 return i;
@@ -191,7 +189,7 @@ public class CSVUtil {
         return -1;
     }
 
-    private static String generateDSCode(Query query) {
+    private String generateDSCode(Query query) {
         String prefix = "DS";
         String queryStr = Integer.toString(query.hashCode());
         String memId;
@@ -206,24 +204,9 @@ public class CSVUtil {
         return prefix + memId;
     }
 
-    private static String getTypeFromDB(Variable v)
+    private String getTypeFromDB(Variable v)
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        String type = null;
-        try{
-            session.beginTransaction();
-            org.hibernate.Query q = session.createQuery("SELECT type FROM Variable where code= :code").setString("code", v.getCode());
-            type = (String) q.uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e)
-        {
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-                throw e;
-            }
-        }
-
+        String type = variableRepository.findOne(v.getCode()).getType();
         if(type == null)
         {
             type = "unknown";

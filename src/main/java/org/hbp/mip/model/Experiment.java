@@ -6,15 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import org.apache.log4j.Logger;
-import org.hbp.mip.utils.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.annotations.*;
-import org.hibernate.exception.DataException;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,21 +137,6 @@ public class Experiment {
         queryElements.add(formatEl);
 
         return new Gson().toJson(queryElements);
-    }
-
-    public void finish() {
-        this.setFinished(new Date());
-
-        try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            Transaction transaction = session.beginTransaction();
-            session.update(this);
-            transaction.commit();
-            session.close();
-        } catch (DataException e) {
-            LOGGER.trace(e);
-            throw e;
-        }
     }
 
     public String getValidations() {

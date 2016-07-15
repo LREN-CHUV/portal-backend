@@ -1,18 +1,16 @@
 package org.hbp.mip.controllers;
 
+import com.google.common.collect.Lists;
 import com.google.gson.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.hbp.mip.MIPApplication;
+import org.hbp.mip.configuration.SecurityConfiguration;
 import org.hbp.mip.model.Experiment;
-import org.hbp.mip.model.Model;
 import org.hbp.mip.model.User;
+import org.hbp.mip.repositories.ExperimentRepository;
+import org.hbp.mip.repositories.ModelRepository;
 import org.hbp.mip.utils.HTTPUtil;
-import org.hbp.mip.utils.HibernateUtil;
 import org.hbp.mip.utils.JSONUtil;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,7 +59,13 @@ public class ExperimentApi {
     private String miningExaremeQueryUrl;
 
     @Autowired
-    MIPApplication mipApplication;
+    SecurityConfiguration securityConfiguration;
+
+    @Autowired
+    ModelRepository modelRepository;
+
+    @Autowired
+    ExperimentRepository experimentRepository;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -72,35 +76,14 @@ public class ExperimentApi {
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
-        try {
-
-            experiment.setAlgorithms(incomingQuery.get("algorithms").toString());
-            experiment.setValidations(incomingQuery.get("validations").toString());
-            experiment.setName(incomingQuery.get("name").getAsString());
-            experiment.setCreatedBy(user);
-
-            Query hibernateQuery = session.createQuery("from Model as model where model.slug = :slug");
-            hibernateQuery.setParameter("slug", incomingQuery.get("model").getAsString());
-            experiment.setModel((Model)hibernateQuery.uniqueResult());
-
-            session.save(experiment);
-            transaction.commit();
-
-        } catch (Exception e) {
-            if(transaction != null)
-            {
-                transaction.rollback();
-            }
-            LOGGER.trace(e);
-            LOGGER.warn("Cannot create experiment to run ! This is probably caused by a bad request !");
-            // 400 here probably
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        experiment.setAlgorithms(incomingQuery.get("algorithms").toString());
+        experiment.setValidations(incomingQuery.get("validations").toString());
+        experiment.setName(incomingQuery.get("name").getAsString());
+        experiment.setCreatedBy(user);
+        experiment.setModel(modelRepository.findOne(incomingQuery.get("model").getAsString()));
+        experimentRepository.save(experiment);
 
         try {
             if(isExaremeAlgo(experiment))
@@ -130,23 +113,7 @@ public class ExperimentApi {
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        try {
-            session.beginTransaction();
-
-            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
-            hibernateQuery.setParameter("uuid", experimentUuid);
-            experiment = (Experiment) hibernateQuery.uniqueResult();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            // 404 here probably
-            if(session.getTransaction() != null)
-            {
-                session.getTransaction().rollback();
-            }
-            throw e;
-        }
+        experiment = experimentRepository.findOne(experimentUuid);
 
         if (experiment == null) {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
@@ -161,7 +128,7 @@ public class ExperimentApi {
 
         Experiment experiment;
         UUID experimentUuid;
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
@@ -170,31 +137,11 @@ public class ExperimentApi {
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-
-            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
-            hibernateQuery.setParameter("uuid", experimentUuid);
-            experiment = (Experiment) hibernateQuery.uniqueResult();
-
-            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
-                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
-
-            experiment.setResultsViewed(true);
-            session.update(experiment);
-
-            transaction.commit();
-        } catch (Exception e) {
-            // 404 here probably
-            if(transaction != null)
-            {
-                transaction.rollback();
-            }
-            throw e;
-        }
-
+        experiment = experimentRepository.findOne(experimentUuid);;
+        if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
+            return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
+        experiment.setResultsViewed(true);
+        experimentRepository.save(experiment);
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
@@ -265,61 +212,38 @@ public class ExperimentApi {
             int maxResultCount,
             String modelSlug
     ) {
-        List<Experiment> experiments = new LinkedList<>();
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
+        Iterable<Experiment> experiments = null;
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
+        List<Experiment> expList = Lists.newLinkedList(myExperiments);
+        if(!mine)
+        {
+            Iterable<Experiment> sharedExperiments = experimentRepository.findByShared(true);
+            List<Experiment> sharedExpList = Lists.newLinkedList(sharedExperiments);
+            expList.addAll(sharedExpList);
+        }
 
-        try {
-            session.beginTransaction();
-
-            Query hibernateQuery;
-            String baseQuery = "from Experiment as e WHERE ";
-
-            baseQuery += mine ? "e.createdBy = :user" : "(e.createdBy = :user OR e.shared is true)";
-
-            if (modelSlug == null || "".equals(modelSlug)) {
-                hibernateQuery = session.createQuery(baseQuery);
-            } else {
-                baseQuery += " AND e.model.slug = :slug";
-                hibernateQuery = session.createQuery(baseQuery);
-                hibernateQuery.setParameter("slug", modelSlug);
-            }
-            hibernateQuery.setParameter("user", user);
-
-            if (maxResultCount > 0)
-                hibernateQuery.setMaxResults(maxResultCount);
-
-            for (Object experiment: hibernateQuery.list()) {
-                if (experiment instanceof Experiment) { // should definitely be true
-                    Experiment experiment1 = (Experiment) experiment;
-                    // remove some fields because it is costly and not useful to send them over the network
-                    experiment1.setResult(null);
-                    experiment1.setAlgorithms(null);
-                    experiment1.setValidations(null);
-                    experiments.add(experiment1);
-
-                }
-
-            }
-        } catch (Exception e) {
-            // 404 here probably
-            LOGGER.trace(e);
-            throw e;
-        } finally {
-            if(session.getTransaction() != null)
+        if (modelSlug != null && !"".equals(modelSlug)) {
+            for(Experiment e : expList)
             {
-                session.getTransaction().rollback();
+                e.setResult(null);
+                e.setAlgorithms(null);
+                e.setValidations(null);
+                if(!e.getModel().getSlug().equals(modelSlug))
+                {
+                    expList.remove(e);
+                }
             }
         }
 
-        return new ResponseEntity<>(gson.toJson(experiments), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(expList), HttpStatus.OK);
     }
 
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
         Experiment experiment;
         UUID experimentUuid;
-        User user = mipApplication.getUser();
+        User user = securityConfiguration.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
@@ -328,30 +252,13 @@ public class ExperimentApi {
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
+        experiment = experimentRepository.findOne(experimentUuid);
 
-            Query hibernateQuery = session.createQuery("from Experiment as experiment where experiment.uuid = :uuid");
-            hibernateQuery.setParameter("uuid", experimentUuid);
-            experiment = (Experiment) hibernateQuery.uniqueResult();
+        if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
+            return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
 
-            if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
-                return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
-
-            experiment.setShared(shared);
-            session.update(experiment);
-
-            transaction.commit();
-        } catch (Exception e) {
-            // 404 here probably
-            if(transaction != null)
-            {
-                transaction.rollback();
-            }
-            throw e;
-        }
+        experiment.setShared(shared);
+        experimentRepository.save(experiment);
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
@@ -361,10 +268,10 @@ public class ExperimentApi {
         new Thread() {
             @Override
             public void run() {
-                    String url = experimentUrl;
-                    String query = experiment.computeQuery();
+                String url = experimentUrl;
+                String query = experiment.computeQuery();
 
-                    // Results are stored in the experiment object
+                // Results are stored in the experiment object
                 try {
                     executeExperiment(url, query, experiment);
                 } catch (IOException e) {
@@ -372,8 +279,7 @@ public class ExperimentApi {
                     LOGGER.warn("Experiment failed to run properly !");
                     setExperimentError(e, experiment);
                 }
-
-                experiment.finish();
+                finishExpermient(experiment);
             }
         }.start();
     }
@@ -399,10 +305,15 @@ public class ExperimentApi {
                     {
                         experiment.setResult("Unsupported variables !");
                     }
-
-                experiment.finish();
+                finishExpermient(experiment);
             }
         }.start();
+    }
+
+    private void finishExpermient(Experiment experiment)
+    {
+        experiment.setFinished(new Date());
+        experimentRepository.save(experiment);
     }
 
     private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
