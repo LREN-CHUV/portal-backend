@@ -183,21 +183,33 @@ public class ModelsApi {
             Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
             model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
 
-            List<Variable> vars = queryRepository.findOne(model.getQuery().getId()).getVariables();
-            Collection<Variable> varsColl = new LinkedHashSet<>(vars);
-            model.getQuery().setVariables(new LinkedList<>(varsColl));
+            List<Variable> varsQuery = queryRepository.findOne(model.getQuery().getId()).getVariables();
+            Collection<Variable> varsQueryColl = new LinkedHashSet<>(varsQuery);
+            model.getQuery().setVariables(new LinkedList<>(varsQueryColl));
 
-            List<Variable> grpgs = queryRepository.findOne(model.getQuery().getId()).getGrouping();
-            Collection<Variable> grpgsColl = new LinkedHashSet<>(grpgs);
-            model.getQuery().setGrouping(new LinkedList<>(grpgsColl));
+            List<Variable> grpgsQuery = queryRepository.findOne(model.getQuery().getId()).getGrouping();
+            Collection<Variable> grpgsQueryColl = new LinkedHashSet<>(grpgsQuery);
+            model.getQuery().setGrouping(new LinkedList<>(grpgsQueryColl));
 
-            List<Variable> covars = queryRepository.findOne(model.getQuery().getId()).getCovariables();
-            Collection<Variable> covarsColl = new LinkedHashSet<>(covars);
-            model.getQuery().setCovariables(new LinkedList<>(covarsColl));
+            List<Variable> covarsQuery = queryRepository.findOne(model.getQuery().getId()).getCovariables();
+            Collection<Variable> covarsQueryColl = new LinkedHashSet<>(covarsQuery);
+            model.getQuery().setCovariables(new LinkedList<>(covarsQueryColl));
 
             List<Filter> fltrs = queryRepository.findOne(model.getQuery().getId()).getFilters();
             Collection<Filter> fltrsColl = new LinkedHashSet<>(fltrs);
             model.getQuery().setFilters(new LinkedList<>(fltrsColl));
+
+            List<String> varsDS = datasetRepository.findOne(model.getDataset().getCode()).getVariable();
+            Collection<String> varsDSColl = new LinkedHashSet<>(varsDS);
+            model.getDataset().setVariable(new LinkedList<>(varsDSColl));
+
+            List<String> grpgsDS = datasetRepository.findOne(model.getDataset().getCode()).getGrouping();
+            Collection<String> grpgsDSColl = new LinkedHashSet<>(grpgsDS);
+            model.getDataset().setGrouping(new LinkedList<>(grpgsDSColl));
+
+            List<String> headersDS = datasetRepository.findOne(model.getDataset().getCode()).getHeader();
+            Collection<String> headersDSColl = new LinkedHashSet<>(headersDS);
+            model.getDataset().setHeader(new LinkedList<>(headersDSColl));
         }
 
         return new ResponseEntity<>(HttpStatus.OK).ok(model);
