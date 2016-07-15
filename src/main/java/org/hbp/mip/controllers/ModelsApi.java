@@ -109,10 +109,9 @@ public class ModelsApi {
             model.setValid(false);
         }
 
-        Long count;
-        int i = 0;
-        do{
-            i++;
+        long count = 1;
+        for(int i = 0; count > 0; i++)
+        {
             count = modelRepository.countByTitle(model.getTitle());
 
             if(count > 0)
@@ -124,7 +123,7 @@ public class ModelsApi {
                 }
                 model.setTitle(title + " (" + i + ")");
             }
-        } while(count > 0);
+        }
 
         String slug = null;
         try {
@@ -134,10 +133,9 @@ public class ModelsApi {
             LOGGER.trace(e);
         }
 
-        i = 0;
-        boolean alreadyExists;
-        do {
-            i++;
+        boolean alreadyExists = true;
+        for(int i = 0; alreadyExists; i++)
+        {
             alreadyExists = modelRepository.exists(slug);
             if(alreadyExists)
             {
@@ -148,7 +146,7 @@ public class ModelsApi {
                 slug += "-"+i;
             }
             model.setSlug(slug);
-        } while(alreadyExists);
+        }
 
         Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
         map.put("text", model.getTitle());
@@ -177,59 +175,6 @@ public class ModelsApi {
         if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        if(model != null) {
-            org.hbp.mip.model.Query q = null;
-
-            q = queryRepository.findOne(model.getQuery().getId());
-
-            if(q != null) {
-
-                List<Variable> vars = new LinkedList<>();
-                for (Variable var : q.getVariables()) {
-                    Variable v = new Variable();
-                    v.setCode(var.getCode());
-                    vars.add(v);
-                }
-
-                List<Variable> covs = new LinkedList<>();
-                for (Variable cov : q.getCovariables()) {
-                    Variable v = new Variable();
-                    v.setCode(cov.getCode());
-                    covs.add(v);
-                }
-
-                List<Variable> grps = new LinkedList<>();
-                for (Variable grp : q.getGrouping()) {
-                    Variable v = new Variable();
-                    v.setCode(grp.getCode());
-                    grps.add(v);
-                }
-
-                List<Filter> fltrs = new LinkedList<>();
-                for (Filter fltr : q.getFilters()) {
-                    Filter f = new Filter();
-                    f.setId(fltr.getId());
-                    f.setOperator(fltr.getOperator());
-                    f.setValues(fltr.getValues());
-                    f.setVariable(fltr.getVariable());
-                    fltrs.add(f);
-                }
-
-                org.hbp.mip.model.Query myQuery = new org.hbp.mip.model.Query();
-                myQuery.setId(q.getId());
-                myQuery.setVariables(vars);
-                myQuery.setCovariables(covs);
-                myQuery.setGrouping(grps);
-                myQuery.setFilters(fltrs);
-
-                model.setQuery(myQuery);
-            }
-
-            Dataset ds = csvUtil.parseValues(DATA_FILE, model.getQuery());
-            model.setDataset(ds);
-
         }
 
         return new ResponseEntity<>(HttpStatus.OK).ok(model);
@@ -261,10 +206,9 @@ public class ModelsApi {
         String newTitle = model.getTitle();
 
         if(!newTitle.equals(oldTitle)) {
-            Long count;
-            int i = 0;
-            do {
-                i++;
+            long count = 1;
+            for(int i = 0; count > 0 && !newTitle.equals(oldTitle); i++)
+            {
                 newTitle = model.getTitle();
                 count = modelRepository.countByTitle(newTitle);
                 if (count > 0 && !newTitle.equals(oldTitle)) {
@@ -273,7 +217,7 @@ public class ModelsApi {
                     }
                     model.setTitle(newTitle + " (" + i + ")");
                 }
-            } while (count > 0 && !newTitle.equals(oldTitle));
+            }
         }
 
         Map<String, String> map = new HashMap<>(model.getConfig().getTitle());

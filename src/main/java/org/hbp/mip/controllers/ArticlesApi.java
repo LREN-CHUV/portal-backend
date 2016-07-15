@@ -89,10 +89,9 @@ public class ArticlesApi {
         }
         article.setCreatedBy(user);
 
-        Long count;
-        int i = 0;
-        do{
-            i++;
+        long count = 1;
+        for(int i = 0; count > 0; i++)
+        {
             count = articleRepository.countByTitle(article.getTitle());
 
             if(count > 0)
@@ -104,7 +103,7 @@ public class ArticlesApi {
                 }
                 article.setTitle(title + " (" + i + ")");
             }
-        } while(count > 0);
+        }
 
         String slug;
         try {
@@ -114,10 +113,9 @@ public class ArticlesApi {
             LOGGER.trace(e);
         }
 
-        i = 0;
-        boolean alreadyExists;
-        do {
-            i++;
+        boolean alreadyExists = true;
+        for(int i = 0; alreadyExists; i++)
+        {
             alreadyExists = articleRepository.exists(slug);
             if(alreadyExists)
             {
@@ -128,7 +126,7 @@ public class ArticlesApi {
                 slug += "-"+i;
             }
             article.setSlug(slug);
-        } while(alreadyExists);
+        }
         articleRepository.save(article);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -175,10 +173,9 @@ public class ArticlesApi {
         String newTitle = article.getTitle();
 
         if(!newTitle.equals(oldTitle)) {
-            Long count;
-            int i = 0;
-            do {
-                i++;
+            long count = 1;
+            for(int i = 0; count > 0 && !newTitle.equals(oldTitle); i++)
+            {
                 newTitle = article.getTitle();
                 count = articleRepository.countByTitle(newTitle);
                 if (count > 0 && !newTitle.equals(oldTitle)) {
@@ -187,7 +184,7 @@ public class ArticlesApi {
                     }
                     article.setTitle(newTitle + " (" + i + ")");
                 }
-            } while (count > 0 && !newTitle.equals(oldTitle));
+            }
         }
 
         articleRepository.save(article);
