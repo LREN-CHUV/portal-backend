@@ -14,9 +14,11 @@ backend:
   image: hbpmip/portal-backend
   pre:
     - echo 'Building backend'
-    - cp -r $(pwd)/target $(pwd)/src/docker/run/target/
+    - cp -r $(pwd)/config/ $(pwd)/src/docker/run/config/
+    - cp -r $(pwd)/target/ $(pwd)/src/docker/run/target/
   post:
     - rm -r $(pwd)/src/docker/run/target/
+    - rm -r $(pwd)/src/docker/run/config/
     - echo 'Finished building backend'
   test:
     - tests.sh
