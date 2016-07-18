@@ -1,5 +1,7 @@
 .idea*
 *.iml
+run/target/
+run/config/
 target/
 .DS_Store
 .m2
