@@ -17,8 +17,8 @@ portal-backend:
     - cp -r $(pwd)/config/ $(pwd)/src/docker/run/config/
     - cp -r $(pwd)/target/ $(pwd)/src/docker/run/target/
   post:
-    - rm -r $(pwd)/src/docker/run/target/
-    - rm -r $(pwd)/src/docker/run/config/
+    - rm -rf $(pwd)/src/docker/run/target/
+    - rm -rf $(pwd)/src/docker/run/config/
     - echo 'Finished building portal-backend'
   test:
     - tests.sh

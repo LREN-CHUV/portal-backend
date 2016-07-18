@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo 'Removing old target folder...'
-rm -r target/
+rm -rf target/
 
 echo 'Packaging...'
 mvn package
