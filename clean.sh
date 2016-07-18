@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 ./halt.sh
-sudo rm -r ./.m2/
-sudo rm -r ./target/
-sudo rm -r ./pgdata/
+sudo rm -rf ./.m2/
+sudo rm -rf ./target/
+sudo rm -rf ./pgdata/
