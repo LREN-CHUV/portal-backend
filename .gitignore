@@ -1,6 +1,6 @@
 .idea*
 *.iml
-target*
+target/
 .DS_Store
 .m2
 *.jar
