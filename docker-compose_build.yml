@@ -1,8 +1,8 @@
 version: '2'
 
 services:
-  backend_build:
-    container_name: backend_build
+  portal-backend-build:
+    container_name: portal-backend-build
     build: ./src/docker/build/
     volumes:
       - ./:/opt/portal/
