@@ -1,22 +1,24 @@
-backend-build:
+portal-backend-build:
   build: ./src/docker/build/Dockerfile
   image: hbpmip/portal-backend-build
   pre:
-    - echo 'Building backend-build'
+    - echo 'Building portal-backend-build'
   post:
-    - docker run --rm -v $(pwd):/opt/portal/ -v $(pwd)/.m2:/root/.m2/ hbpmip/backend-build
-    - echo 'Finished building backend-build'
+    - docker run --rm -v $(pwd):/opt/portal/ -v $(pwd)/.m2:/root/.m2/ hbpmip/portal-backend-build
+    - echo 'Finished building portal-backend-build'
   test:
     - tests.sh
 
-backend:
+portal-backend:
   build: ./src/docker/run/Dockerfile
   image: hbpmip/portal-backend
   pre:
-    - echo 'Building backend'
-    - cp -r $(pwd)/target $(pwd)/src/docker/run/target/
+    - echo 'Building portal-backend'
+    - cp -r $(pwd)/config/ $(pwd)/src/docker/run/config/
+    - cp -r $(pwd)/target/ $(pwd)/src/docker/run/target/
   post:
     - rm -r $(pwd)/src/docker/run/target/
-    - echo 'Finished building backend'
+    - rm -r $(pwd)/src/docker/run/config/
+    - echo 'Finished building portal-backend'
   test:
     - tests.sh

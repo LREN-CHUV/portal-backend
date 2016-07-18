@@ -1,6 +1,7 @@
 .idea*
 *.iml
-target*
+target/
+src/docker/run/config/
 .DS_Store
 .m2
 *.jar

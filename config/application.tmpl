@@ -1,0 +1,50 @@
+# Configuration for the portal running inside a Docker container
+
+spring:
+  datasource:
+    url: {{ .Env.DB_URL }}
+    username: {{ .Env.DB_USER }}
+    password: {{ .Env.DB_PASS }}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQL9Dialect
+  resources:
+      chain:
+        enabled: true
+
+security:
+  enabled: false
+
+hbp:
+  client:
+    clientId: {{ .Env.CLIENT_ID }}
+    clientSecret: {{ .Env.CLIENT_SECRET }}
+    accessTokenUri: {{ .Env.TOKEN_URI }}
+    userAuthorizationUri: {{ .Env.AUTH_URI }}
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: {{ .Env.USER_INFO_URI }}
+
+logging:
+  level:
+    org.springframework.security: {{ .Env.LOGGING_LEVEL }}
+
+server:
+  contextPath: {{ .Env.CONTEXT_PATH }}
+  port: {{ .Env.PORT }}
+  use-forward-headers: true
+  session:
+    timeout: {{ .Env.SESSION_TIMEOUT }}
+
+workflow:
+  experimentUrl: {{ .Env.EXPERIMENT_URL }}
+  listMethodsUrl: {{ .Env.LIST_METHODS_URL }}
+  miningMipUrl: {{ .Env.ML_URL }}
+  miningExaremeUrl: {{ .Env.EXAREME_URL }}
+
+frontend:
+  redirect:
+    url: {{ .Env.FRONTEND_REDIRECT_URL }}

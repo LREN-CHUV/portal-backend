@@ -1,21 +1,40 @@
 version: '2'
 
 services:
-  backend:
-    container_name: backend
+  portal-backend:
+    container_name: portal-backend
     build:
       context: .
       dockerfile: ./src/docker/run/Dockerfile
     depends_on:
-      - "db"
+      - "portal-db"
     ports:
       - "8080:8080"
     links:
-      - "db"
+      - "portal-db"
     volumes:
       - ./config:/config
-  db:
-    container_name: db
+    environment:
+      DB_URL: jdbc:postgresql://172.22.0.1:5432/postgres
+      DB_USER: postgres
+      DB_PASS: pass
+      CLIENT_ID: 996f97c5-a3ca-460e-b18b-00df3e2be89a
+      CLIENT_SECRET: aD0Tueb3KkNkcZqZgQbNyDWgnM95IfZ0xPCQ_6Z9dQNHXY00RIrnAD_m7sNJh1oofYSX8aHkl72MkwI0K626Ug
+      TOKEN_URI: https://services.humanbrainproject.eu/oidc/token
+      AUTH_URI: https://services.humanbrainproject.eu/oidc/authorize
+      USER_INFO_URI: https://services.humanbrainproject.eu/oidc/userinfo
+      LOGGING_LEVEL: DEBUG
+      CONTEXT_PATH: /services
+      PORT: 8080
+      SESSION_TIMEOUT: 2592000
+      EXPERIMENT_URL: http://172.22.0.1:8087/experiment
+      LIST_METHODS_URL: http://172.22.0.1:8087/list-methods
+      ML_URL: http://172.22.0.1:8087/mining
+      EXAREME_URL: http://hbps2.chuv.ch:9090/mining/query
+      FRONTEND_REDIRECT_URL: http://frontend/home
+
+  portal-db:
+    container_name: portal-db
     image: postgres:9.5.3
     ports:
       - "5432:5432"
