@@ -47,7 +47,7 @@ workflow:
 
 frontend:
   redirect:
-    url: {{ default .Env.FRONTEND_REDIRECT_URL http://localhost/home }}
+    url: {{ default .Env.FRONTEND_REDIRECT_URL "http://localhost/home" }}
 
 authentication:
   enabled: {{ default .Env.AUTHENTICATION 1 }}
