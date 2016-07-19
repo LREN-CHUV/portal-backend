@@ -7,7 +7,7 @@ portal-backend-build:
     - docker run --rm -v $(pwd):/opt/portal/ -v $(pwd)/.m2:/root/.m2/ hbpmip/portal-backend-build
     - echo 'Finished building portal-backend-build'
   test:
-    - tests.sh
+    - ./tests/test-build.sh
 
 portal-backend:
   build: ./src/docker/run/Dockerfile
@@ -21,4 +21,6 @@ portal-backend:
     - rm -rf $(pwd)/src/docker/run/config/
     - echo 'Finished building portal-backend'
   test:
-    - tests.sh
+    - ./tests/pre-test-run.sh
+    - ./tests/test-run.sh
+    - ./tests/post-test-run.sh

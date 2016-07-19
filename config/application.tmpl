@@ -48,3 +48,6 @@ workflow:
 frontend:
   redirect:
     url: {{ .Env.FRONTEND_REDIRECT_URL }}
+
+authentication:
+  enabled: {{ .Env.AUTHENTICATION }}

@@ -32,6 +32,7 @@ services:
       ML_URL: http://172.22.0.1:8087/mining
       EXAREME_URL: http://hbps2.chuv.ch:9090/mining/query
       FRONTEND_REDIRECT_URL: http://frontend/home
+      AUTHENTICATION: 0
 
   portal-db:
     container_name: portal-db
