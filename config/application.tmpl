@@ -34,10 +34,10 @@ logging:
 
 server:
   contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
-  port: {{ default .Env.PORT 8080 }}
+  port: {{ default .Env.PORT "8080" }}
   use-forward-headers: true
   session:
-    timeout: {{ default .Env.SESSION_TIMEOUT 2592000 }}
+    timeout: {{ default .Env.SESSION_TIMEOUT "2592000" }}
 
 workflow:
   experimentUrl: {{ default .Env.EXPERIMENT_URL "http://172.22.0.1:8087/experiment" }}
@@ -50,4 +50,4 @@ frontend:
     url: {{ default .Env.FRONTEND_REDIRECT_URL "http://localhost/home" }}
 
 authentication:
-  enabled: {{ default .Env.AUTHENTICATION 1 }}
+  enabled: {{ default .Env.AUTHENTICATION "1" }}
