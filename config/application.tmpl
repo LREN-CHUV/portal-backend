@@ -2,8 +2,8 @@
 
 spring:
   datasource:
-    url: {{ .Env.DB_URL }}
-    username: {{ .Env.DB_USER }}
+    url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
+    username: {{ default .Env.DB_USER "postgres" }}
     password: {{ .Env.DB_PASS }}
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -18,36 +18,36 @@ security:
 
 hbp:
   client:
-    clientId: {{ .Env.CLIENT_ID }}
+    clientId: {{ default .Env.CLIENT_ID "996f97c5-a3ca-460e-b18b-00df3e2be89a" }}
     clientSecret: {{ .Env.CLIENT_SECRET }}
-    accessTokenUri: {{ .Env.TOKEN_URI }}
-    userAuthorizationUri: {{ .Env.AUTH_URI }}
+    accessTokenUri: {{ default .Env.TOKEN_URI "https://services.humanbrainproject.eu/oidc/token" }}
+    userAuthorizationUri: {{ default .Env.AUTH_URI "https://services.humanbrainproject.eu/oidc/authorize" }}
     tokenName: oauth_token
     authenticationScheme: query
     clientAuthenticationScheme: form
   resource:
-    userInfoUri: {{ .Env.USER_INFO_URI }}
+    userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
 
 logging:
   level:
-    org.springframework.security: {{ .Env.LOGGING_LEVEL }}
+    org.springframework.security: {{ default .Env.LOGGING_LEVEL "DEBUG" }}
 
 server:
-  contextPath: {{ .Env.CONTEXT_PATH }}
-  port: {{ .Env.PORT }}
+  contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
+  port: {{ default .Env.PORT "8080" }}
   use-forward-headers: true
   session:
-    timeout: {{ .Env.SESSION_TIMEOUT }}
+    timeout: {{ default .Env.SESSION_TIMEOUT "2592000" }}
 
 workflow:
-  experimentUrl: {{ .Env.EXPERIMENT_URL }}
-  listMethodsUrl: {{ .Env.LIST_METHODS_URL }}
-  miningMipUrl: {{ .Env.ML_URL }}
-  miningExaremeUrl: {{ .Env.EXAREME_URL }}
+  experimentUrl: {{ default .Env.EXPERIMENT_URL "http://172.22.0.1:8087/experiment" }}
+  listMethodsUrl: {{ default .Env.LIST_METHODS_URL "http://172.22.0.1:8087/list-methods" }}
+  miningMipUrl: {{ default .Env.ML_URL "http://172.22.0.1:8087/mining" }}
+  miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090/mining/query" }}
 
 frontend:
   redirect:
-    url: {{ .Env.FRONTEND_REDIRECT_URL }}
+    url: {{ default .Env.FRONTEND_REDIRECT_URL "http://frontend/home" }}
 
 authentication:
-  enabled: {{ .Env.AUTHENTICATION }}
+  enabled: {{ default .Env.AUTHENTICATION "1" }}
