@@ -41,7 +41,7 @@ server:
 
 workflow:
   experimentUrl: {{ default .Env.EXPERIMENT_URL "http://172.22.0.1:8087/experiment" }}
-  listMethodsUrl: {{ .Env.LIST_METHODS_URL "http://172.22.0.1:8087/list-methods" }}
+  listMethodsUrl: {{ default .Env.LIST_METHODS_URL "http://172.22.0.1:8087/list-methods" }}
   miningMipUrl: {{ default .Env.ML_URL "http://172.22.0.1:8087/mining" }}
   miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090/mining/query" }}
 
