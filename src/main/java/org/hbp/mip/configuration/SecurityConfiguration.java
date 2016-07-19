@@ -82,20 +82,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("#{'${frontend.redirect.url:http://frontend/home}'}")
     String frontendRedirect;
 
+    @Value("#{'${authentication.enabled:1}'}")
+    boolean authentication;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
-        http.antMatcher("/**")
-                .authorizeRequests()
-                .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
-                .anyRequest().authenticated()
-                .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
-                .and().logout().logoutSuccessUrl(loginUrl).permitAll()
-                .and().logout().logoutUrl(logoutUrl).permitAll()
-                .and().csrf().ignoringAntMatchers(logoutUrl).csrfTokenRepository(csrfTokenRepository())
-                .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
-                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+
+        if(authentication) {
+            http.antMatcher("/**")
+                    .authorizeRequests()
+                    .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
+                    .anyRequest().authenticated()
+                    .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
+                    .and().logout().logoutSuccessUrl(loginUrl).permitAll()
+                    .and().logout().logoutUrl(logoutUrl).permitAll()
+                    .and().csrf().ignoringAntMatchers(logoutUrl).csrfTokenRepository(csrfTokenRepository())
+                    .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
+                    .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+        }
+        else {
+            http.antMatcher("/**")
+                    .authorizeRequests()
+                    .antMatchers("/**").permitAll();
+            getUser();
+        }
     }
 
     private Filter ssoFilter() {
@@ -173,11 +185,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return
      */
     public synchronized User getUser() {
-        User user = new User(getUserInfos());
-        User foundUser = userRepository.findOne(user.getUsername());
-        if(foundUser != null)
+        User user;
+        if(!authentication)
         {
-            user.setAgreeNDA(foundUser.getAgreeNDA());
+            user = new User();
+            user.setUsername("TestUser");
+        }
+        else {
+            user = new User(getUserInfos());
+            User foundUser = userRepository.findOne(user.getUsername());
+            if (foundUser != null) {
+                user.setAgreeNDA(foundUser.getAgreeNDA());
+            }
         }
         userRepository.save(user);
         return user;

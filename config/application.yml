@@ -48,3 +48,6 @@ workflow:
 frontend:
   redirect:
     url: http://frontend/home
+
+authentication:
+  enabled: 0
