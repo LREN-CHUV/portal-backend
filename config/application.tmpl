@@ -2,8 +2,8 @@
 
 spring:
   datasource:
-    url: {{ default .Env.DB_URL jdbc:postgresql://172.22.0.1:5432/postgres }}
-    username: {{ default .Env.DB_USER postgres }}
+    url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
+    username: {{ default .Env.DB_USER "postgres" }}
     password: {{ .Env.DB_PASS }}
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -18,32 +18,32 @@ security:
 
 hbp:
   client:
-    clientId: {{ default .Env.CLIENT_ID 996f97c5-a3ca-460e-b18b-00df3e2be89a }}
+    clientId: {{ default .Env.CLIENT_ID "996f97c5-a3ca-460e-b18b-00df3e2be89a" }}
     clientSecret: {{ .Env.CLIENT_SECRET }}
-    accessTokenUri: {{ default .Env.TOKEN_URI https://services.humanbrainproject.eu/oidc/token }}
-    userAuthorizationUri: {{ default .Env.AUTH_URI https://services.humanbrainproject.eu/oidc/authorize }}
+    accessTokenUri: {{ default .Env.TOKEN_URI "https://services.humanbrainproject.eu/oidc/token" }}
+    userAuthorizationUri: {{ default .Env.AUTH_URI "https://services.humanbrainproject.eu/oidc/authorize" }}
     tokenName: oauth_token
     authenticationScheme: query
     clientAuthenticationScheme: form
   resource:
-    userInfoUri: {{ default .Env.USER_INFO_URI https://services.humanbrainproject.eu/oidc/userinfo }}
+    userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
 
 logging:
   level:
-    org.springframework.security: {{ default .Env.LOGGING_LEVEL DEBUG }}
+    org.springframework.security: {{ default .Env.LOGGING_LEVEL "DEBUG" }}
 
 server:
-  contextPath: {{ default .Env.CONTEXT_PATH /services }}
+  contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
   port: {{ default .Env.PORT 8080 }}
   use-forward-headers: true
   session:
     timeout: {{ default .Env.SESSION_TIMEOUT 2592000 }}
 
 workflow:
-  experimentUrl: {{ default .Env.EXPERIMENT_URL http://172.22.0.1:8087/experiment }}
-  listMethodsUrl: {{ .Env.LIST_METHODS_URL http://172.22.0.1:8087/list-methods }}
-  miningMipUrl: {{ default .Env.ML_URL http://172.22.0.1:8087/mining }}
-  miningExaremeUrl: {{ default .Env.EXAREME_URL http://hbps2.chuv.ch:9090/mining/query }}
+  experimentUrl: {{ default .Env.EXPERIMENT_URL "http://172.22.0.1:8087/experiment" }}
+  listMethodsUrl: {{ .Env.LIST_METHODS_URL "http://172.22.0.1:8087/list-methods" }}
+  miningMipUrl: {{ default .Env.ML_URL "http://172.22.0.1:8087/mining" }}
+  miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090/mining/query" }}
 
 frontend:
   redirect:
