@@ -50,4 +50,4 @@ frontend:
     url: {{ default .Env.FRONTEND_REDIRECT_URL http://localhost/home }}
 
 authentication:
-  enabled: {{ default .Env.AUTHENTICATION 0 }}
+  enabled: {{ default .Env.AUTHENTICATION 1 }}
