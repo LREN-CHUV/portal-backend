@@ -23,7 +23,7 @@ until [ $(docker exec portal-db psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; 
 done
 
 docker run --name portal-backend -p 8080:8080 \
--e "AUTHENTICATION=0" \
+-e "AUTHENTICATION=1" \
 -d hbpmip/portal-backend
 
 echo 'Wating for backend to start...'
