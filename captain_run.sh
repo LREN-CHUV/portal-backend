@@ -24,6 +24,8 @@ done
 
 docker run --name portal-backend -p 8080:8080 \
 -e "AUTHENTICATION=1" \
+-e "CLIENT_SECRET=aD0Tueb3KkNkcZqZgQbNyDWgnM95IfZ0xPCQ_6Z9dQNHXY00RIrnAD_m7sNJh1oofYSX8aHkl72MkwI0K626Ug" \
+-e "FRONTEND_REDIRECT_URL=http://localhost/home" \
 -d hbpmip/portal-backend
 
 echo 'Wating for backend to start...'
