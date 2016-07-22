@@ -11,10 +11,11 @@ This is the MIP backend.
 * Stop and remove the running container: `./halt.sh`
 * Clean Maven cache, etc: `./clean.sh`
 
-## Usage for deployments
+## Usage in building environment
 
 * Build a versioned image: `./captain_build.sh` or `captain build`
 * Build and test an image: `./captain_test.sh` or `captain test`
+* Run the latest image with a non-persistent postgres (only use this for testing purpose): `./captain_run.sh`
 
 ## Deployment
 
@@ -24,3 +25,7 @@ This is the MIP backend.
 
 Uncomment the following line in src/docker/build/build-in-docker.sh :
 `mvn swagger2markup:convertSwagger2markup asciidoctor:process-asciidoc`
+
+## Tips
+
+* Do not forget to set up the CLIENT_SECRET environment variable when deploying.
