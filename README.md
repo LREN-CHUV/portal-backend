@@ -13,7 +13,7 @@ This is the MIP backend.
 
 ## Usage in building environment
 
-* Build a versioned image: `./captain_build.sh` or `captain build`
+* Build a versioned image: `./captain_build.sh` (only if `$WORKSPACE=$(pwd)`) or `export WORKSPACE=<path-to-workspace> && captain build`
 * Build and test an image: `./captain_test.sh` or `captain test`
 * Run the latest image with a non-persistent postgres (only use this for testing purpose): `./captain_run.sh`
 
