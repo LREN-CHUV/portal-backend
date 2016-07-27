@@ -1,6 +1,8 @@
 FROM java:openjdk-8u92-jdk-alpine
 
-COPY ./target/backend-services-DOCKER_BUILD.jar backend.jar
+MAINTAINER mirco.nasuti@chuv.ch
+
+COPY ./target/portal-backend-DOCKER_BUILD.jar backend.jar
 
 RUN apk add --update ca-certificates wget &&  rm -rf /var/cache/apk/* /tmp/* && update-ca-certificates
 RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz

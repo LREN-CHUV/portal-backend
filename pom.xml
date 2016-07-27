@@ -3,13 +3,13 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hbp.mip</groupId>
-    <artifactId>backend-services</artifactId>
+    <groupId>eu.hbp.mip</groupId>
+    <artifactId>portal-backend</artifactId>
     <version>DOCKER_BUILD</version>
     <packaging>jar</packaging>
 
-    <name>backend-services</name>
-    <description>Medical Informatics Platform : backend restful services</description>
+    <name>portal-backend</name>
+    <description>Medical Informatics Platform - portal-backend</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -20,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.host.url>http://dockerhost:9000</sonar.host.url>
-        <sonar.projectName>MIP Backend</sonar.projectName>
+        <sonar.host.url>https://hbps1.chuv.ch/sonarqube/</sonar.host.url>
+        <sonar.projectName>MIP portal-backend</sonar.projectName>
         <sonar.sources>src/main/java/</sonar.sources>
         <java.version>1.8</java.version>
         <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
