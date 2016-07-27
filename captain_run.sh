@@ -16,7 +16,7 @@ fi
 
 docker run --name portal-db -p 5432:5432 -e POSTGRES_USER=postgres -d postgres
 
-echo 'Wating for DB to start...'
+echo 'Waiting for DB to start...'
 until [ $(docker exec portal-db psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
     printf '.'
     sleep 1
@@ -28,7 +28,7 @@ docker run --name portal-backend -p 8080:8080 \
 -e "FRONTEND_REDIRECT_URL=http://localhost/home" \
 -d hbpmip/portal-backend
 
-echo 'Wating for backend to start...'
+echo 'Waiting for backend to start...'
 until [ $(docker logs portal-backend | grep "Started MIPApplication" | wc -l) -eq 1 ]; do
     printf '.'
     sleep 1
