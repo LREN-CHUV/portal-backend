@@ -72,6 +72,8 @@ public class ExperimentApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> runExperiment(@RequestBody String incomingQueryString) {
+        LOGGER.info("Run an experiment");
+
         JsonObject incomingQuery = gson.fromJson(incomingQueryString, JsonObject.class);
 
         Experiment experiment = new Experiment();
@@ -84,6 +86,8 @@ public class ExperimentApi {
         experiment.setCreatedBy(user);
         experiment.setModel(modelRepository.findOne(incomingQuery.get("model").getAsString()));
         experimentRepository.save(experiment);
+
+        LOGGER.info("Experiment saved");
 
         try {
             if(isExaremeAlgo(experiment))
@@ -103,6 +107,8 @@ public class ExperimentApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        LOGGER.info("Get an experiment");
+
         Experiment experiment;
         UUID experimentUuid;
         try {
@@ -121,10 +127,11 @@ public class ExperimentApi {
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "get an experiment", response = Experiment.class)
+    @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsViewed", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsViewed(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        LOGGER.info("Mark an experiment as viewed");
 
         Experiment experiment;
         UUID experimentUuid;
@@ -142,20 +149,27 @@ public class ExperimentApi {
             return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
         experiment.setResultsViewed(true);
         experimentRepository.save(experiment);
+
+        LOGGER.info("Experiment updated (marked as viewed)");
+
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "get an experiment", response = Experiment.class)
+    @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        LOGGER.info("Mark an experiment as shared");
+
         return doMarkExperimentAsShared(uuid, true);
     }
 
-    @ApiOperation(value = "get an experiment", response = Experiment.class)
+    @ApiOperation(value = "Mark an experiment as unshared", response = Experiment.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+        LOGGER.info("Mark an experiment as unshared");
+
         return doMarkExperimentAsShared(uuid, false);
     }
 
@@ -165,6 +179,8 @@ public class ExperimentApi {
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
     ) {
+        LOGGER.info("List experiments");
+
         return doListExperiments(true, maxResultCount, null);
     }
 
@@ -175,6 +191,7 @@ public class ExperimentApi {
             @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
             @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
     ) {
+        LOGGER.info("List experiments");
 
         if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
             return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
@@ -187,6 +204,7 @@ public class ExperimentApi {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
+        LOGGER.info("List available methods and validations");
 
         StringBuilder response = new StringBuilder();
 
@@ -260,6 +278,8 @@ public class ExperimentApi {
         experiment.setShared(shared);
         experimentRepository.save(experiment);
 
+        LOGGER.info("Experiment updated (marked as shared)");
+
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
@@ -314,6 +334,8 @@ public class ExperimentApi {
     {
         experiment.setFinished(new Date());
         experimentRepository.save(experiment);
+
+        LOGGER.info("Experiment updated (finished)");
     }
 
     private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {

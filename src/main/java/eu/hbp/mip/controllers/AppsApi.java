@@ -49,6 +49,8 @@ public class AppsApi {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getApps(
     ) {
+        LOGGER.info("Get apps");
+
         return ResponseEntity.ok(appRepository.findAll());
     }
 
@@ -59,6 +61,8 @@ public class AppsApi {
             @ApiParam(value = "id", required = true) @PathVariable("id") Integer id,
             @ApiParam(value = "value", required = true) @PathVariable("value") Integer value
     ) {
+        LOGGER.info("Post a vote");
+
         User user = userRepository.findOne(securityConfiguration.getUser().getUsername());
         App app = appRepository.findOne(id);
         Vote vote;
@@ -77,6 +81,8 @@ public class AppsApi {
 
         vote.setValue(value);
         voteRepository.save(vote);
+
+        LOGGER.info("Vote saved");
 
         return new ResponseEntity<>(HttpStatus.CREATED);
 

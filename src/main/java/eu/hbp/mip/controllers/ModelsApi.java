@@ -64,6 +64,7 @@ public class ModelsApi {
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
+        LOGGER.info("Get models");
 
         User user = securityConfiguration.getUser();
         Iterable<Model> models = null;
@@ -101,6 +102,8 @@ public class ModelsApi {
     public ResponseEntity<Model> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
     )  {
+
+        LOGGER.info("Create a model");
 
         User user = securityConfiguration.getUser();
 
@@ -160,6 +163,8 @@ public class ModelsApi {
         datasetRepository.save(model.getDataset());
         modelRepository.save(model);
 
+        LOGGER.info("Model saved (also saved model.config, model.query and model.dataset)");
+
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
 
@@ -169,6 +174,7 @@ public class ModelsApi {
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     )  {
+        LOGGER.info("Get a model");
 
         User user = securityConfiguration.getUser();
 
@@ -226,6 +232,7 @@ public class ModelsApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Model to update", required = true) Model model
     )  {
+        LOGGER.info("Update a model");
 
         User user = securityConfiguration.getUser();
 
@@ -266,6 +273,8 @@ public class ModelsApi {
         queryRepository.save(model.getQuery());
         datasetRepository.save(model.getDataset());
         modelRepository.save(model);
+
+        LOGGER.info("Model updated (also saved/updated model.config, model.query and model.dataset)");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

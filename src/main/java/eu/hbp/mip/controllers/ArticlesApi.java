@@ -45,6 +45,7 @@ public class ArticlesApi {
             @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
             @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
     ) {
+        LOGGER.info("Get articles");
 
         User user = securityConfiguration.getUser();
         Iterable<Article> articles;
@@ -80,6 +81,7 @@ public class ArticlesApi {
     public ResponseEntity<Void> addAnArticle(
             @RequestBody @ApiParam(value = "Article to create", required = true) @Valid Article article
     ) {
+        LOGGER.info("Create an article");
 
         User user = securityConfiguration.getUser();
 
@@ -129,6 +131,8 @@ public class ArticlesApi {
         }
         articleRepository.save(article);
 
+        LOGGER.info("Article saved");
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -139,6 +143,7 @@ public class ArticlesApi {
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
     ) {
+        LOGGER.info("Get an article");
 
         User user = securityConfiguration.getUser();
         Article article;
@@ -147,6 +152,7 @@ public class ArticlesApi {
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+
         return ResponseEntity.ok(article);
     }
 
@@ -158,6 +164,7 @@ public class ArticlesApi {
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
             @RequestBody @ApiParam(value = "Article to update", required = true) @Valid Article article
     ) {
+        LOGGER.info("Update an article");
 
         User user = securityConfiguration.getUser();
 
@@ -188,6 +195,8 @@ public class ArticlesApi {
         }
 
         articleRepository.save(article);
+
+        LOGGER.info("Article updated");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

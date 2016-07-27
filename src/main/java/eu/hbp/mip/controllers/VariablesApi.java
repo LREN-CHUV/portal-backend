@@ -9,6 +9,7 @@ import eu.hbp.mip.repositories.VariableRepository;
 import io.swagger.annotations.*;
 import eu.hbp.mip.model.Value;
 import eu.hbp.mip.model.Variable;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/variables", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/variables", description = "the variables API")
 public class VariablesApi {
+
+    private static final Logger LOGGER = Logger.getLogger(VariablesApi.class);
 
     @Autowired
     VariableRepository variableRepository;
@@ -36,6 +39,8 @@ public class VariablesApi {
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isCovariable", required = false) String isCovariable,
             @ApiParam(value = "Boolean value formatted like : (\"0\") or (\"1\") or (\"false\") or (\"true\")") @RequestParam(value = "isFilter", required = false) String isFilter
     )  {
+        LOGGER.info("Get variables");
+
         return ResponseEntity.ok(variableRepository.findAll());
     }
 
@@ -45,6 +50,8 @@ public class VariablesApi {
     public ResponseEntity<Variable> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
     )  {
+        LOGGER.info("Get a variable");
+
         return ResponseEntity.ok(variableRepository.findOne(code));
     }
 
@@ -56,6 +63,8 @@ public class VariablesApi {
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q
     )  {
+        LOGGER.info("Get values from a variable");
+
         return ResponseEntity.ok(variableRepository.findOne(code).getValues());
     }
 
