@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiResponses;
 import eu.hbp.mip.model.GeneralStats;
 import eu.hbp.mip.repositories.ArticleRepository;
 import eu.hbp.mip.repositories.UserRepository;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/stats", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/stats", description = "the stats API")
 public class StatsApi {
+
+    private static final Logger LOGGER = Logger.getLogger(StatsApi.class);
 
     @Autowired
     UserRepository userRepository;
@@ -38,6 +41,7 @@ public class StatsApi {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<GeneralStats> getGeneralStatistics()  {
+        LOGGER.info("Get statistics (count on users, articles and variables)");
 
         GeneralStats stats = new GeneralStats();
 

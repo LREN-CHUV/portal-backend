@@ -8,6 +8,7 @@ package eu.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import eu.hbp.mip.model.Dataset;
 import eu.hbp.mip.repositories.DatasetRepository;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/datasets", description = "the datasets API")
 public class DatasetsApi {
 
+    private static final Logger LOGGER = Logger.getLogger(DatasetsApi.class);
+
     @Autowired
     DatasetRepository datasetRepository;
 
@@ -31,6 +34,8 @@ public class DatasetsApi {
     public ResponseEntity<Dataset> getADataset(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code
     )  {
+        LOGGER.info("Get a dataset");
+
         return ResponseEntity.ok(datasetRepository.findOne(code));
     }
 
