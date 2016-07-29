@@ -20,7 +20,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.host.url>https://hbps1.chuv.ch/sonarqube/</sonar.host.url>
+        <sonar.host.url>http://172.24.0.1:9083/sonarqube/</sonar.host.url>
         <sonar.projectName>MIP portal-backend</sonar.projectName>
         <sonar.sources>src/main/java/</sonar.sources>
         <java.version>1.8</java.version>
@@ -28,25 +28,25 @@
         <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
         <spring-data-commons.version>1.12.2.RELEASE</spring-data-commons.version>
-        <angularjs.version>1.4.3</angularjs.version>
-        <jquery.version>2.1.1</jquery.version>
-        <bootstrap.version>3.2.0</bootstrap.version>
+        <angularjs.version>1.5.7</angularjs.version>
+        <jquery.version>3.0.0</jquery.version>
+        <bootstrap.version>3.3.7</bootstrap.version>
+        <h2.version>1.4.192</h2.version>
+        <postgresql.version>9.4-1206-jdbc42</postgresql.version>
+        <springfox-swagger2.version>2.5.0</springfox-swagger2.version>
+        <springfox-swagger-ui.version>2.5.0</springfox-swagger-ui.version>
+        <gson.version>2.7</gson.version>
+        <slugify.version>2.1.5</slugify.version>
+        <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
+        <sonar-maven-plugin.version>3.0.2</sonar-maven-plugin.version>
+        <swagger2markup-maven-plugin.version>1.0.0</swagger2markup-maven-plugin.version>
+        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <hibernate4-maven-plugin.version>1.1.0</hibernate4-maven-plugin.version>
+        <flyway-core.version>4.0.3</flyway-core.version>
         <hibernate-jpa-2.1-api.version>1.0.0.Final</hibernate-jpa-2.1-api.version>
         <hibernate-core.version>4.3.8.Final</hibernate-core.version>
         <hibernate-entitymanager.version>4.3.8.Final</hibernate-entitymanager.version>
-        <h2.version>1.4.187</h2.version>
-        <postgresql.version>9.4-1205-jdbc42</postgresql.version>
-        <springfox-swagger2.version>2.3.1</springfox-swagger2.version>
-        <springfox-swagger-ui.version>2.3.1</springfox-swagger-ui.version>
-        <gson.version>2.5</gson.version>
-        <slugify.version>2.1.4</slugify.version>
         <spring-data-jpa.version>1.10.2.RELEASE</spring-data-jpa.version>
-        <maven-resources-plugin.version>2.3</maven-resources-plugin.version>
-        <sonar-maven-plugin.version>3.0.1</sonar-maven-plugin.version>
-        <swagger2markup-maven-plugin.version>1.0.0</swagger2markup-maven-plugin.version>
-        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
-        <hibernate4-maven-plugin.version>1.1.0</hibernate4-maven-plugin.version>
-        <flyway-core.version>4.0.3</flyway-core.version>
     </properties>
 
     <dependencies>
