@@ -1,4 +1,4 @@
-# ONLY FOR DEVELOPMENT - Configuration for the portal running inside a Docker container
+# Configuration template for the portal running inside a Docker container
 
 spring:
   datasource:
