@@ -12,10 +12,8 @@ services:
       - "8080:8080"
     links:
       - "portal-db"
-    volumes:
-      - ./config:/config
     environment:
-      DB_URL: jdbc:postgresql://172.22.0.1:5432/postgres
+      DB_URL: jdbc:postgresql://portal-db:5432/postgres
       DB_USER: postgres
       DB_PASS: pass
       CLIENT_ID: 996f97c5-a3ca-460e-b18b-00df3e2be89a
@@ -27,12 +25,12 @@ services:
       CONTEXT_PATH: /services
       PORT: 8080
       SESSION_TIMEOUT: 2592000
-      EXPERIMENT_URL: http://172.22.0.1:8087/experiment
-      LIST_METHODS_URL: http://172.22.0.1:8087/list-methods
+      EXPERIMENT_URL: http://backend-ml:8087/experiment
+      LIST_METHODS_URL: http://backend-ml:8087/list-methods
       ML_URL: http://172.22.0.1:8087/mining
       EXAREME_URL: http://hbps2.chuv.ch:9090/mining/query
       FRONTEND_REDIRECT_URL: http://frontend/home
-      AUTHENTICATION: 0
+      AUTHENTICATION: 1
 
   portal-db:
     container_name: portal-db
