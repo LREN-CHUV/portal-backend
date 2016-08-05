@@ -9,10 +9,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by habfast on 21/04/16.
@@ -90,6 +87,11 @@ public class Experiment {
         JsonObject outgoingQuery = new JsonObject();
         outgoingQuery.add("algorithms", gson.fromJson(algorithms, JsonArray.class));
         outgoingQuery.add("validations", gson.fromJson(validations, JsonArray.class));
+
+        List<Variable> covarsQuery = model.getQuery().getCovariables();
+        Collection<Variable> covarsQueryColl = new LinkedHashSet<>(covarsQuery);
+        model.getQuery().setCovariables(new LinkedList<>(covarsQueryColl));
+
         outgoingQuery.add("covariables", gson.toJsonTree(model.getQuery().getCovariables()));
         outgoingQuery.add("variables", gson.toJsonTree(model.getQuery().getVariables()));
         outgoingQuery.add("filters", gson.toJsonTree(model.getQuery().getFilters()));
