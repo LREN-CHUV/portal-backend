@@ -16,7 +16,6 @@ spring:
 security:
   enabled: false
 
-{{ if (not .Env.AUTHENTICATION) or (eq .Env.AUTHENTICATION "1") }}
 hbp:
   client:
     clientId: {{ default .Env.CLIENT_ID "996f97c5-a3ca-460e-b18b-00df3e2be89a" }}
@@ -28,7 +27,6 @@ hbp:
     clientAuthenticationScheme: form
   resource:
     userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
-{{ end }}
 
 logging:
   level:
