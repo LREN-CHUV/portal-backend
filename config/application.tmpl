@@ -4,7 +4,7 @@ spring:
   datasource:
     url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
     username: {{ default .Env.DB_USER "postgres" }}
-    password: {{ .Env.DB_PASS }}
+    password: {{ .Env.DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -31,7 +31,7 @@ hbp:
 logging:
   level:
     logging.level.org.springframework.web = {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}
-    logging.level.org.hibernate = {{ default .Env.LOGGING_LEVEL_HIB "WARN" }}
+    logging.level.org.hibernate = {{ default .Env.LOGGING_LEVEL_HIBERNATE "WARN" }}
 
 server:
   contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
