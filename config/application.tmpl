@@ -32,7 +32,8 @@ hbp:
 
 logging:
   level:
-    org.springframework.security: {{ default .Env.LOGGING_LEVEL "DEBUG" }}
+    logging.level.org.springframework.web = {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}
+    logging.level.org.hibernate = {{ default .Env.LOGGING_LEVEL_HIB "WARN" }}
 
 server:
   contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
