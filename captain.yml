@@ -14,8 +14,8 @@ portal-backend:
   image: hbpmip/portal-backend
   pre:
     - echo "Building portal-backend"
-    - cp -r $(pwd)/config/ $(pwd)/src/docker/run/config/
-    - cp -r $(pwd)/target/ $(pwd)/src/docker/run/target/
+    - cp -r $WORKSPACE/config/ $WORKSPACE/src/docker/run/config/
+    - cp -r $WORKSPACE/target/ $WORKSPACE/src/docker/run/target/
   post:
     - rm -rf $WORKSPACE/src/docker/run/target/
     - rm -rf $WORKSPACE/src/docker/run/config/
