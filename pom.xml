@@ -47,9 +47,15 @@
         <hibernate-core.version>4.3.8.Final</hibernate-core.version>
         <hibernate-entitymanager.version>4.3.8.Final</hibernate-entitymanager.version>
         <spring-data-jpa.version>1.10.2.RELEASE</spring-data-jpa.version>
+        <spring-boot-starter-actuator.version>1.4.0.RELEASE</spring-boot-starter-actuator.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${spring-boot-starter-actuator.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>

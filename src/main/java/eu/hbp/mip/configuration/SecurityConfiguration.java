@@ -93,7 +93,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         if(authentication) {
             http.antMatcher("/**")
                     .authorizeRequests()
-                    .antMatchers("/", "/frontend/**", "/webjars/**", "/v2/api-docs").permitAll()
+                    .antMatchers(
+                            "/", "/health/**", "/info/**", "/metrics/**", "/trace/**", "/frontend/**", "/webjars/**", "/v2/api-docs"
+                    ).permitAll()
                     .anyRequest().authenticated()
                     .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
                     .and().logout().logoutSuccessUrl(loginUrl).permitAll()
