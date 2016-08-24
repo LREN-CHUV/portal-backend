@@ -33,7 +33,7 @@ public class RequestsApi {
     @ApiOperation(value = "Post a request", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
-    @deprecated("Is that used anymore?")
+    @Deprecated
     public ResponseEntity<Dataset> postRequests(
             @RequestBody @ApiParam(value = "Query to process", required = true) Query query
     )  {
