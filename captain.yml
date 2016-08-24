@@ -21,7 +21,6 @@ portal-backend:
     - rm -rf $WORKSPACE/src/docker/run/target/
     - rm -rf $WORKSPACE/src/docker/run/config/
     - echo "Finished building portal-backend"
-    - curl -k -X POST --data-urlencode payload@$WORKSPACE/src/docker/run/slack.json https://hbps1.chuv.ch/slack/dev-activity
   test:
     - ./tests/pre-test-run.sh
     - ./tests/test-run.sh
