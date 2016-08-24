@@ -7,8 +7,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize
 RUN tar -C /usr/local/bin -xvzf dockerize-linux-amd64-v0.2.0.tar.gz
 
 COPY ./target/portal-backend-DOCKER_BUILD.jar backend.jar
+COPY ./config/application.tmpl /config/application.tmpl
 
-CMD mkdir /config
-ADD ./config/application.tmpl /config/application.tmpl
+EXPOSE 8080
 
-CMD dockerize -template /config/application.tmpl:/config/application.yml java -jar backend.jar
+CMD ["dockerize", "-template", "/config/application.tmpl:/config/application.yml", "java", "-jar", "backend.jar"]

@@ -35,16 +35,16 @@ logging:
 
 server:
   contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
-  port: {{ default .Env.PORT "8080" }}
+  port: 8080
   use-forward-headers: true
   session:
     timeout: {{ default .Env.SESSION_TIMEOUT "2592000" }}
 
 workflow:
-  experimentUrl: {{ default .Env.EXPERIMENT_URL "http://172.22.0.1:8087/experiment" }}
-  listMethodsUrl: {{ default .Env.LIST_METHODS_URL "http://172.22.0.1:8087/list-methods" }}
-  miningMipUrl: {{ default .Env.ML_URL "http://172.22.0.1:8087/mining" }}
-  miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090/mining/query" }}
+  experimentUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/experiment
+  listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
+  miningMipUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/mining"
+  miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
 
 frontend:
   redirect:
