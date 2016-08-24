@@ -53,8 +53,6 @@ public class ModelsApi {
     @Autowired
     ConfigRepository configRepository;
 
-    private static final String DATA_FILE = "data/values.csv";
-
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
