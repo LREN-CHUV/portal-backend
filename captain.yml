@@ -4,7 +4,7 @@ portal-backend-build:
   pre:
     - echo "Building portal-backend-build"
   post:
-    - docker run --rm -v $WORKSPACE:/opt/portal/ -v $WORKSPACE/.m2:/root/.m2/ hbpmip/portal-backend-build
+    - docker run --rm -v $WORKSPACE:/opt/portal/ -v $HOME/.m2:/home/build/.m2/ hbpmip/portal-backend-build
     - echo "Finished building portal-backend-build"
   test:
     - ./tests/test-build.sh
@@ -14,8 +14,9 @@ portal-backend:
   image: hbpmip/portal-backend
   pre:
     - echo "Building portal-backend"
-    - cp -r $WORKSPACE/config/ $WORKSPACE/src/docker/run/config/
-    - cp -r $WORKSPACE/target/ $WORKSPACE/src/docker/run/target/
+    - mkdir -p $WORKSPACE/src/docker/run/config $WORKSPACE/src/docker/run/target
+    - cp $WORKSPACE/config/application.tmpl $WORKSPACE/src/docker/run/config/
+    - cp $WORKSPACE/target/*.jar $WORKSPACE/src/docker/run/target/
   post:
     - rm -rf $WORKSPACE/src/docker/run/target/
     - rm -rf $WORKSPACE/src/docker/run/config/
