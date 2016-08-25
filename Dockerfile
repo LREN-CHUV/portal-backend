@@ -7,7 +7,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize
 RUN tar -C /usr/local/bin -xvzf dockerize-linux-amd64-v0.2.0.tar.gz
 
 COPY ./target/portal-backend-DOCKER_BUILD.jar backend.jar
-COPY ./config/application.tmpl /config/application.tmpl
+COPY ./docker/runner/config/application.tmpl /config/application.tmpl
+COPY ./docker/runner/README.md /
 
 EXPOSE 8080
 

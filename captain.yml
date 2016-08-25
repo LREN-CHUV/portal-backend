@@ -1,25 +1,23 @@
-portal-backend-build:
-  build: ./src/docker/build/Dockerfile
-  image: hbpmip/portal-backend-build
+# Builder image
+# Creates a portable environemnt to build this project.
+# Do not push this image to Docker hub.
+builder:
+  build: Dockerfile.builder
+  image: portal-backend-builder
   pre:
-    - echo "Building portal-backend-build"
+    - echo "Building portal backend builder"
   post:
     - docker run --rm -v $WORKSPACE:/opt/portal/ -v $HOME/.m2:/home/build/.m2/ hbpmip/portal-backend-build
-    - echo "Finished building portal-backend-build"
+    - echo "Finished building portal backend builder"
   test:
     - ./tests/test-build.sh
 
 portal-backend:
-  build: ./src/docker/run/Dockerfile
+  build: Dockerfile
   image: hbpmip/portal-backend
   pre:
     - echo "Building portal-backend"
-    - mkdir -p $WORKSPACE/src/docker/run/config $WORKSPACE/src/docker/run/target
-    - cp $WORKSPACE/config/application.tmpl $WORKSPACE/src/docker/run/config/
-    - cp $WORKSPACE/target/*.jar $WORKSPACE/src/docker/run/target/
   post:
-    - rm -rf $WORKSPACE/src/docker/run/target/
-    - rm -rf $WORKSPACE/src/docker/run/config/
     - echo "Finished building portal-backend"
   test:
     - ./tests/pre-test-run.sh
