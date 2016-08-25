@@ -57,9 +57,8 @@ import java.net.URLEncoder;
 import java.security.Principal;
 
 /**
- * Created by mirco on 11.07.16.
+ * Configuration for security.
  */
-
 @Configuration
 @EnableOAuth2Client
 @RestController
@@ -68,39 +67,51 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
-    OAuth2ClientContext oauth2ClientContext;
+    private OAuth2ClientContext oauth2ClientContext;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    @Value("#{'${hbp.client.pre-established-redirect-uri:/login/hbp}'}")
-    String loginUrl;
-
-    @Value("#{'${hbp.client.logout-uri:/logout}'}")
-    String logoutUrl;
-
-    @Value("#{'${frontend.redirect.url:http://frontend/home}'}")
-    String frontendRedirect;
-
+    /**
+     * Enable authentication (1) or disable it (0). Default is 1
+     */
     @Value("#{'${authentication.enabled:1}'}")
-    boolean authentication;
+    private boolean authentication;
+
+    /**
+     * Absolute URL to redirect to when login is required
+     */
+    @Value("#{'${frontend.loginUrl:/login/hbp}'}")
+    private String loginUrl;
+
+    /**
+     * Absolute URL to redirect to after successful login
+     */
+    @Value("#{'${frontend.redirectAfterLoginUrl:http://frontend/home}'}")
+    private String frontendRedirectAfterLogin;
+
+    /**
+     * Absolute URL to redirect to after logout has occurred
+     */
+    @Value("#{'${frontend.redirectAfterLogoutUrl:/login/hbp}'}")
+    private String redirectAfterLogoutUrl;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
 
-        if(authentication) {
+        if (authentication) {
             http.antMatcher("/**")
                     .authorizeRequests()
                     .antMatchers(
-                            "/", "/health/**", "/info/**", "/metrics/**", "/trace/**", "/frontend/**", "/webjars/**", "/v2/api-docs"
+                            "/", "/login/**", "/health/**", "/info/**", "/metrics/**", "/trace/**", "/frontend/**", "/webjars/**", "/v2/api-docs"
                     ).permitAll()
                     .anyRequest().authenticated()
                     .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
-                    .and().logout().logoutSuccessUrl(loginUrl).permitAll()
-                    .and().logout().logoutUrl(logoutUrl).permitAll()
-                    .and().csrf().ignoringAntMatchers(logoutUrl).csrfTokenRepository(csrfTokenRepository())
+                    .and().logout().logoutSuccessUrl(redirectAfterLogoutUrl)
+                    .and().logout().permitAll()
+                    .and().csrf().ignoringAntMatchers("/logout").csrfTokenRepository(csrfTokenRepository())
                     .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
                     .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         }
@@ -115,7 +126,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter() {
         OAuth2ClientAuthenticationProcessingFilter hbpFilter = new OAuth2ClientAuthenticationProcessingFilter(loginUrl);
         OAuth2RestTemplate hbpTemplate = new OAuth2RestTemplate(hbp(), oauth2ClientContext);
-        hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler(frontendRedirect));
+        hbpFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler(frontendRedirectAfterLogin));
         hbpFilter.setRestTemplate(hbpTemplate);
         hbpFilter.setTokenServices(new UserInfoTokenServices(hbpResource().getUserInfoUri(), hbp().getClientId()));
         return hbpFilter;
@@ -168,11 +179,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return repository;
     }
 
-    public String getUserInfos() {
+    private String getUserInfos() {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
         Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
         return userAuthentication.getDetails().toString();
     }
+
+    private transient User user;
 
     /**
      * returns the user for the current session.
@@ -184,23 +197,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * - log in using the front end
      * - check you have no 500 error in the network logs.
      *
-     * @return
+     * @return the user for the current session
      */
     public synchronized User getUser() {
-        User user;
-        if(!authentication)
-        {
-            user = new User();
-            user.setUsername("TestUser");
-        }
-        else {
-            user = new User(getUserInfos());
-            User foundUser = userRepository.findOne(user.getUsername());
-            if (foundUser != null) {
-                user.setAgreeNDA(foundUser.getAgreeNDA());
+        if (user == null) {
+            if (!authentication) {
+                user = new User();
+                user.setUsername("TestUser");
+            } else {
+                user = new User(getUserInfos());
+                User foundUser = userRepository.findOne(user.getUsername());
+                if (foundUser != null) {
+                    user.setAgreeNDA(foundUser.getAgreeNDA());
+                }
             }
+            userRepository.save(user);
         }
-        userRepository.save(user);
         return user;
     }
 
@@ -221,7 +233,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
-    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA", required = true) Boolean agreeNDA) {
+    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA") Boolean agreeNDA) {
         User user = getUser();
         if (user != null) {
             user.setAgreeNDA(agreeNDA);

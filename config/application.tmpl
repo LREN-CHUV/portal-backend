@@ -1,5 +1,6 @@
 # Configuration template for the portal running inside a Docker container
 
+# See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 spring:
   datasource:
     url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
@@ -9,12 +10,17 @@ spring:
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQL9Dialect
+  # SPRING RESOURCES HANDLING
   resources:
-      chain:
-        enabled: true
+    chain:
+      enabled: true # TODO: why is that enabled? Do we serve any resources from the backend?
 
+# SECURITY
 security:
-  enabled: false
+  enabled: false # TODO: why Spring security is disabled? It supports OAuth2 out of the box...
+
+authentication:
+  enabled: {{ default .Env.AUTHENTICATION "1" }}
 
 hbp:
   client:
@@ -28,11 +34,18 @@ hbp:
   resource:
     userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
 
+# WEB FRONTEND
+frontend:
+  loginUrl: {{ default .Env.LOGIN_URL "http://frontend/services/login/hbp" }}
+  redirectAfterLogoutUrl: {{ default .Env.AFTER_LOGOUT_URL (default .Env.LOGIN_URI "http://frontend/services/login/hbp") }}
+  redirectAfterLoginUrl: {{ default .Env.AFTER_LOGIN_URL "http://frontend/home" }}
+
 logging:
   level:
     logging.level.org.springframework.web = {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}
     logging.level.org.hibernate = {{ default .Env.LOGGING_LEVEL_HIBERNATE "WARN" }}
 
+# EMBEDDED SERVER CONFIGURATION
 server:
   contextPath: {{ default .Env.CONTEXT_PATH "/services" }}
   port: 8080
@@ -40,15 +53,16 @@ server:
   session:
     timeout: {{ default .Env.SESSION_TIMEOUT "2592000" }}
 
+# ENDPOINTS
+endpoints
+  enabled: true
+  health:
+    enabled: true
+    endoint: /health
+    sentitive: false
+
 workflow:
   experimentUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/experiment
   listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
   miningMipUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/mining"
   miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
-
-frontend:
-  redirect:
-    url: {{ default .Env.FRONTEND_REDIRECT_URL "http://frontend/home" }}
-
-authentication:
-  enabled: {{ default .Env.AUTHENTICATION "1" }}
