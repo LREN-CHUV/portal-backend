@@ -1,4 +1,5 @@
-FROM maven:3-jdk-8
+# Pull base image
+FROM maven:3.3.9-jdk-8
 
 MAINTAINER mirco.nasuti@chuv.ch
 
@@ -8,7 +9,9 @@ USER build
 
 COPY ./docker/builder/build-in-docker.sh /
 
-VOLUME /opt/portal/
-WORKDIR /opt/portal/
+# Volume
+VOLUME /build
+# Define working directory
+WORKDIR /build
 
 CMD ["/build-in-docker.sh"]

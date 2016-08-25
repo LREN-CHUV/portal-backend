@@ -5,10 +5,12 @@ builder:
   build: Dockerfile.builder
   image: portal-backend-builder
   pre:
-    - echo "Building portal backend builder"
+    - echo "Building portal backend builder image"
   post:
-    - docker run --rm -v $WORKSPACE:/opt/portal/ -v $HOME/.m2:/home/build/.m2/ hbpmip/portal-backend-build
-    - echo "Finished building portal backend builder"
+    - echo "Finished building portal backend builder image"
+    - echo "Building project..."
+    - docker run --rm -v $WORKSPACE:/build/ -v $HOME/.m2:/home/build/.m2/ portal-backend-builder
+    - echo "Finished building project"
   test:
     - ./tests/test-build.sh
 
@@ -16,9 +18,9 @@ portal-backend:
   build: Dockerfile
   image: hbpmip/portal-backend
   pre:
-    - echo "Building portal-backend"
+    - echo "Building portal-backend image"
   post:
-    - echo "Finished building portal-backend"
+    - echo "Finished building portal-backend image"
   test:
     - ./tests/pre-test-run.sh
     - ./tests/test-run.sh
