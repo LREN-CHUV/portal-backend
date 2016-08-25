@@ -6,9 +6,9 @@ MAINTAINER mirco.nasuti@chuv.ch
 RUN adduser --quiet --uid 1000 build
 USER build
 
-COPY ./docker/builder/build-in-docker.sh /build-in-docker.sh
+COPY ./docker/builder/build-in-docker.sh /
 
 VOLUME /opt/portal/
 WORKDIR /opt/portal/
 
-CMD ["bash", "/build-in-docker.sh"]
+CMD ["/build-in-docker.sh"]

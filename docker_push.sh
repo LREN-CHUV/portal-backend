@@ -27,4 +27,6 @@ else
 fi
 
 $CAPTAIN push --branch-tags=false --commit-tags=true portal-backend
-curl -k -X POST --data-urlencode payload@$WORKSPACE/docker/runner/slack.json https://hbps1.chuv.ch/slack/dev-activity
+eval "echo $(cat $WORKSPACE/docker/runner/slack.json)" > $WORKSPACE/target/slack.json
+curl -k -X POST --data-urlencode payload@$WORKSPACE/target/slack.json https://hbps1.chuv.ch/slack/dev-activity
+rm -f $WORKSPACE/target/slack.json
