@@ -22,6 +22,7 @@ security:
 authentication:
   enabled: {{ default .Env.AUTHENTICATION "1" }}
 
+# HBP OAUTH2 LOGIN
 hbp:
   client:
     clientId: {{ default .Env.CLIENT_ID "996f97c5-a3ca-460e-b18b-00df3e2be89a" }}
