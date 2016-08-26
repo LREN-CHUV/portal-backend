@@ -10,6 +10,7 @@ You need to configure a few things using some environment variables.
 Environment variables:
 
 * DB_URL: JDBC URL to connect to the database, for example "jdbc:postgresql://db:5432/portal"
+* DB_SERVER: optional, address of the database server, for example DB_SERVER="db:5432". Used to wait for the database to be up and running.
 * DB_USER: User to use when connecting to the database
 * DB_PASSWORD: Password to use when connecting to the database
 * CONTEXT_PATH:  context path appended to all services running in this container. Default to "/services"
