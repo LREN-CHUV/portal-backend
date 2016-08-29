@@ -32,9 +32,9 @@ hbp:
 
 # WEB FRONTEND
 frontend:
-  loginUrl: {{ default .Env.LOGIN_URL "http://frontend/services/login/hbp" }}
-  redirectAfterLogoutUrl: {{ default .Env.AFTER_LOGOUT_URL (default .Env.LOGIN_URI "http://frontend/services/login/hbp") }}
-  redirectAfterLoginUrl: {{ default .Env.AFTER_LOGIN_URL "http://frontend/home" }}
+  loginUrl: {{ default .Env.FRONTEND_LOGIN_URL "http://frontend/services/login/hbp" }}
+  redirectAfterLogoutUrl: {{ default .Env.FRONTEND_AFTER_LOGOUT_URL (default .Env.LOGIN_URI "http://frontend/services/login/hbp") }}
+  redirectAfterLoginUrl: {{ default .Env.FRONTEND_AFTER_LOGIN_URL "http://frontend/home" }}
 
 logging:
   level:
