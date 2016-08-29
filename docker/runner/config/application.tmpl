@@ -27,8 +27,12 @@ hbp:
     tokenName: oauth_token
     authenticationScheme: query
     clientAuthenticationScheme: form
+    useCurrentUri: false
+    preEstablishedRedirectUri: {{ default .Env.FRONTEND_LOGIN_URL "http://frontend/services/login/hbp" }}
   resource:
     userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
+  sso:
+    login-path:
 
 # WEB FRONTEND
 frontend:
