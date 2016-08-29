@@ -1,6 +1,5 @@
 package eu.hbp.mip.configuration;
 
-import eu.hbp.mip.utils.CSVUtil;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -25,11 +24,6 @@ public class PersistenceConfiguration {
 
     @Autowired
     DataSource dataSource;
-
-    @Bean
-    public CSVUtil csvUtil() {
-        return new CSVUtil();
-    }
 
     @Bean
     @DependsOn("flyway")
