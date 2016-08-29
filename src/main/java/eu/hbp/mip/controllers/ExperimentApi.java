@@ -49,13 +49,13 @@ public class ExperimentApi {
 
     private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
 
-    @Value("#{'${workflow.experimentUrl:http://dockerhost:8087/experiment}'}")
+    @Value("#{'${services.woken.experimentUrl:http://dockerhost:8087/experiment}'}")
     private String experimentUrl;
 
-    @Value("#{'${workflow.listMethodsUrl:http://dockerhost:8087/list-methods}'}")
+    @Value("#{'${services.woken.listMethodsUrl:http://dockerhost:8087/list-methods}'}")
     private String listMethodsUrl;
 
-    @Value("#{'${workflow.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    @Value("#{'${services.exareme.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
     private String miningExaremeQueryUrl;
 
     @Autowired

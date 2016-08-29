@@ -15,15 +15,10 @@ spring:
     chain:
       enabled: true # TODO: why is that enabled? Do we serve any resources from the backend?
 
-# SECURITY
-security:
-  enabled: false # TODO: why Spring security is disabled? It supports OAuth2 out of the box...
-
-authentication:
-  enabled: {{ default .Env.AUTHENTICATION "1" }}
-
 # HBP OAUTH2 LOGIN
 hbp:
+  authentication:
+    enabled: {{ default .Env.AUTHENTICATION "1" }}
   client:
     clientId: {{ default .Env.CLIENT_ID "996f97c5-a3ca-460e-b18b-00df3e2be89a" }}
     clientSecret: {{ .Env.CLIENT_SECRET }}
@@ -62,8 +57,9 @@ endpoints:
     endoint: /health
     sentitive: false
 
-workflow:
-  experimentUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/experiment
-  listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
-  miningMipUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/mining"
-  miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
+services:
+  woken:
+    experimentUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/experiment
+    listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
+  exareme:
+    miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
