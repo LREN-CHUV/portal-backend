@@ -49,29 +49,9 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get variables");
 
-        InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-
-        JsonObject root = new Gson().fromJson(new JsonReader(br), JsonObject.class);
-        variables = new LinkedList<>();
-
-        extractVariablesRecursive(root);
+        loadVariables();
 
         return ResponseEntity.ok(variables);
-    }
-
-    private static void extractVariablesRecursive(JsonObject element) {
-        if (element.has("groups")){
-            for(JsonElement child : element.getAsJsonArray("groups")) {
-                extractVariablesRecursive(child.getAsJsonObject());
-            }
-        }
-        if (element.has("variables")){
-            for (JsonElement var : element.getAsJsonArray("variables")){
-                variables.add(new Gson().fromJson(var, Variable.class));
-            }
-        }
     }
 
     @ApiOperation(value = "Get a variable", response = Variable.class)
@@ -82,7 +62,19 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get a variable");
 
-        return ResponseEntity.ok(null); // TODO findOne(code)
+        loadVariables();
+
+        for (Variable var : variables)
+        {
+            if (var.getCode().equals(code))
+            {
+                return ResponseEntity.ok(var);
+            }
+        }
+
+        LOGGER.warn("Variable " + code + " not found ! ");
+
+        return ResponseEntity.ok(null);
     }
 
 
@@ -101,7 +93,7 @@ public class VariablesApi {
     @ApiOperation(value = "Get groups and variables hierarchy", response = Variable.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
-    public ResponseEntity<Object> getAVariable(
+    public ResponseEntity<Object> getVariablesHierarchy(
     )  {
         LOGGER.info("Get groups and variables hierarchy");
 
@@ -112,6 +104,34 @@ public class VariablesApi {
         Object hierarchy = new Gson().fromJson(new JsonReader(br), Object.class);
 
         return ResponseEntity.ok(hierarchy);
+    }
+
+
+    private static void loadVariables() {
+        if(variables == null)
+        {
+            InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            JsonObject root = new Gson().fromJson(new JsonReader(br), JsonObject.class);
+            variables = new LinkedList<>();
+
+            extractVariablesRecursive(root);
+        }
+    }
+
+    private static void extractVariablesRecursive(JsonObject element) {
+        if (element.has("groups")){
+            for(JsonElement child : element.getAsJsonArray("groups")) {
+                extractVariablesRecursive(child.getAsJsonObject());
+            }
+        }
+        if (element.has("variables")){
+            for (JsonElement var : element.getAsJsonArray("variables")){
+                variables.add(new Gson().fromJson(var, Variable.class));
+            }
+        }
     }
 
 
