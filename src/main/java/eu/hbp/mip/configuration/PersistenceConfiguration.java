@@ -25,6 +25,9 @@ public class PersistenceConfiguration {
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    DataSource variablesDatasource;
+
     @Bean
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

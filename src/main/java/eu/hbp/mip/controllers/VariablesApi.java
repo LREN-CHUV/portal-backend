@@ -6,6 +6,8 @@ package eu.hbp.mip.controllers;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import eu.hbp.mip.model.Value;
 import eu.hbp.mip.model.Variable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -29,6 +32,8 @@ public class VariablesApi {
     private static final Logger LOGGER = Logger.getLogger(VariablesApi.class);
 
     private static final String VARIABLES_FILE = "data/variables.json";
+
+    private static LinkedList<Variable> variables;
 
 
     @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
@@ -44,7 +49,29 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get variables");
 
-        return ResponseEntity.ok(null);  // TODO : findall
+        InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        JsonObject root = new Gson().fromJson(new JsonReader(br), JsonObject.class);
+        variables = new LinkedList<>();
+
+        extractVariablesRecursive(root);
+
+        return ResponseEntity.ok(variables);
+    }
+
+    private static void extractVariablesRecursive(JsonObject element) {
+        if (element.has("groups")){
+            for(JsonElement child : element.getAsJsonArray("groups")) {
+                extractVariablesRecursive(child.getAsJsonObject());
+            }
+        }
+        if (element.has("variables")){
+            for (JsonElement var : element.getAsJsonArray("variables")){
+                variables.add(new Gson().fromJson(var, Variable.class));
+            }
+        }
     }
 
     @ApiOperation(value = "Get a variable", response = Variable.class)
