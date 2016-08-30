@@ -7,6 +7,11 @@ spring:
     username: {{ default .Env.DB_USER "postgres" }}
     password: {{ .Env.DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
+  variablesDatasource:
+    url: {{ default .Env.VARIABLES_DB_URL "jdbc:postgresql://172.22.0.1:5433/postgres" }}
+    username: {{ default .Env.VARIABLES_DB_USER "postgres" }}
+    password: {{ .Env.VARIABLES_DB_PASSWORD }}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQL9Dialect

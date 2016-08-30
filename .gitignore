@@ -4,3 +4,4 @@ target/
 .DS_Store
 .m2
 *.jar
+src/main/resources/data/

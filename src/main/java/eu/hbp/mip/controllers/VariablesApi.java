@@ -5,15 +5,18 @@
 package eu.hbp.mip.controllers;
 
 
-import eu.hbp.mip.repositories.VariableRepository;
-import io.swagger.annotations.*;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import eu.hbp.mip.model.Value;
 import eu.hbp.mip.model.Variable;
+import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -25,8 +28,8 @@ public class VariablesApi {
 
     private static final Logger LOGGER = Logger.getLogger(VariablesApi.class);
 
-    @Autowired
-    VariableRepository variableRepository;
+    private static final String VARIABLES_FILE = "data/variables.json";
+
 
     @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -41,7 +44,7 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get variables");
 
-        return ResponseEntity.ok(variableRepository.findAll());
+        return ResponseEntity.ok(null);  // TODO : findall
     }
 
     @ApiOperation(value = "Get a variable", response = Variable.class)
@@ -52,7 +55,7 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get a variable");
 
-        return ResponseEntity.ok(variableRepository.findOne(code));
+        return ResponseEntity.ok(null); // TODO findOne(code)
     }
 
 
@@ -65,7 +68,23 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get values from a variable");
 
-        return ResponseEntity.ok(variableRepository.findOne(code).getValues());
+        return ResponseEntity.ok(null);  // TODO : findOne(code).getValues()
+    }
+
+    @ApiOperation(value = "Get groups and variables hierarchy", response = Variable.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
+    @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAVariable(
+    )  {
+        LOGGER.info("Get groups and variables hierarchy");
+
+        InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        Object hierarchy = new Gson().fromJson(new JsonReader(br), Object.class);
+
+        return ResponseEntity.ok(hierarchy);
     }
 
 

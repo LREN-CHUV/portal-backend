@@ -4,14 +4,13 @@
 
 package eu.hbp.mip.controllers;
 
-import eu.hbp.mip.repositories.VariableRepository;
+import eu.hbp.mip.model.GeneralStats;
+import eu.hbp.mip.repositories.ArticleRepository;
+import eu.hbp.mip.repositories.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import eu.hbp.mip.model.GeneralStats;
-import eu.hbp.mip.repositories.ArticleRepository;
-import eu.hbp.mip.repositories.UserRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +33,6 @@ public class StatsApi {
     @Autowired
     ArticleRepository articleRepository;
 
-    @Autowired
-    VariableRepository variableRepository;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -47,7 +44,7 @@ public class StatsApi {
 
         stats.setUsers(userRepository.count());
         stats.setArticles(articleRepository.count());
-        stats.setVariables(variableRepository.count());
+        stats.setVariables(0L);  // TODO: compute from adni_merge DB
 
         return ResponseEntity.ok(stats);
     }
