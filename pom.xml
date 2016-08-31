@@ -5,7 +5,7 @@
 
     <groupId>eu.hbp.mip</groupId>
     <artifactId>portal-backend</artifactId>
-    <version>DOCKER_BUILD</version>
+    <version>1.0.0-docker-packaging</version>
     <packaging>jar</packaging>
 
     <name>portal-backend</name>
