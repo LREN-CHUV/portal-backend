@@ -26,7 +26,7 @@ public class PersistenceConfiguration {
     DataSource dataSource;
 
     @Autowired
-    DataSource variablesDatasource;
+    DataSource variablesDatasource;  //  TODO: Fix this problem
 
     @Bean
     @DependsOn("flyway")
