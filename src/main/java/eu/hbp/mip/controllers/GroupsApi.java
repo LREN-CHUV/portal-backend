@@ -5,13 +5,14 @@
 package eu.hbp.mip.controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-import eu.hbp.mip.model.Variable;
+import eu.hbp.mip.model.Group;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import eu.hbp.mip.model.Group;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,8 @@ public class GroupsApi {
 
     private static final String VARIABLES_FILE = "data/variables.json";
 
+    private static String groups;
+
 
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -40,14 +43,33 @@ public class GroupsApi {
     public ResponseEntity<Object> getTheRootGroup()  {
         LOGGER.info("Get root group and its whole sub-groups tree");
 
-        InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+        loadGroups();
 
-        Object hierarchy = new Gson().fromJson(new JsonReader(br), Object.class);
-
-        return ResponseEntity.ok(hierarchy);
+        return ResponseEntity.ok(new Gson().fromJson(groups, Object.class));
     }
 
+    private static void loadGroups() {
+        if(groups == null)
+        {
+            InputStream is = VariablesApi.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            JsonObject root = new Gson().fromJson(new JsonReader(br), JsonObject.class);
+            removeVariablesRecursive(root);
+            groups = new Gson().toJson(root);
+        }
+    }
+
+    private static void removeVariablesRecursive(JsonObject element) {
+        if (element.has("groups")){
+            for(JsonElement child : element.getAsJsonArray("groups")) {
+                removeVariablesRecursive(child.getAsJsonObject());
+            }
+        }
+        if(element.has("variables")) {
+            element.remove("variables");
+        }
+    }
 
 }
