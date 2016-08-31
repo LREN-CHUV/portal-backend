@@ -6,10 +6,10 @@ package eu.hbp.mip.controllers;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-import eu.hbp.mip.model.Value;
 import eu.hbp.mip.model.Variable;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
@@ -33,10 +33,10 @@ public class VariablesApi {
 
     private static final String VARIABLES_FILE = "data/variables.json";
 
-    private static LinkedList<Variable> variables;
+    private static LinkedList<String> variables;
 
 
-    @ApiOperation(value = "Get variables", response = Variable.class, responseContainer = "List")
+    @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getVariables(
@@ -51,24 +51,32 @@ public class VariablesApi {
 
         loadVariables();
 
-        return ResponseEntity.ok(variables);
+        LinkedList<Object> variablesObjects = new LinkedList<>();
+
+        for (String var : variables)
+        {
+            variablesObjects.add(new Gson().fromJson(var, Object.class));
+        }
+
+        return ResponseEntity.ok(variablesObjects);
     }
 
-    @ApiOperation(value = "Get a variable", response = Variable.class)
+    @ApiOperation(value = "Get a variable", response = Object.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
-    public ResponseEntity<Variable> getAVariable(
+    public ResponseEntity<Object> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
     )  {
         LOGGER.info("Get a variable");
 
         loadVariables();
 
-        for (Variable var : variables)
+        for (String var : variables)
         {
-            if (var.getCode().equals(code))
+            JsonObject varObj = new Gson().fromJson(var, JsonElement.class).getAsJsonObject();
+            if (varObj.get("code").getAsString().equals(code))
             {
-                return ResponseEntity.ok(var);
+                return ResponseEntity.ok(new Gson().fromJson(varObj, Object.class));
             }
         }
 
@@ -78,19 +86,37 @@ public class VariablesApi {
     }
 
 
-    @ApiOperation(value = "Get values from a variable", response = Value.class, responseContainer = "List")
+    @ApiOperation(value = "Get values from a variable", response = List.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}/values", method = RequestMethod.GET)
-    public ResponseEntity<List> getValuesFromAVariable(
+    public ResponseEntity<Iterable> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
             @ApiParam(value = "Pattern to match") @RequestParam(value = "q", required = false) String q
     )  {
         LOGGER.info("Get values from a variable");
 
-        return ResponseEntity.ok(null);  // TODO : findOne(code).getValues()
+        loadVariables();
+
+        for (String var : variables)
+        {
+            JsonObject varObj = new Gson().fromJson(var, JsonElement.class).getAsJsonObject();
+            if (varObj.get("code").getAsString().equals(code))
+            {
+                JsonArray values = varObj.get("enumerations").getAsJsonArray();
+                LinkedList<Object> valuesObjects = new LinkedList<>();
+                for (JsonElement value : values){
+                    valuesObjects.add(new Gson().fromJson(value, Object.class));
+                }
+                return ResponseEntity.ok(valuesObjects);
+            }
+        }
+
+        LOGGER.warn("Variable " + code + " not found ! ");
+
+        return ResponseEntity.ok(null);
     }
 
-    @ApiOperation(value = "Get groups and variables hierarchy", response = Variable.class)
+    @ApiOperation(value = "Get groups and variables hierarchy", response = Object.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
     public ResponseEntity<Object> getVariablesHierarchy(
@@ -110,7 +136,7 @@ public class VariablesApi {
     private static void loadVariables() {
         if(variables == null)
         {
-            InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
+            InputStream is = VariablesApi.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
 
@@ -129,7 +155,7 @@ public class VariablesApi {
         }
         if (element.has("variables")){
             for (JsonElement var : element.getAsJsonArray("variables")){
-                variables.add(new Gson().fromJson(var, Variable.class));
+                variables.add(new Gson().toJson(var));
             }
         }
     }
