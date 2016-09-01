@@ -56,8 +56,9 @@ public class StatsApi {
 
     private Long countVariables()
     {
-        LOGGER.warn("TEST DB : " + jdbcTemplate.queryForObject("select count(*) from information_schema.tables", Long.class));  // This is a test
-        Long count = jdbcTemplate.queryForObject("select count(*) from adni_merge", Long.class);  // TODO: compute from adni_merge DB
+        Long count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
+                        "WHERE table_schema = 'public' AND table_name = 'adni_merge'", Long.class);  // TODO: compute from adni_merge DB
         return count;
     }
 
