@@ -159,6 +159,7 @@ public class VariablesApi {
                 grp.addProperty("code", element.getAsJsonPrimitive("code").getAsString());
                 grp.addProperty("label", element.getAsJsonPrimitive("label").getAsString());
                 var.getAsJsonObject().add("group", grp);
+                var.getAsJsonObject().addProperty("isVariable", true);
                 variables.add(new Gson().toJson(var));
             }
         }
