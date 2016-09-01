@@ -23,7 +23,7 @@ import javax.sql.DataSource;
  */
 
 @Configuration
-@EnableJpaRepositories(value = "eu.hbp.mip.repositories")
+@EnableJpaRepositories(value = "eu.hbp.mip.repositories", entityManagerFactoryRef = "metaEntityManagerFactory")
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
@@ -35,7 +35,7 @@ public class PersistenceConfiguration {
     }
 
     @Bean(name = "metaDatasource")
-    @ConfigurationProperties(prefix="spring.variablesDatasource")
+    @ConfigurationProperties(prefix="spring.metaDatasource")
     public DataSource metaDataSource() {
         return DataSourceBuilder.create().build();
     }
@@ -57,7 +57,7 @@ public class PersistenceConfiguration {
         return em;
     }
 
-    @Bean(name = "metaMigrations", initMethod = "migrate")
+    @Bean(name = "flyway", initMethod = "migrate")
     public Flyway metaMigrations() {
         Flyway flyway = new Flyway();
         flyway.setBaselineOnMigrate(true);
