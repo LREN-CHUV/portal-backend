@@ -27,8 +27,8 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Bean(name = "datasource")
     @Primary
+    @Bean(name = "datasource")
     @ConfigurationProperties(prefix="spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
@@ -51,7 +51,7 @@ public class PersistenceConfiguration {
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean metaEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(metaDataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
