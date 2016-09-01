@@ -36,8 +36,8 @@ public class StatsApi {
     ArticleRepository articleRepository;
 
     @Autowired
-    @Qualifier("metaJDBC")
-    private JdbcTemplate metaJDBC;
+    @Qualifier("jdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -56,8 +56,8 @@ public class StatsApi {
 
     private Long countVariables()
     {
-        LOGGER.warn("TEST DB : " + metaJDBC.queryForObject("select count(*) from information_schema.tables", Long.class));  // This is a test
-        Long count = metaJDBC.queryForObject("select count(*) from adni_merge", Long.class);  // TODO: compute from adni_merge DB
+        LOGGER.warn("TEST DB : " + jdbcTemplate.queryForObject("select count(*) from information_schema.tables", Long.class));  // This is a test
+        Long count = jdbcTemplate.queryForObject("select count(*) from adni_merge", Long.class);  // TODO: compute from adni_merge DB
         return count;
     }
 

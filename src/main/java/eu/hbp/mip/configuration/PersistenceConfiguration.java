@@ -42,9 +42,9 @@ public class PersistenceConfiguration {
 
     @Bean
     @Autowired
-    @Qualifier("metaJDBC")
-    public JdbcTemplate metaJDBC() {
-        return new JdbcTemplate(metaDataSource());
+    @Qualifier("jdbcTemplate")
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
     }
 
     @Bean(name = "metaEntityManagerFactory")
