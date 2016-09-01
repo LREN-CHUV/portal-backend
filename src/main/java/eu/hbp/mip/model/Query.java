@@ -26,21 +26,21 @@ public class Query {
 
     private String request = null;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "query_variable", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
                     nullable = false, updatable = false) })
     private List<Variable> variables = new LinkedList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "query_covariable", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
                     nullable = false, updatable = false) })
     private List<Variable> covariables = new LinkedList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "query_grouping", joinColumns = {
             @JoinColumn(name = "id", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "code",
