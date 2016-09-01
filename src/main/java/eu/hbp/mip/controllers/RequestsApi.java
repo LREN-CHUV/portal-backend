@@ -54,7 +54,7 @@ public class RequestsApi {
         List<String> variables = new LinkedList<>();
         List<String> groupings = new LinkedList<>();
         List<String> covariables = new LinkedList<>();
-        Map<String, LinkedList<Object>> data = new HashMap<>();
+        Map<String, List<Object>> data = new HashMap<>();
 
         Gson gson = new Gson();
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);
@@ -85,11 +85,19 @@ public class RequestsApi {
 
         for(String varCode : allVars)
         {
+            List<Object> currentVarData = new LinkedList<>();
             String sqlQuery = "SELECT " + varCode + " FROM adni_merge";
             for (Map resultMap : jdbcTemplate.queryForList(sqlQuery))
             {
-                resultMap.get(varCode);
+                String strValue = String.valueOf(resultMap.get(varCode));
+                try {
+                    Double numValue = Double.parseDouble(strValue);
+                    currentVarData.add(numValue);
+                } catch (NumberFormatException e2) {
+                    currentVarData.add(strValue);
+                }
             }
+            data.put(varCode, currentVarData);
         }
 
         dataset.addProperty("code", code);
