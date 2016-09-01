@@ -155,6 +155,10 @@ public class VariablesApi {
         }
         if (element.has("variables")){
             for (JsonElement var : element.getAsJsonArray("variables")){
+                JsonObject grp = new JsonObject();
+                grp.addProperty("code", element.getAsJsonPrimitive("code").getAsString());
+                grp.addProperty("label", element.getAsJsonPrimitive("label").getAsString());
+                var.getAsJsonObject().add("group", grp);
                 variables.add(new Gson().toJson(var));
             }
         }
