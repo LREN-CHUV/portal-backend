@@ -13,13 +13,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.sql.DataSource;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,8 +36,8 @@ public class StatsApi {
     ArticleRepository articleRepository;
 
     @Autowired
-    DataSource variablesDatasource;
-
+    @Qualifier("metaJDBC")
+    private JdbcTemplate metaJDBC;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -57,9 +56,8 @@ public class StatsApi {
 
     private Long countVariables()
     {
-        JdbcTemplate db = new JdbcTemplate(variablesDatasource);
-        LOGGER.warn("TEST DB : " + db.queryForObject("select count(*) from information_schema.tables", Long.class));  // This is a test
-        Long count = db.queryForObject("select count(*) from adni_merge", Long.class);  // TODO: compute from adni_merge DB
+        LOGGER.warn("TEST DB : " + metaJDBC.queryForObject("select count(*) from information_schema.tables", Long.class));  // This is a test
+        Long count = metaJDBC.queryForObject("select count(*) from adni_merge", Long.class);  // TODO: compute from adni_merge DB
         return count;
     }
 

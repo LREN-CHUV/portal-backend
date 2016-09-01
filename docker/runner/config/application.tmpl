@@ -3,14 +3,14 @@
 # See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 spring:
   datasource:
-    url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
+    url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5433/postgres" }}
     username: {{ default .Env.DB_USER "postgres" }}
     password: {{ .Env.DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
-  variablesDatasource:
-    url: {{ default .Env.VARIABLES_DB_URL "jdbc:postgresql://172.22.0.1:5433/postgres" }}
-    username: {{ default .Env.VARIABLES_DB_USER "postgres" }}
-    password: {{ .Env.VARIABLES_DB_PASSWORD }}
+  metaDatasource:
+    url: {{ default .Env.META_DB_URL "jdbc:postgresql://172.22.0.1:5432/postgres" }}
+    username: {{ default .Env.META_DB_USER "postgres" }}
+    password: {{ .Env.META_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
