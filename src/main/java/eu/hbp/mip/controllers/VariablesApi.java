@@ -9,16 +9,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
-import eu.hbp.mip.model.Variable;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
+import org.postgresql.util.PGobject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,9 +31,11 @@ public class VariablesApi {
 
     private static final Logger LOGGER = Logger.getLogger(VariablesApi.class);
 
-    private static final String VARIABLES_FILE = "data/variables.json";
-
     private static LinkedList<String> variables;
+
+    @Autowired
+    @Qualifier("jdbcTemplateMeta")
+    private JdbcTemplate jdbcTemplateMeta;
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
@@ -123,31 +125,33 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get groups and variables hierarchy");
 
-        InputStream is = Variable.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+        String sqlQuery = "SELECT * FROM meta_variables";
+        SqlRowSet data = jdbcTemplateMeta.queryForRowSet(sqlQuery);
+        data.next();
+        String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-        Object hierarchy = new Gson().fromJson(new JsonReader(br), Object.class);
+        Object hierarchy = new Gson().fromJson(json, Object.class);
 
         return ResponseEntity.ok(hierarchy);
     }
 
 
-    private static void loadVariables() {
+    private void loadVariables() {
         if(variables == null)
         {
-            InputStream is = VariablesApi.class.getClassLoader().getResourceAsStream(VARIABLES_FILE);
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            String sqlQuery = "SELECT * FROM meta_variables";
+            SqlRowSet data = jdbcTemplateMeta.queryForRowSet(sqlQuery);
+            data.next();
+            String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-            JsonObject root = new Gson().fromJson(new JsonReader(br), JsonObject.class);
+            JsonObject root = new Gson().fromJson(json, JsonObject.class);
+
             variables = new LinkedList<>();
-
             extractVariablesRecursive(root);
         }
     }
 
-    private static void extractVariablesRecursive(JsonObject element) {
+    private void extractVariablesRecursive(JsonObject element) {
         if (element.has("groups")){
             for(JsonElement child : element.getAsJsonArray("groups")) {
                 extractVariablesRecursive(child.getAsJsonObject());

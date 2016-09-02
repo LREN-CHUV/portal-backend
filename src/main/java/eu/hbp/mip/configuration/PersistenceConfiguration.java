@@ -47,6 +47,13 @@ public class PersistenceConfiguration {
         return new JdbcTemplate(dataSource());
     }
 
+    @Bean
+    @Autowired
+    @Qualifier("jdbcTemplateMeta")
+    public JdbcTemplate jdbcTemplateMeta() {
+        return new JdbcTemplate(metaDataSource());
+    }
+
     @Bean(name = "metaEntityManagerFactory")
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean metaEntityManagerFactory() {
