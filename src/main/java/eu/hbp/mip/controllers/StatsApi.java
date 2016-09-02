@@ -4,17 +4,18 @@
 
 package eu.hbp.mip.controllers;
 
-import eu.hbp.mip.repositories.VariableRepository;
+import eu.hbp.mip.model.GeneralStats;
+import eu.hbp.mip.repositories.ArticleRepository;
+import eu.hbp.mip.repositories.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import eu.hbp.mip.model.GeneralStats;
-import eu.hbp.mip.repositories.ArticleRepository;
-import eu.hbp.mip.repositories.UserRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,8 @@ public class StatsApi {
     ArticleRepository articleRepository;
 
     @Autowired
-    VariableRepository variableRepository;
+    @Qualifier("jdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -47,9 +49,17 @@ public class StatsApi {
 
         stats.setUsers(userRepository.count());
         stats.setArticles(articleRepository.count());
-        stats.setVariables(variableRepository.count());
+        stats.setVariables(countVariables());
 
         return ResponseEntity.ok(stats);
+    }
+
+    private Long countVariables()
+    {
+        Long count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
+                        "WHERE table_schema = 'public' AND table_name = 'adni_merge'", Long.class);  // TODO: compute from adni_merge DB
+        return count;
     }
 
 }

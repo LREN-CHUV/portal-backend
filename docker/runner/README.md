@@ -13,6 +13,10 @@ Environment variables:
 * DB_SERVER: optional, address of the database server, for example DB_SERVER="db:5432". Used to wait for the database to be up and running.
 * DB_USER: User to use when connecting to the database
 * DB_PASSWORD: Password to use when connecting to the database
+* META_DB_URL: JDBC URL to connect to the metadata database, for example "jdbc:postgresql://meta-db:5432/portal"
+* META_DB_SERVER: optional, address of the metadata database server, for example META_DB_SERVER="meta-db:5432". Used to wait for the database to be up and running.
+* META_DB_USER: User to use when connecting to the metadata database
+* META_DB_PASSWORD: Password to use when connecting to the metadata database
 * CONTEXT_PATH:  context path appended to all services running in this container. Default to "/services"
 * AUTHENTICATION: 0 to disable authentication or 1 to enable authentication.
 * CLIENT_ID: required when authentication is turned on, client ID for the [OpenID server of HBP](https://services.humanbrainproject.eu/oidc/)

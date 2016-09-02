@@ -11,12 +11,11 @@ import eu.hbp.mip.model.Model;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.ConfigRepository;
+import eu.hbp.mip.repositories.DatasetRepository;
 import eu.hbp.mip.repositories.ModelRepository;
-import eu.hbp.mip.utils.CSVUtil;
+import eu.hbp.mip.repositories.QueryRepository;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
-import eu.hbp.mip.repositories.DatasetRepository;
-import eu.hbp.mip.repositories.QueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +36,6 @@ public class ModelsApi {
 
     @Autowired
     SecurityConfiguration securityConfiguration;
-
-    @Autowired
-    CSVUtil csvUtil;
 
     @Autowired
     DatasetRepository datasetRepository;

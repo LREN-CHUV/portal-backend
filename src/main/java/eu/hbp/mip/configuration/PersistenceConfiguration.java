@@ -1,13 +1,17 @@
 package eu.hbp.mip.configuration;
 
-import eu.hbp.mip.utils.CSVUtil;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -19,33 +23,52 @@ import javax.sql.DataSource;
  */
 
 @Configuration
-@EnableJpaRepositories(value = "eu.hbp.mip.repositories")
+@EnableJpaRepositories(value = "eu.hbp.mip.repositories", entityManagerFactoryRef = "metaEntityManagerFactory")
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Autowired
-    DataSource dataSource;
+    @Primary
+    @Bean(name = "datasource")
+    @ConfigurationProperties(prefix="spring.datasource")
+    public DataSource dataSource() {
+        return DataSourceBuilder.create().build();
+    }
 
-    @Bean
-    public CSVUtil csvUtil() {
-        return new CSVUtil();
+    @Bean(name = "metaDatasource")
+    @ConfigurationProperties(prefix="spring.metaDatasource")
+    public DataSource metaDataSource() {
+        return DataSourceBuilder.create().build();
     }
 
     @Bean
+    @Autowired
+    @Qualifier("jdbcTemplate")
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    @Autowired
+    @Qualifier("jdbcTemplateMeta")
+    public JdbcTemplate jdbcTemplateMeta() {
+        return new JdbcTemplate(metaDataSource());
+    }
+
+    @Bean(name = "metaEntityManagerFactory")
     @DependsOn("flyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean metaEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
+        em.setDataSource(metaDataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
     }
 
-    @Bean(initMethod = "migrate")
-    public Flyway flyway() {
+    @Bean(name = "flyway", initMethod = "migrate")
+    public Flyway metaMigrations() {
         Flyway flyway = new Flyway();
         flyway.setBaselineOnMigrate(true);
-        flyway.setDataSource(dataSource);
+        flyway.setDataSource(metaDataSource());
         return flyway;
     }
 
