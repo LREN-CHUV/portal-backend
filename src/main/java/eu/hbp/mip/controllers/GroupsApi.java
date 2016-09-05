@@ -5,6 +5,7 @@
 package eu.hbp.mip.controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Group;
@@ -70,6 +71,9 @@ public class GroupsApi {
             for(JsonElement child : element.getAsJsonArray("groups")) {
                 removeVariablesRecursive(child.getAsJsonObject());
             }
+        }
+        else {
+            element.add("groups", new JsonArray());  // Only for compatibility with olf frontend
         }
         if(element.has("variables")) {
             element.remove("variables");

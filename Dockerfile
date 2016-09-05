@@ -13,7 +13,7 @@ RUN apk add --update ca-certificates wget \
 
 COPY docker/runner/config/application.tmpl /config/application.tmpl
 COPY docker/runner/README.md docker/runner/run.sh /
-COPY target/portal-backend-DOCKER_BUILD.jar backend.jar
+COPY target/portal-backend-1.0.0-docker-packaging.jar backend.jar
 
 EXPOSE 8080
 
