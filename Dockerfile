@@ -13,7 +13,10 @@ RUN apk add --update ca-certificates wget \
 
 COPY docker/runner/config/application.tmpl /config/application.tmpl
 COPY docker/runner/README.md docker/runner/run.sh /
-COPY target/portal-backend-1.0.0-docker-packaging.jar backend.jar
+
+ENV PORTAL_BACKEND_VERSION=1.1
+
+COPY target/portal-backend-$PORTAL_BACKEND_VERSION.jar backend.jar
 
 # org.label-schema.build-date=$BUILD_DATE
 # org.label-schema.vcs-ref=$VCS_REF
