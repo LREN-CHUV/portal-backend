@@ -57,6 +57,7 @@ import java.net.URLEncoder;
 import java.security.Principal;
 
 // See https://spring.io/guides/tutorials/spring-boot-oauth2/ for reference about configuring OAuth2 login
+// also http://cscarioni.blogspot.ch/2013/04/pro-spring-security-and-oauth-2.html
 
 /**
  * Configuration for security.

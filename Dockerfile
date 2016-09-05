@@ -15,6 +15,17 @@ COPY docker/runner/config/application.tmpl /config/application.tmpl
 COPY docker/runner/README.md docker/runner/run.sh /
 COPY target/portal-backend-1.0.0-docker-packaging.jar backend.jar
 
+# org.label-schema.build-date=$BUILD_DATE
+# org.label-schema.vcs-ref=$VCS_REF
+LABEL org.label-schema.schema-version="1.0" \
+        org.label-schema.license="AGPLv3" \
+        org.label-schema.name="portal-backend" \
+        org.label-schema.description="Java backend for the MIP portal" \
+        org.label-schema.url="https://mip.humanbrainproject.eu" \
+        org.label-schema.vendor="LREN CHUV" \
+        org.label-schema.docker.dockerfile="Dockerfile" \
+        org.label-schema.memory-hint="2048"
+
 EXPOSE 8080
 
 CMD ["./run.sh"]
