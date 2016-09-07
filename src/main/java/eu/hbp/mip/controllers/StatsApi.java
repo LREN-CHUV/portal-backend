@@ -36,8 +36,8 @@ public class StatsApi {
     ArticleRepository articleRepository;
 
     @Autowired
-    @Qualifier("jdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("adniJdbcTemplate")
+    private JdbcTemplate adniJdbcTemplate;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -56,7 +56,7 @@ public class StatsApi {
 
     private Long countVariables()
     {
-        Long count = jdbcTemplate.queryForObject(
+        Long count = adniJdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
                         "WHERE table_schema = 'public' AND table_name = 'adni_merge'", Long.class);  // TODO: compute from adni_merge DB
         return count;

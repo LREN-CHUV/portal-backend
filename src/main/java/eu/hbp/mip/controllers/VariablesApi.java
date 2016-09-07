@@ -34,8 +34,8 @@ public class VariablesApi {
     private static LinkedList<String> variables;
 
     @Autowired
-    @Qualifier("jdbcTemplateMeta")
-    private JdbcTemplate jdbcTemplateMeta;
+    @Qualifier("metaJdbcTemplate")
+    private JdbcTemplate metaJdbcTemplate;
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
@@ -125,8 +125,8 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get groups and variables hierarchy");
 
-        String sqlQuery = "SELECT * FROM meta_variables";
-        SqlRowSet data = jdbcTemplateMeta.queryForRowSet(sqlQuery);
+        String sqlQuery = "SELECT * FROM meta.meta_variables";
+        SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
@@ -139,8 +139,8 @@ public class VariablesApi {
     private void loadVariables() {
         if(variables == null)
         {
-            String sqlQuery = "SELECT * FROM meta_variables";
-            SqlRowSet data = jdbcTemplateMeta.queryForRowSet(sqlQuery);
+            String sqlQuery = "SELECT * FROM meta.meta_variables";
+            SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();
 

@@ -23,7 +23,7 @@ import javax.sql.DataSource;
  */
 
 @Configuration
-@EnableJpaRepositories(value = "eu.hbp.mip.repositories", entityManagerFactoryRef = "metaEntityManagerFactory")
+@EnableJpaRepositories(value = "eu.hbp.mip.repositories", entityManagerFactoryRef = "entityManagerFactory")
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
@@ -40,35 +40,41 @@ public class PersistenceConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean
-    @Autowired
-    @Qualifier("jdbcTemplate")
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+    @Bean(name = "adniDatasource")
+    @ConfigurationProperties(prefix="spring.adniDatasource")
+    public DataSource adniDataSource() {
+        return DataSourceBuilder.create().build();
     }
 
     @Bean
     @Autowired
-    @Qualifier("jdbcTemplateMeta")
-    public JdbcTemplate jdbcTemplateMeta() {
+    @Qualifier("metaJdbcTemplate")
+    public JdbcTemplate metaJdbcTemplate() {
         return new JdbcTemplate(metaDataSource());
     }
 
-    @Bean(name = "metaEntityManagerFactory")
+    @Bean
+    @Autowired
+    @Qualifier("adniJdbcTemplate")
+    public JdbcTemplate adniJdbcTemplate() {
+        return new JdbcTemplate(adniDataSource());
+    }
+
+    @Bean(name = "entityManagerFactory")
     @DependsOn("flyway")
-    public LocalContainerEntityManagerFactoryBean metaEntityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(metaDataSource());
+        em.setDataSource(dataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
     }
 
     @Bean(name = "flyway", initMethod = "migrate")
-    public Flyway metaMigrations() {
+    public Flyway migrations() {
         Flyway flyway = new Flyway();
         flyway.setBaselineOnMigrate(true);
-        flyway.setDataSource(metaDataSource());
+        flyway.setDataSource(dataSource());
         return flyway;
     }
 

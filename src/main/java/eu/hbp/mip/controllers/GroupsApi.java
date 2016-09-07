@@ -36,8 +36,8 @@ public class GroupsApi {
     private static String groups;
 
     @Autowired
-    @Qualifier("jdbcTemplateMeta")
-    private JdbcTemplate jdbcTemplateMeta;
+    @Qualifier("metaJdbcTemplate")
+    private JdbcTemplate metaJdbcTemplate;
 
 
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
@@ -54,8 +54,8 @@ public class GroupsApi {
     private void loadGroups() {
         if(groups == null)
         {
-            String sqlQuery = "SELECT * FROM meta_variables";
-            SqlRowSet data = jdbcTemplateMeta.queryForRowSet(sqlQuery);
+            String sqlQuery = "SELECT * FROM meta.meta_variables";
+            SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
