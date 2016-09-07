@@ -2,20 +2,20 @@
 
 # See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 spring:
-  datasource:
-    url: {{ default .Env.DB_URL "jdbc:postgresql://172.22.0.1:5432/portal" }}
-    username: {{ default .Env.DB_USER "portal" }}
-    password: {{ .Env.DB_PASSWORD }}
+  portalDatasource:
+    url: {{ default .Env.PORTAL_DB_URL "jdbc:postgresql://172.22.0.1:5432/portal" }}
+    username: {{ default .Env.PORTAL_DB_USER "portal" }}
+    password: {{ .Env.PORTAL_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
   metaDatasource:
     url: {{ default .Env.META_DB_URL "jdbc:postgresql://172.22.0.1:5432/portal" }}
     username: {{ default .Env.META_DB_USER "portal" }}
     password: {{ .Env.META_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
-  adniDatasource:
-      url: {{ default .Env.ADNI_DB_URL "jdbc:postgresql://172.22.0.1:5433/adni" }}
-      username: {{ default .Env.ADNI_DB_USER "adni" }}
-      password: {{ .Env.ADNI_DB_PASSWORD }}
+  scienceDatasource:
+      url: {{ default .Env.SCIENCE_DB_URL "jdbc:postgresql://172.22.0.1:5433/science" }}
+      username: {{ default .Env.SCIENCE_DB_USER "science" }}
+      password: {{ .Env.SCIENCE_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

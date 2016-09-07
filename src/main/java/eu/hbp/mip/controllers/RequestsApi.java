@@ -35,8 +35,8 @@ public class RequestsApi {
     private static final Logger LOGGER = Logger.getLogger(RequestsApi.class);
 
     @Autowired
-    @Qualifier("adniJdbcTemplate")
-    private JdbcTemplate adniJdbcTemplate;
+    @Qualifier("scienceJdbcTemplate")
+    private JdbcTemplate scienceJdbcTemplate;
 
     @ApiOperation(value = "Post a request", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -87,7 +87,7 @@ public class RequestsApi {
         {
             List<Object> currentVarData = new LinkedList<>();
             String sqlQuery = "SELECT " + varCode + " FROM adni_merge";
-            for (Map resultMap : adniJdbcTemplate.queryForList(sqlQuery))
+            for (Map resultMap : scienceJdbcTemplate.queryForList(sqlQuery))
             {
                 String strValue = String.valueOf(resultMap.get(varCode));
                 try {

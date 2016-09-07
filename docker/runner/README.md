@@ -9,20 +9,20 @@ You need to configure a few things using some environment variables.
 
 Environment variables:
 
-* DB_URL: JDBC URL to connect to the portal database, for example "jdbc:postgresql://db:5432/portal"
-* DB_SERVER: optional, address of the portal database server, for example DB_SERVER="db:5432". Used to wait for the database to be up and running.
-* DB_USER: User to use when connecting to the portal database
-* DB_PASSWORD: Password to use when connecting to the portal database
+* PORTAL_DB_URL: JDBC URL to connect to the portal database, for example "jdbc:postgresql://db:5432/portal"
+* PORTAL_DB_SERVER: optional, address of the portal database server, for example DB_SERVER="db:5432". Used to wait for the database to be up and running.
+* PORTAL_DB_USER: User to use when connecting to the portal database
+* PORTAL_DB_PASSWORD: Password to use when connecting to the portal database
 
 * META_DB_URL: JDBC URL to connect to the metadata database
 * META_DB_SERVER: optional, address of the metadata database server. Used to wait for the database to be up and running.
 * META_DB_USER: User to use when connecting to the metadata database
 * META_DB_PASSWORD: Password to use when connecting to the metadata database
 
-* ADNI_DB_URL: JDBC URL to connect to the adni database
-* ADNI_DB_SERVER: optional, address of the adni database server. Used to wait for the database to be up and running.
-* ADNI_DB_USER: User to use when connecting to the adni database
-* ADNI_DB_PASSWORD: Password to use when connecting to the adni database
+* SCIENCE_DB_URL: JDBC URL to connect to the science database
+* SCIENCE_DB_SERVER: optional, address of the science database server. Used to wait for the database to be up and running.
+* SCIENCE_DB_USER: User to use when connecting to the science database
+* SCIENCE_DB_PASSWORD: Password to use when connecting to the science database
 
 * CONTEXT_PATH:  context path appended to all services running in this container. Default to "/services"
 

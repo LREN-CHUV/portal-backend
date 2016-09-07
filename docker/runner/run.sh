@@ -7,7 +7,7 @@ fi
 if [ ! -z "$META_DB_SERVER" ]; then
   OPTS="$OPTS -wait tcp://$META_DB_SERVER -timeout 60s"
 fi
-if [ ! -z "$ADNI_DB_SERVER" ]; then
-  OPTS="$OPTS -wait tcp://$ADNI_DB_SERVER -timeout 60s"
+if [ ! -z "$SCIENCE_DB_SERVER" ]; then
+  OPTS="$OPTS -wait tcp://$SCIENCE_DB_SERVER -timeout 60s"
 fi
 dockerize $OPTS java -jar backend.jar

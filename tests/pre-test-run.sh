@@ -26,7 +26,7 @@ GATEWAY_IP=$(docker inspect portal-db-test | grep \"Gateway\":\ \" | sed 's/.*Ga
 
 docker run --name portal-backend-test -p 8080:8080 \
 -e "AUTHENTICATION=0" \
--e "DB_URL=jdbc:postgresql://$GATEWAY_IP:5433/postgres" \
+-e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:5433/postgres" \
 -e "META_DB_URL=jdbc:postgresql://$GATEWAY_IP:5432/postgres" \
 -d hbpmip/portal-backend
 

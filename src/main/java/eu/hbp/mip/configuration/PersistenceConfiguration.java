@@ -23,14 +23,14 @@ import javax.sql.DataSource;
  */
 
 @Configuration
-@EnableJpaRepositories(value = "eu.hbp.mip.repositories", entityManagerFactoryRef = "entityManagerFactory")
+@EnableJpaRepositories(value = "eu.hbp.mip.repositories")
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
     @Primary
-    @Bean(name = "datasource")
-    @ConfigurationProperties(prefix="spring.datasource")
-    public DataSource dataSource() {
+    @Bean(name = "portalDatasource")
+    @ConfigurationProperties(prefix="spring.portalDatasource")
+    public DataSource portalDataSource() {
         return DataSourceBuilder.create().build();
     }
 
@@ -40,9 +40,9 @@ public class PersistenceConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "adniDatasource")
-    @ConfigurationProperties(prefix="spring.adniDatasource")
-    public DataSource adniDataSource() {
+    @Bean(name = "scienceDatasource")
+    @ConfigurationProperties(prefix="spring.scienceDatasource")
+    public DataSource scienceDataSource() {
         return DataSourceBuilder.create().build();
     }
 
@@ -55,16 +55,16 @@ public class PersistenceConfiguration {
 
     @Bean
     @Autowired
-    @Qualifier("adniJdbcTemplate")
-    public JdbcTemplate adniJdbcTemplate() {
-        return new JdbcTemplate(adniDataSource());
+    @Qualifier("scienceJdbcTemplate")
+    public JdbcTemplate scienceJdbcTemplate() {
+        return new JdbcTemplate(scienceDataSource());
     }
 
     @Bean(name = "entityManagerFactory")
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(portalDataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
@@ -74,7 +74,7 @@ public class PersistenceConfiguration {
     public Flyway migrations() {
         Flyway flyway = new Flyway();
         flyway.setBaselineOnMigrate(true);
-        flyway.setDataSource(dataSource());
+        flyway.setDataSource(portalDataSource());
         return flyway;
     }
 
