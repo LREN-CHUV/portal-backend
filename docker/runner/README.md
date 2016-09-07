@@ -1,6 +1,6 @@
 # hbpmip/portal-backend
 
-[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![](https://images.microbadger.com/badges/version/hbpmip/portal-backend.svg)](https://hub.docker.com/r/hbpmip/portal-backend/ "hbpmip/portal-backend") [![](https://images.microbadger.com/badges/image/hbpmip/portal-backend.svg)](https://hub.docker.com/r/hbpmip/portal-backend/ "hbpmip/portal-backend")
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![](https://images.microbadger.com/badges/version/hbpmip/portal-backend.svg)](https://hub.docker.com/r/hbpmip/portal-backend/tags/ "hbpmip/portal-backend image tags") [![](https://images.microbadger.com/badges/image/hbpmip/portal-backend.svg)](https://microbadger.com/#/images/hbpmip/portal-backend "hbpmip/portal-backend on microbadger")
 
 ## Docker image for the MIP portal backend.
 
