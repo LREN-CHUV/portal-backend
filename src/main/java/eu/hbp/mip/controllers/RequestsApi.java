@@ -86,7 +86,7 @@ public class RequestsApi {
         for(String varCode : allVars)
         {
             List<Object> currentVarData = new LinkedList<>();
-            String sqlQuery = "SELECT " + varCode + " FROM adni_merge";
+            String sqlQuery = "SELECT " + varCode + " FROM science.adni_merge";
             for (Map resultMap : scienceJdbcTemplate.queryForList(sqlQuery))
             {
                 String strValue = String.valueOf(resultMap.get(varCode));

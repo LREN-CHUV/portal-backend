@@ -58,7 +58,7 @@ public class StatsApi {
     {
         Long count = scienceJdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE table_schema = 'public' AND table_name = 'adni_merge'", Long.class);
+                        "WHERE table_schema = 'science' AND table_name = 'adni_merge'", Long.class);
         return count;
     }
 
