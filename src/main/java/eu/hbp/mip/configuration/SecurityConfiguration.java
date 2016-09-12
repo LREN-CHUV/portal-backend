@@ -188,8 +188,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return userAuthentication.getDetails().toString();
     }
 
-    private transient User user;
-
     /**
      * returns the user for the current session.
      * <p>
@@ -203,19 +201,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the user for the current session
      */
     public synchronized User getUser() {
-        if (user == null) {
-            if (!authentication) {
-                user = new User();
-                user.setUsername("TestUser");
-            } else {
-                user = new User(getUserInfos());
-                User foundUser = userRepository.findOne(user.getUsername());
-                if (foundUser != null) {
-                    user.setAgreeNDA(foundUser.getAgreeNDA());
-                }
-            }
-            userRepository.save(user);
+        User user = new User(getUserInfos());
+        User foundUser = userRepository.findOne(user.getUsername());
+        if (foundUser != null) {
+            user.setAgreeNDA(foundUser.getAgreeNDA());
         }
+        userRepository.save(user);
         return user;
     }
 
