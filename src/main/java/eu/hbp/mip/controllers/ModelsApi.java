@@ -72,7 +72,6 @@ public class ModelsApi {
             models = modelRepository.findByValidOrCreatedByOrderByCreatedAt(true, user);
         }
 
-        List<Model> modelsList = new LinkedList<>();
         if(valid != null && models != null)
         {
             for (Iterator<Model> i = models.iterator(); i.hasNext(); )
@@ -83,12 +82,15 @@ public class ModelsApi {
                 {
                     i.remove();
                 }
-                else
-                {
-                    m.cureVariables();
-                    modelsList.add(m);
-                }
             }
+        }
+
+        List<Model> modelsList = new LinkedList<>();
+        for (Iterator<Model> i = models.iterator(); i.hasNext(); )
+        {
+            Model m = i.next();
+            m.cureVariables();
+            modelsList.add(m);
         }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(modelsList);
