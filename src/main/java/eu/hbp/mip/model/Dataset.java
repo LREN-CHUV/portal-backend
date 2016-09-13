@@ -33,10 +33,6 @@ public class Dataset {
     @CollectionTable(name = "dataset_variable", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> variable = new LinkedList<>();
 
-    @ElementCollection(fetch=FetchType.EAGER)
-    @CollectionTable(name = "dataset_data", joinColumns = @JoinColumn(name = "dataset_code"))
-    private Map<String, LinkedList<Object>> data = new HashMap<>();
-
 
     public Dataset() {
         /*
@@ -87,15 +83,6 @@ public class Dataset {
 
     public void setVariable(List<String> variable) {
         this.variable = variable;
-    }
-
-
-    public Map<String, LinkedList<Object>> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, LinkedList<Object>> data) {
-        this.data = data;
     }
 
 }

@@ -54,7 +54,7 @@ public class RequestsApi {
         List<String> variables = new LinkedList<>();
         List<String> groupings = new LinkedList<>();
         List<String> covariables = new LinkedList<>();
-        Map<String, List<Object>> data = new HashMap<>();
+        JsonObject data = new JsonObject();
 
         Gson gson = new Gson();
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);
@@ -85,7 +85,7 @@ public class RequestsApi {
 
         for(String varCode : allVars)
         {
-            List<Object> currentVarData = new LinkedList<>();
+            JsonArray currentVarData = new JsonArray();
             String sqlQuery = "SELECT " + varCode + " FROM science.adni_merge";
             for (Map resultMap : scienceJdbcTemplate.queryForList(sqlQuery))
             {
@@ -97,7 +97,7 @@ public class RequestsApi {
                     currentVarData.add(strValue);
                 }
             }
-            data.put(varCode, currentVarData);
+            data.add(varCode, currentVarData);
         }
 
         dataset.addProperty("code", code);
@@ -105,7 +105,7 @@ public class RequestsApi {
         dataset.add("variable", gson.toJsonTree(variables));
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
-        dataset.add("data", new Gson().toJsonTree(data));
+        dataset.add("data", data);
 
         return ResponseEntity.ok(new Gson().fromJson(dataset, Object.class));
     }
