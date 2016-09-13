@@ -10,10 +10,7 @@ import eu.hbp.mip.model.Filter;
 import eu.hbp.mip.model.Model;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
-import eu.hbp.mip.repositories.ConfigRepository;
-import eu.hbp.mip.repositories.DatasetRepository;
-import eu.hbp.mip.repositories.ModelRepository;
-import eu.hbp.mip.repositories.QueryRepository;
+import eu.hbp.mip.repositories.*;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +45,9 @@ public class ModelsApi {
 
     @Autowired
     ConfigRepository configRepository;
+
+    @Autowired
+    VariableRepository variableRepository;
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -151,6 +151,19 @@ public class ModelsApi {
         Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
         map.put("text", model.getTitle());
         model.getConfig().setTitle(map);
+
+        for (Variable var : model.getQuery().getVariables())
+        {
+            variableRepository.save(var);
+        }
+        for (Variable var : model.getQuery().getCovariables())
+        {
+            variableRepository.save(var);
+        }
+        for (Variable var : model.getQuery().getGrouping())
+        {
+            variableRepository.save(var);
+        }
 
         configRepository.save(model.getConfig());
         queryRepository.save(model.getQuery());
