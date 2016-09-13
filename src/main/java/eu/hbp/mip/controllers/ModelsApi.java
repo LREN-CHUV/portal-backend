@@ -52,7 +52,7 @@ public class ModelsApi {
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<Iterable> getModels(
+    public ResponseEntity<List> getModels(
             @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
             @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
@@ -72,6 +72,7 @@ public class ModelsApi {
             models = modelRepository.findByValidOrCreatedByOrderByCreatedAt(true, user);
         }
 
+        List<Model> modelsList = new LinkedList<>();
         if(valid != null && models != null)
         {
             for (Iterator<Model> i = models.iterator(); i.hasNext(); )
@@ -82,10 +83,15 @@ public class ModelsApi {
                 {
                     i.remove();
                 }
+                else
+                {
+                    m.cureVariables();
+                    modelsList.add(m);
+                }
             }
         }
 
-        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(models);
+        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(modelsList);
 
     }
 
@@ -197,33 +203,11 @@ public class ModelsApi {
         Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
         model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
 
-        List<Variable> varsQuery = queryRepository.findOne(model.getQuery().getId()).getVariables();
-        Collection<Variable> varsQueryColl = new LinkedHashSet<>(varsQuery);
-        model.getQuery().setVariables(new LinkedList<>(varsQueryColl));
-
-        List<Variable> grpgsQuery = queryRepository.findOne(model.getQuery().getId()).getGrouping();
-        Collection<Variable> grpgsQueryColl = new LinkedHashSet<>(grpgsQuery);
-        model.getQuery().setGrouping(new LinkedList<>(grpgsQueryColl));
-
-        List<Variable> covarsQuery = queryRepository.findOne(model.getQuery().getId()).getCovariables();
-        Collection<Variable> covarsQueryColl = new LinkedHashSet<>(covarsQuery);
-        model.getQuery().setCovariables(new LinkedList<>(covarsQueryColl));
-
         List<Filter> fltrs = queryRepository.findOne(model.getQuery().getId()).getFilters();
         Collection<Filter> fltrsColl = new LinkedHashSet<>(fltrs);
         model.getQuery().setFilters(new LinkedList<>(fltrsColl));
 
-        List<String> varsDS = datasetRepository.findOne(model.getDataset().getCode()).getVariable();
-        Collection<String> varsDSColl = new LinkedHashSet<>(varsDS);
-        model.getDataset().setVariable(new LinkedList<>(varsDSColl));
-
-        List<String> grpgsDS = datasetRepository.findOne(model.getDataset().getCode()).getGrouping();
-        Collection<String> grpgsDSColl = new LinkedHashSet<>(grpgsDS);
-        model.getDataset().setGrouping(new LinkedList<>(grpgsDSColl));
-
-        List<String> headersDS = datasetRepository.findOne(model.getDataset().getCode()).getHeader();
-        Collection<String> headersDSColl = new LinkedHashSet<>(headersDS);
-        model.getDataset().setHeader(new LinkedList<>(headersDSColl));
+        model.cureVariables();
 
         return new ResponseEntity<>(HttpStatus.OK).ok(model);
     }

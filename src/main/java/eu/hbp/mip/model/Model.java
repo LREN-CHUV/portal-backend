@@ -11,7 +11,10 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 @Entity
 @Table(name = "`model`")
@@ -170,6 +173,27 @@ public class Model {
 
     public void setTextQuery(String textQuery) {
     this.textQuery = textQuery;
+    }
+
+    public void cureVariables()
+    {
+        Collection<Variable> varsQueryColl = new LinkedHashSet<>(this.getQuery().getVariables());
+        this.getQuery().setVariables(new LinkedList<>(varsQueryColl));
+
+        Collection<Variable> coVarsQueryColl = new LinkedHashSet<>(this.getQuery().getCovariables());
+        this.getQuery().setCovariables(new LinkedList<>(coVarsQueryColl));
+
+        Collection<Variable> grpsQueryColl = new LinkedHashSet<>(this.getQuery().getGrouping());
+        this.getQuery().setGrouping(new LinkedList<>(grpsQueryColl));
+
+        Collection<String> varsDSQueryColl = new LinkedHashSet<>(this.getDataset().getVariable());
+        this.getDataset().setVariable(new LinkedList<>(varsDSQueryColl));
+
+        Collection<String> coVarsDSQueryColl = new LinkedHashSet<>(this.getDataset().getHeader());
+        this.getDataset().setHeader(new LinkedList<>(coVarsDSQueryColl));
+
+        Collection<String> grpsDSQueryColl = new LinkedHashSet<>(this.getDataset().getGrouping());
+        this.getDataset().setGrouping(new LinkedList<>(grpsDSQueryColl));
     }
 
 }
