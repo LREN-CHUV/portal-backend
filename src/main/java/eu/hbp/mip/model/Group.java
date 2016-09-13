@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
-import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "`group`")
@@ -22,14 +22,6 @@ public class Group {
     @Id
     private String code = null;
 
-    private String label = null;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Group parent = null;
-
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Group> groups = new LinkedList<>();
-
 
     public Group() {
         /*
@@ -40,37 +32,6 @@ public class Group {
 
     public String getCode() {
         return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-
-    public Group getParent() {
-        return parent;
-    }
-
-    public void setParent(Group parent) {
-        this.parent = parent;
-    }
-
-
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
     }
 
 }
