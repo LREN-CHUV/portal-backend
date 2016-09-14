@@ -5,17 +5,22 @@
 package eu.hbp.mip.controllers;
 
 import com.github.slugify.Slugify;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Filter;
 import eu.hbp.mip.model.Model;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.*;
+import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -48,6 +53,11 @@ public class ModelsApi {
 
     @Autowired
     VariableRepository variableRepository;
+
+    @Autowired
+    @Qualifier("scienceJdbcTemplate")
+    private JdbcTemplate scienceJdbcTemplate;
+
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -85,12 +95,12 @@ public class ModelsApi {
             }
         }
 
-        List<Model> modelsList = new LinkedList<>();
+        List<Object> modelsList = new LinkedList<>();
         for (Iterator<Model> i = models.iterator(); i.hasNext(); )
         {
             Model m = i.next();
             m.cureVariables();
-            modelsList.add(m);
+            modelsList.add(getModelWithDataset(m));
         }
 
         return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(modelsList);
@@ -106,6 +116,8 @@ public class ModelsApi {
     )  {
 
         LOGGER.info("Create a model");
+
+        model = getModelWithDataset(model);
 
         User user = securityConfiguration.getUser();
 
@@ -178,7 +190,7 @@ public class ModelsApi {
         datasetRepository.save(model.getDataset());
         modelRepository.save(model);
 
-        LOGGER.info("Model saved (also saved model.config, model.query and model.dataset)");
+        LOGGER.info("Model saved (also saved model.config and model.query)");
 
         return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
     }
@@ -211,7 +223,7 @@ public class ModelsApi {
 
         model.cureVariables();
 
-        return new ResponseEntity<>(HttpStatus.OK).ok(model);
+        return new ResponseEntity<>(HttpStatus.OK).ok(getModelWithDataset(model));
     }
 
 
@@ -269,16 +281,19 @@ public class ModelsApi {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private static String randomStr(int length) {
-        char[] chars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            char c = chars[random.nextInt(chars.length)];
-            sb.append(c);
-        }
-        return sb.toString();
-    }
+    private Model getModelWithDataset(Model model)
+    {
+        List<String> allVars = new LinkedList<>();
+        allVars.addAll(model.getDataset().getVariable());
+        allVars.addAll(model.getDataset().getHeader());
+        allVars.addAll(model.getDataset().getGrouping());
 
+        Gson gson = new Gson();
+        JsonObject jsonModel = gson.fromJson(gson.toJson(model, Model.class), JsonObject.class);
+        jsonModel.get("dataset").getAsJsonObject()
+                .add("data", new DataUtil(scienceJdbcTemplate).getDataFromVariables(allVars));
+
+        return gson.fromJson(jsonModel, Model.class);
+    }
 
 }

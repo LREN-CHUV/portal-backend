@@ -5,10 +5,13 @@
 package eu.hbp.mip.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "`dataset`")
@@ -32,6 +35,10 @@ public class Dataset {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "dataset_variable", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> variable = new LinkedList<>();
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Object data = null;
 
 
     public Dataset() {
@@ -85,4 +92,11 @@ public class Dataset {
         this.variable = variable;
     }
 
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
 }

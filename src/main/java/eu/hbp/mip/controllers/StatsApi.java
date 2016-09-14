@@ -7,6 +7,7 @@ package eu.hbp.mip.controllers;
 import eu.hbp.mip.model.GeneralStats;
 import eu.hbp.mip.repositories.ArticleRepository;
 import eu.hbp.mip.repositories.UserRepository;
+import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -49,17 +50,9 @@ public class StatsApi {
 
         stats.setUsers(userRepository.count());
         stats.setArticles(articleRepository.count());
-        stats.setVariables(countVariables());
+        stats.setVariables(new DataUtil(scienceJdbcTemplate).countVariables());
 
         return ResponseEntity.ok(stats);
-    }
-
-    private Long countVariables()
-    {
-        Long count = scienceJdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE table_schema = 'science' AND table_name = 'adni_merge'", Long.class);
-        return count;
     }
 
 }

@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Dataset;
 import eu.hbp.mip.model.Query;
+import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,29 +84,12 @@ public class RequestsApi {
             allVars.add(varCode);
         }
 
-        for(String varCode : allVars)
-        {
-            JsonArray currentVarData = new JsonArray();
-            String sqlQuery = "SELECT " + varCode + " FROM science.adni_merge";
-            for (Map resultMap : scienceJdbcTemplate.queryForList(sqlQuery))
-            {
-                String strValue = String.valueOf(resultMap.get(varCode));
-                try {
-                    Double numValue = Double.parseDouble(strValue);
-                    currentVarData.add(numValue);
-                } catch (NumberFormatException e2) {
-                    currentVarData.add(strValue);
-                }
-            }
-            data.add(varCode, currentVarData);
-        }
-
         dataset.addProperty("code", code);
         dataset.addProperty("date", date.getTime());
         dataset.add("variable", gson.toJsonTree(variables));
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
-        dataset.add("data", data);
+        dataset.add("data", new DataUtil(scienceJdbcTemplate).getDataFromVariables(allVars));
 
         return ResponseEntity.ok(new Gson().fromJson(dataset, Object.class));
     }
