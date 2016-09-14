@@ -276,7 +276,7 @@ public class ModelsApi {
         datasetRepository.save(model.getDataset());
         modelRepository.save(model);
 
-        LOGGER.info("Model updated (also saved/updated model.config, model.query and model.dataset)");
+        LOGGER.info("Model updated (also saved/updated model.config and model.query)");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
