@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by mirco on 14.09.16.
@@ -14,6 +13,7 @@ import java.util.Map;
 public class DataUtil {
 
     private static final int NB_ROWS_SAMPLING = 200;
+    private static final int TABLESAMPLE_SEED = 42;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -29,12 +29,12 @@ public class DataUtil {
         for (String var : vars) {
             JsonArray currentVarData = new JsonArray();
             int samplingPercentage = (int) countAdniRows()/NB_ROWS_SAMPLING;
-            List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(
+            List<Object> queryResult = jdbcTemplate.queryForList(
                     "SELECT " + var + " FROM science.adni_merge " +
-                            "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( 42 )");
-            for (Map resultMap : queryResult)
+                            "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
+            for (Object value : queryResult)
             {
-                String strValue = String.valueOf(resultMap.get(var));
+                String strValue = String.valueOf(value);
                 try {
                     double numValue = Double.parseDouble(strValue);
                     currentVarData.add(numValue);
