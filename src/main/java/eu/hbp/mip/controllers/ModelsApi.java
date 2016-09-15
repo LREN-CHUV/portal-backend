@@ -99,7 +99,6 @@ public class ModelsApi {
         {
             Model m = i.next();
             m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
-            m.cureVariables();
             modelsList.add(getModelWithDataset(m));
         }
 
@@ -218,8 +217,6 @@ public class ModelsApi {
         List<Filter> fltrs = queryRepository.findOne(model.getQuery().getId()).getFilters();
         Collection<Filter> fltrsColl = new LinkedHashSet<>(fltrs);
         model.getQuery().setFilters(new LinkedList<>(fltrsColl));
-
-        model.cureVariables();
 
         return new ResponseEntity<>(HttpStatus.OK).ok(getModelWithDataset(model));
     }

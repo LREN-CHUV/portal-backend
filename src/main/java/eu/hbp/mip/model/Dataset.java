@@ -24,15 +24,15 @@ public class Dataset {
 
     private Date date = null;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "dataset_header", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> header = new LinkedList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "dataset_grouping", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> grouping = new LinkedList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "dataset_variable", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> variable = new LinkedList<>();
 

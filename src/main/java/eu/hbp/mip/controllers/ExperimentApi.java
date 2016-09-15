@@ -89,8 +89,6 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment saved");
 
-        experiment.getModel().cureVariables();
-
         try {
             if(isExaremeAlgo(experiment))
             {
@@ -127,8 +125,6 @@ public class ExperimentApi {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
 
-        experiment.getModel().cureVariables();
-
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
 
@@ -156,8 +152,6 @@ public class ExperimentApi {
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment updated (marked as viewed)");
-
-        experiment.getModel().cureVariables();
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
@@ -286,8 +280,6 @@ public class ExperimentApi {
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment updated (marked as shared)");
-
-        experiment.getModel().cureVariables();
 
         return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
     }
