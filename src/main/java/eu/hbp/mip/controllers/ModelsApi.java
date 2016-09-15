@@ -71,8 +71,8 @@ public class ModelsApi {
         LOGGER.info("Get models");
 
         User user = securityConfiguration.getUser();
-        Iterable<Model> models = null;
 
+        Iterable<Model> models = null;
         if(own != null && own)
         {
             models = modelRepository.findByCreatedByOrderByCreatedAt(user);
@@ -87,7 +87,6 @@ public class ModelsApi {
             for (Iterator<Model> i = models.iterator(); i.hasNext(); )
             {
                 Model m = i.next();
-                m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
                 if(valid != m.getValid())
                 {
                     i.remove();
@@ -99,6 +98,7 @@ public class ModelsApi {
         for (Iterator<Model> i = models.iterator(); i.hasNext(); )
         {
             Model m = i.next();
+            m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
             m.cureVariables();
             modelsList.add(getModelWithDataset(m));
         }
@@ -128,14 +128,13 @@ public class ModelsApi {
         }
 
         // Ensure the title is unique
-        long count = 1;  //
-        for(int i = 1; count > 0; i++)
+        boolean titleExists = true;
+        for(int i = 1; titleExists; i++)
         {
-            count = modelRepository.countByTitle(model.getTitle());
-
-            if(count > 0)
+            String title = model.getTitle();
+            titleExists = modelRepository.countByTitle(title) > 0;
+            if(titleExists)
             {
-                String title = model.getTitle();
                 if(i > 1)
                 {
                     title = title.substring(0, title.length()-4);
@@ -144,7 +143,7 @@ public class ModelsApi {
             }
         }
 
-        // Slugify
+        // Create slug from title
         String slug = null;
         try {
             slug = new Slugify().slugify(model.getTitle());
@@ -154,11 +153,11 @@ public class ModelsApi {
         }
 
         // Ensure slug is unique
-        boolean alreadyExists = true;
-        for(int i = 1; alreadyExists; i++)
+        boolean slugExists = true;
+        for(int i = 1; slugExists; i++)
         {
-            alreadyExists = modelRepository.exists(slug);
-            if(alreadyExists)
+            slugExists = modelRepository.exists(slug);
+            if(slugExists)
             {
                 if(i > 1)
                 {
@@ -236,28 +235,26 @@ public class ModelsApi {
         LOGGER.info("Update a model");
 
         User user = securityConfiguration.getUser();
-
-        model.setTitle(model.getConfig().getTitle().get("text"));
-
         Model oldModel = modelRepository.findOne(slug);
 
-        String author = oldModel.getCreatedBy().getUsername();
-
-        if(!user.getUsername().equals(author))
+        if(!user.getUsername().equals(oldModel.getCreatedBy().getUsername()))
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+        model.setTitle(model.getConfig().getTitle().get("text"));
+
         String oldTitle = oldModel.getTitle();
         String newTitle = model.getTitle();
 
+        // If title has been updated, ensure it is unique
         if(!newTitle.equals(oldTitle)) {
-            long count = 1;
-            for(int i = 1; count > 0 && !newTitle.equals(oldTitle); i++)
+            boolean newTitleExists = true;
+            for(int i = 1; newTitleExists && !newTitle.equals(oldTitle); i++)
             {
                 newTitle = model.getTitle();
-                count = modelRepository.countByTitle(newTitle);
-                if (count > 0 && !newTitle.equals(oldTitle)) {
+                newTitleExists = modelRepository.countByTitle(newTitle) > 0;
+                if (newTitleExists && !newTitle.equals(oldTitle)) {
                     if (i > 1) {
                         newTitle = newTitle.substring(0, newTitle.length() - 4);
                     }
