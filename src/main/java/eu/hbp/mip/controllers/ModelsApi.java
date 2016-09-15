@@ -117,8 +117,6 @@ public class ModelsApi {
 
         LOGGER.info("Create a model");
 
-        model = getModelWithDataset(model);
-
         User user = securityConfiguration.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
@@ -129,7 +127,8 @@ public class ModelsApi {
             model.setValid(false);
         }
 
-        long count = 1;
+        // Ensure the title is unique
+        long count = 1;  //
         for(int i = 1; count > 0; i++)
         {
             count = modelRepository.countByTitle(model.getTitle());
@@ -145,14 +144,16 @@ public class ModelsApi {
             }
         }
 
+        // Slugify
         String slug = null;
         try {
             slug = new Slugify().slugify(model.getTitle());
         } catch (IOException e) {
-            slug = "";
+            slug = "";  // Should never happen
             LOGGER.trace(e);
         }
 
+        // Ensure slug is unique
         boolean alreadyExists = true;
         for(int i = 1; alreadyExists; i++)
         {
@@ -205,9 +206,7 @@ public class ModelsApi {
 
         User user = securityConfiguration.getUser();
 
-        Model model = null;
-
-        model = modelRepository.findOne(slug);
+        Model model = modelRepository.findOne(slug);
         if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
