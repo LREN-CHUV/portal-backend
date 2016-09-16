@@ -201,6 +201,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the user for the current session
      */
     public synchronized User getUser() {
+        if (!authentication)
+        {
+            User user = new User();
+            user.setUsername("Anonymous");
+            user.setFullname("Anonymous");
+            user.setAgreeNDA(true);
+            return user;
+        }
         User user = new User(getUserInfos());
         User foundUser = userRepository.findOne(user.getUsername());
         if (foundUser != null) {

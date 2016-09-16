@@ -29,8 +29,8 @@ fi
 
 # Run databases containers
 
-docker run --name science-db-test -p 65432:5432 -v /science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=science -d postgres:9.5.3
-docker run --name portal-db-test -p 65433:5432 -v /meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=portal -d postgres:9.5.3
+docker run --name science-db-test -p 65432:5432 -v $(pwd)/science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=science -d postgres:9.5.3
+docker run --name portal-db-test -p 65433:5432 -v $(pwd)/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=portal -d postgres:9.5.3
 
 
 # Get gateway IP
