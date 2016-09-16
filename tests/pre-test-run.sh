@@ -3,6 +3,7 @@
 
 # Kill old containers
 
+echo "Killing old containers..."
 if [ $(docker ps | grep backend-test | wc -l) -gt 0 ]; then
   docker kill backend-test
 fi
@@ -16,6 +17,7 @@ fi
 
 # Remove old containers
 
+echo "Removing old containers..."
 if [ $(docker ps -a | grep backend-test | wc -l) -gt 0 ]; then
   docker rm -f backend-test
 fi
@@ -29,12 +31,14 @@ fi
 
 # Run databases containers
 
+echo "Running databases containers..."
 docker run --name science-db-test -p 65432:5432 -v $(pwd)/tests/science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=science -d postgres:9.5.3
 docker run --name portal-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=portal -d postgres:9.5.3
 
 
 # Get gateway IP
 
+echo "Searching gateway IP..."
 GATEWAY_IP=$(docker inspect science-db-test | grep \"Gateway\":\ \" | sed 's/.*Gateway\":\ \"\([^-]*\)\",/\1/' | head -n 1)
 echo "Gateway IP: $GATEWAY_IP"
 
@@ -58,6 +62,7 @@ echo ""
 
 # Run backend container
 
+echo "Running backend container..."
 docker run --name backend-test -p 65434:8080 \
 -e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/portal" \
 -e "PORTAL_DB_SERVER=$GATEWAY_IP:65433/portal" \
@@ -80,3 +85,6 @@ until [ $(docker logs backend-test | grep "Started MIPApplication" | wc -l) -eq 
     printf '.'
     sleep 1
 done
+
+
+echo "DONE"
