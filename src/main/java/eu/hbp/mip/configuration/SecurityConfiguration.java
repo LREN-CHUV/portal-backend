@@ -122,7 +122,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             http.antMatcher("/**")
                     .authorizeRequests()
                     .antMatchers("/**").permitAll().and().csrf().disable();
-            getUser();
+            User user = getUser();
+            userRepository.save(user);
         }
     }
 
