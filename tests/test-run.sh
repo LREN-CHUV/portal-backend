@@ -3,7 +3,7 @@
 
 # Get gateway IP
 
-GATEWAY_IP=$(docker inspect portal-db-test | grep \"Gateway\":\ \" | sed 's/.*Gateway\":\ \"\([^-]*\)\",/\1/' | head -n 1)
+GATEWAY_IP=$(docker inspect backend-test | grep \"Gateway\":\ \" | sed 's/.*Gateway\":\ \"\([^-]*\)\",/\1/' | head -n 1)
 
 # if [ "$(curl -s $GATEWAY_IP:8080/services/groups)" != "$groups" ]; then
 #   echo "failed to load groups"

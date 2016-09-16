@@ -3,13 +3,25 @@
 
 # Kill old containers
 
-docker kill backend-test
-docker kill portal-db-test
-docker kill science-db-test
+if [ $(docker ps | grep backend-test | wc -l) -gt 0 ]; then
+  docker kill backend-test
+fi
+if [ $(docker ps | grep portal-db-test | wc -l) -gt 0 ]; then
+  docker kill portal-db-test
+fi
+if [ $(docker ps | grep science-db-test | wc -l) -gt 0 ]; then
+  docker kill science-db-test
+fi
 
 
 # Remove old containers
 
-docker rm -f backend-test
-docker rm -f portal-db-test
-docker rm -f science-db-test
+if [ $(docker ps -a | grep backend-test | wc -l) -gt 0 ]; then
+  docker rm -f backend-test
+fi
+if [ $(docker ps -a | grep portal-db-test | wc -l) -gt 0 ]; then
+  docker rm -f portal-db-test
+fi
+if [ $(docker ps -a | grep science-db-test | wc -l) -gt 0 ]; then
+  docker rm -f science-db-test
+fi

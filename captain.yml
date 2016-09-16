@@ -11,8 +11,6 @@ builder:
     - echo "Building project..."
     - docker run --rm -v $WORKSPACE:/build/ -v $HOME/.m2:/home/build/.m2/ portal-backend-builder:latest
     - echo "Finished building project"
-  test:
-    - ./tests/test-build.sh
 
 portal-backend:
   build: Dockerfile
