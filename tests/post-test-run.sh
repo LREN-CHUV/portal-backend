@@ -12,6 +12,9 @@ fi
 if [ $(docker ps | grep science-db-test | wc -l) -gt 0 ]; then
   docker kill science-db-test
 fi
+if [ $(docker ps | grep meta-db-test | wc -l) -gt 0 ]; then
+  docker kill meta-db-test
+fi
 
 
 # Remove old containers
@@ -24,4 +27,7 @@ if [ $(docker ps -a | grep portal-db-test | wc -l) -gt 0 ]; then
 fi
 if [ $(docker ps -a | grep science-db-test | wc -l) -gt 0 ]; then
   docker rm -f science-db-test
+fi
+if [ $(docker ps -a | grep meta-db-test | wc -l) -gt 0 ]; then
+  docker rm -f meta-db-test
 fi
