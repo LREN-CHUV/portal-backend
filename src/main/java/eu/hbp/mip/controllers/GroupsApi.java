@@ -54,7 +54,7 @@ public class GroupsApi {
     private void loadGroups() {
         if(groups == null)
         {
-            String sqlQuery = "SELECT * FROM meta.meta_variables";
+            String sqlQuery = "SELECT * FROM meta_variables";
             SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();

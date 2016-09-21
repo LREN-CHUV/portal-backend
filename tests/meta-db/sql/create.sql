@@ -1,11 +1,14 @@
-CREATE SCHEMA IF NOT EXISTS meta;
+CREATE DATABASE meta;
+\c meta
 
-CREATE TABLE IF NOT EXISTS meta.meta_variables (
+SET datestyle to 'European';
+
+CREATE TABLE IF NOT EXISTS meta_variables (
   ID serial NOT NULL PRIMARY KEY,
   source varchar(256) UNIQUE NOT NULL,
   hierarchy json NOT NULL
 );
-INSERT INTO meta.meta_variables (source, hierarchy) VALUES (
+INSERT INTO meta_variables (source, hierarchy) VALUES (
   'adni',
   '
   {

@@ -125,7 +125,7 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get groups and variables hierarchy");
 
-        String sqlQuery = "SELECT * FROM meta.meta_variables";
+        String sqlQuery = "SELECT * FROM meta_variables";
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
@@ -139,7 +139,7 @@ public class VariablesApi {
     private void loadVariables() {
         if(variables == null)
         {
-            String sqlQuery = "SELECT * FROM meta.meta_variables";
+            String sqlQuery = "SELECT * FROM meta_variables";
             SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();

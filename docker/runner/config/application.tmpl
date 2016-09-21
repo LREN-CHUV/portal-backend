@@ -4,17 +4,17 @@
 spring:
   portalDatasource:
     url: {{ default .Env.PORTAL_DB_URL "jdbc:postgresql://172.22.0.1:5432/portal" }}
-    username: {{ default .Env.PORTAL_DB_USER "portal" }}
+    username: {{ default .Env.PORTAL_DB_USER "postgres" }}
     password: {{ .Env.PORTAL_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
   metaDatasource:
-    url: {{ default .Env.META_DB_URL "jdbc:postgresql://172.22.0.1:5432/portal" }}
-    username: {{ default .Env.META_DB_USER "portal" }}
+    url: {{ default .Env.META_DB_URL "jdbc:postgresql://172.22.0.1:5432/meta" }}
+    username: {{ default .Env.META_DB_USER "postgres" }}
     password: {{ .Env.META_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
   scienceDatasource:
       url: {{ default .Env.SCIENCE_DB_URL "jdbc:postgresql://172.22.0.1:5433/science" }}
-      username: {{ default .Env.SCIENCE_DB_USER "science" }}
+      username: {{ default .Env.SCIENCE_DB_USER "postgres" }}
       password: {{ .Env.SCIENCE_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver
   jpa:
