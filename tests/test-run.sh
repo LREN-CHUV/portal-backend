@@ -29,7 +29,7 @@ GATEWAY_IP=$(docker inspect backend-test | grep \"Gateway\":\ \" | sed 's/.*Gate
 # Test - GET groups
 
 echo "Testing groups API..."
-if [ "$(curl -s ${GATEWAY_IP}:65434/services/groups)" != "$GROUPS_REF" ]; then
+if [ "$(curl -s ${GATEWAY_IP}:65440/services/groups)" != "$GROUPS_REF" ]; then
   echo "Tests failed - failed to load groups"
   exit 1
 fi
@@ -38,7 +38,7 @@ fi
 # Test - GET variables
 
 echo "Testing variables API..."
-if [ "$(curl -s ${GATEWAY_IP}:65434/services/variables)" != "$VARIABLES_REF" ]; then
+if [ "$(curl -s ${GATEWAY_IP}:65440/services/variables)" != "$VARIABLES_REF" ]; then
   echo "Tests failed - failed to load variables"
   exit 1
 fi
@@ -46,7 +46,7 @@ fi
 
 # Test - GET variables hierarchy
 
-if [ "$(curl -s ${GATEWAY_IP}:65434/services/variables/hierarchy)" != "$VARIABLES_HIERARCHY_REF" ]; then
+if [ "$(curl -s ${GATEWAY_IP}:65440/services/variables/hierarchy)" != "$VARIABLES_HIERARCHY_REF" ]; then
   echo "Tests failed - failed to load variables hierarchy"
   exit 1
 fi
@@ -55,7 +55,7 @@ fi
 # Test - GET stats
 
 echo "Testing stats API..."
-if [ "$(curl -s ${GATEWAY_IP}:65434/services/stats)" != "$STATS_REF" ]; then
+if [ "$(curl -s ${GATEWAY_IP}:65440/services/stats)" != "$STATS_REF" ]; then
   echo "Tests failed - failed to load stats"
   exit 1
 fi
@@ -64,7 +64,7 @@ fi
 # Test - POST requests
 
 echo "Testing requests API..."
-response=$(curl -s -H "Content-Type: application/json" -X POST -d ${REQUEST_BODY} ${GATEWAY_IP}:65434/services/queries/requests)
+response=$(curl -s -H "Content-Type: application/json" -X POST -d ${REQUEST_BODY} ${GATEWAY_IP}:65440/services/queries/requests)
 if [ "${response:52}" != "${REQUEST_REF:52}" ]; then
   echo "Tests failed - failed to post requests"
   exit 1
@@ -74,8 +74,8 @@ fi
 # Test - POST and GET an article
 
 echo "Testing articles API..."
-temp=$(curl -s -H "Content-Type: application/json" -X POST -d ${ARTICLE_BODY} ${GATEWAY_IP}:65434/services/articles)
-response=$(curl -s ${GATEWAY_IP}:65434/services/articles | sed "s/\"createdAt\":[0-9]*,//g")
+temp=$(curl -s -H "Content-Type: application/json" -X POST -d ${ARTICLE_BODY} ${GATEWAY_IP}:65440/services/articles)
+response=$(curl -s ${GATEWAY_IP}:65440/services/articles | sed "s/\"createdAt\":[0-9]*,//g")
 response_ref=$(echo "${ARTICLE_REF}" | sed "s/\"createdAt\":[0-9]*,//g")
 if [ "${response}" != "${response_ref}" ]; then
   echo "Tests failed - failed to save/load article"
@@ -86,8 +86,8 @@ fi
 # Test - POST and GET a model
 
 echo "Testing models API..."
-temp=$(curl -s -H "Content-Type: application/json" -X POST -d ${MODEL_BODY} ${GATEWAY_IP}:65434/services/models)
-response=$(curl -s ${GATEWAY_IP}:65434/services/models | sed "s/\"createdAt\":[0-9]*,//g" | sed "s/\"date\":[0-9]*,//g")
+temp=$(curl -s -H "Content-Type: application/json" -X POST -d ${MODEL_BODY} ${GATEWAY_IP}:65440/services/models)
+response=$(curl -s ${GATEWAY_IP}:65440/services/models | sed "s/\"createdAt\":[0-9]*,//g" | sed "s/\"date\":[0-9]*,//g")
 response_ref=$(echo "${MODEL_REF}" | sed "s/\"createdAt\":[0-9]*,//g" | sed "s/\"date\":[0-9]*,//g")
 if [ "${response}" != "${response_ref}" ]; then
   echo "Tests failed - failed to save/load model"

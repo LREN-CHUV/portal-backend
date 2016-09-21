@@ -33,7 +33,8 @@ fi
 
 echo "Running databases containers..."
 docker run --name science-db-test -p 65432:5432 -v $(pwd)/tests/science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
-docker run --name portal-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
+docker run --name meta-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
+docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=portal -d postgres:9.5.3
 
 
 # Get gateway IP
@@ -53,6 +54,14 @@ until [ $(docker exec science-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq
 done
 echo ""
 
+echo "Waiting for meta-db to start..."
+sleep 3
+until [ $(docker exec meta-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
+    printf '.'
+    sleep 1
+done
+echo ""
+
 echo "Waiting for portal-db to start..."
 sleep 3
 until [ $(docker exec portal-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
@@ -65,9 +74,9 @@ echo ""
 # Run backend container
 
 echo "Running backend container..."
-docker run --name backend-test -p 65434:8080 \
--e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/portal" \
--e "PORTAL_DB_SERVER=$GATEWAY_IP:65433/portal" \
+docker run --name backend-test -p 65440:8080 \
+-e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:65434/portal" \
+-e "PORTAL_DB_SERVER=$GATEWAY_IP:65434/portal" \
 -e "PORTAL_DB_USER=postgres" \
 -e "META_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/meta" \
 -e "META_DB_SERVER=$GATEWAY_IP:65433/meta" \
