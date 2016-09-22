@@ -286,12 +286,11 @@ public class ExperimentApi {
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
         // this runs in the background. For future optimization: use a thread pool
+        final String url = experimentUrl;
+        final String query = experiment.computeQuery();
         new Thread() {
             @Override
             public void run() {
-                String url = experimentUrl;
-                String query = experiment.computeQuery();
-
                 // Results are stored in the experiment object
                 try {
                     executeExperiment(url, query, experiment);
