@@ -92,6 +92,14 @@ public class Experiment {
         Collection<Variable> covarsQueryColl = new LinkedHashSet<>(covarsQuery);
         model.getQuery().setCovariables(new LinkedList<>(covarsQueryColl));
 
+        List<Variable> varsQuery = model.getQuery().getVariables();
+        Collection<Variable> varsQueryColl = new LinkedHashSet<>(varsQuery);
+        model.getQuery().setVariables(new LinkedList<>(varsQueryColl));
+
+        List<Variable> grpsQuery = model.getQuery().getCovariables();
+        Collection<Variable> grpsQueryColl = new LinkedHashSet<>(grpsQuery);
+        model.getQuery().setGrouping(new LinkedList<>(grpsQueryColl));
+
         outgoingQuery.add("covariables", gson.toJsonTree(model.getQuery().getCovariables()));
         outgoingQuery.add("variables", gson.toJsonTree(model.getQuery().getVariables()));
         outgoingQuery.add("filters", gson.toJsonTree(model.getQuery().getFilters()));
