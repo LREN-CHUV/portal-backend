@@ -30,7 +30,7 @@ public class DataUtil {
 
         for (String var : vars) {
             JsonArray currentVarData = new JsonArray();
-            int samplingPercentage = (int) countAdniRows()/NB_ROWS_SAMPLING;
+            int samplingPercentage = 100 * NB_ROWS_SAMPLING / (int) countAdniRows();
             List<Object> queryResult = jdbcTemplate.queryForList(
                     "SELECT " + var + " FROM adni_merge " +
                             "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
