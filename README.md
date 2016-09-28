@@ -1,6 +1,6 @@
-## Introduction
+## Backend for the MIP portal
 
-This is the MIP backend.
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 
 ## Usage in development environment
 
