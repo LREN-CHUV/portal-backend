@@ -4,8 +4,7 @@ machine:
 dependencies:
   pre:
     - curl -sSL https://raw.githubusercontent.com/harbur/captain/v1.0.0/install.sh | bash
-    - $HOME/.captain/bin/captain > ~/bin/captain
-    - chmod a+x ~/bin/captain
+    - export PATH=$HOME/.captain/bin:$PATH
 test:
   override:
     - ./test.sh
