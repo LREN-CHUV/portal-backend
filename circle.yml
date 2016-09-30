@@ -14,4 +14,4 @@ deployment:
     commands:
       - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS -e $DOCKER_HUB_EMAIL
       - captain push --branch-tags=false --commit-tags=true
-      - mvn sonar:sonar -Dsonar.login=$SONAR_KEY
+      # - mvn sonar:sonar -Dsonar.login=$SONAR_KEY  # Need SonarQube back on a public URL
