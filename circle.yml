@@ -3,7 +3,7 @@ machine:
     - docker
 dependencies:
   pre:
-    - curl -sL https://github.com/harbur/captain/releases/download/v0.0.1/captain > ~/bin/captain
+    - curl -sL https://github.com/harbur/captain/releases/download/v1.0.0/captain > ~/bin/captain
     - chmod u+x ~/bin/captain
 test:
   override:
