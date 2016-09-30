@@ -1,0 +1,11 @@
+machine:
+  services:
+    - docker
+dependencies:
+  pre:
+    - curl -sL https://github.com/harbur/captain/releases/download/v0.0.1/captain > ~/bin/captain
+    - chmod u+x ~/bin/captain
+test:
+  override:
+    - captain test
+
