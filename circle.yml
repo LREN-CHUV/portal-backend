@@ -9,17 +9,20 @@ test:
   override:
     - ./test.sh
 deployment:
-  automerge:
+  hub:
     branch: master
     commands:
       - set +x
       - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS -e $DOCKER_HUB_EMAIL
       - set -x
       - captain push --branch-tags=false --commit-tags=true
-      - git fetch origin stable
+  automerge:
+    branch: master
+    commands:
+      - git fetch hub stable
       - git checkout stable
-      - git pull origin master
-      - git push origin stable
+      - git pull hub master
+      - git push hub stable
       - set +x
       - mvn sonar:sonar -Dsonar.login=$SONAR_KEY
       - set -x
