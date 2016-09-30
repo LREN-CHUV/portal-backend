@@ -3,8 +3,8 @@ machine:
     - docker
 dependencies:
   pre:
-    - curl -sSL https://raw.githubusercontent.com/harbur/captain/v1.0.0/install.sh | bash
-    - export PATH=/home/ubuntu/.captain/bin:$PATH
+    - curl -sL https://github.com/harbur/captain/releases/download/v0.0.1/captain > ~/bin/captain
+    - chmod u+x ~/bin/captain
 test:
   override:
     - ./test.sh
