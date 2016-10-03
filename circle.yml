@@ -1,6 +1,12 @@
 machine:
   services:
     - docker
+dependencies:
+  override:
+    - docker info
+    - docker build -f Dockerfile.builder -t portal-backend-builder .
+    - docker run --rm -v $HOME/portal-backend:/build/ -v $HOME/.m2:/home/build/.m2/ portal-backend-builder:latest
+    - docker build -t hbpmip/portal-backend .
 test:
   pre:
     - ./tests/pre-test-run.sh
