@@ -1,17 +1,17 @@
 machine:
   services:
     - docker
-dependencies:
-  pre:
-    - curl -sL https://github.com/harbur/captain/releases/download/v0.0.1/captain > ~/bin/captain
-    - chmod u+x ~/bin/captain
 test:
+  pre:
+    - ./tests/pre-test-run.sh
   override:
-    - ./test.sh
-deployment:
-  hub:
-    branch: master
-    commands:
-      - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS -e $DOCKER_HUB_EMAIL
-      - captain push --branch-tags=false --commit-tags=true
-      # - mvn sonar:sonar -Dsonar.login=$SONAR_KEY  # Need SonarQube back on a public URL
+    - ./tests/test-run.sh
+  post:
+    - ./tests/tests/post-test-run.sh
+# deployment:
+#   hub:
+#     branch: master
+#     commands:
+#       - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS -e $DOCKER_HUB_EMAIL
+#       - docker push --branch-tags=false --commit-tags=true
+#       - mvn sonar:sonar -Dsonar.login=$SONAR_KEY  # Need SonarQube back on a public URL
