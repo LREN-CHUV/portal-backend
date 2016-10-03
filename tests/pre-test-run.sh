@@ -47,27 +47,36 @@ echo "Gateway IP: $GATEWAY_IP"
 # Wait for databases to be ready
 
 echo "Waiting for science-db to start..."
-sleep 3
-until [ $(docker exec science-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
-    printf '.'
-    sleep 1
-done
+if [ "$CIRCLECI" = true ] ; then
+  sleep 5
+else
+  until [ $(docker exec science-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
+      printf '.'
+      sleep 1
+  done
+fi
 echo ""
 
 echo "Waiting for meta-db to start..."
-sleep 3
+if [ "$CIRCLECI" = true ] ; then
+  sleep 5
+else
 until [ $(docker exec meta-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
     printf '.'
     sleep 1
 done
+fi
 echo ""
 
 echo "Waiting for portal-db to start..."
-sleep 3
+if [ "$CIRCLECI" = true ] ; then
+  sleep 5
+else
 until [ $(docker exec portal-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
     printf '.'
     sleep 1
 done
+fi
 echo ""
 
 

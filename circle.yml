@@ -6,8 +6,6 @@ test:
     - ./tests/pre-test-run.sh
   override:
     - ./tests/test-run.sh
-  post:
-    - ./tests/tests/post-test-run.sh
 # deployment:
 #   hub:
 #     branch: master
