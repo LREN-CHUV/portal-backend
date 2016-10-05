@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -244,14 +245,15 @@ public class ExperimentApi {
         }
 
         if (modelSlug != null && !"".equals(modelSlug)) {
-            for(Experiment e : expList)
+            for(Iterator<Experiment> it = expList.iterator(); it.hasNext();)
             {
+                Experiment e = it.next();
                 e.setResult(null);
                 e.setAlgorithms(null);
                 e.setValidations(null);
                 if(!e.getModel().getSlug().equals(modelSlug))
                 {
-                    expList.remove(e);
+                    it.remove();
                 }
             }
         }
