@@ -1,7 +1,7 @@
 ## Backend for the MIP portal
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
-[![CircleCI](https://circleci.com/gh/LREN-CHUV/portal-backend/tree/master.svg?style=svg)]
+![CircleCI](https://circleci.com/gh/LREN-CHUV/portal-backend/tree/master.svg?style=svg)
 
 ## Usage
 
