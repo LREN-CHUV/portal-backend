@@ -30,33 +30,33 @@ public class PersistenceConfiguration {
     @Primary
     @Bean(name = "portalDatasource")
     @ConfigurationProperties(prefix="spring.portalDatasource")
-    private DataSource portalDataSource() {
+    public DataSource portalDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name = "metaDatasource")
     @ConfigurationProperties(prefix="spring.metaDatasource")
-    private DataSource metaDataSource() {
+    public DataSource metaDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name = "scienceDatasource")
     @ConfigurationProperties(prefix="spring.scienceDatasource")
-    private DataSource scienceDataSource() {
+    public DataSource scienceDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean
     @Autowired
     @Qualifier("metaJdbcTemplate")
-    private JdbcTemplate metaJdbcTemplate() {
+    public JdbcTemplate metaJdbcTemplate() {
         return new JdbcTemplate(metaDataSource());
     }
 
     @Bean
     @Autowired
     @Qualifier("scienceJdbcTemplate")
-    private JdbcTemplate scienceJdbcTemplate() {
+    public JdbcTemplate scienceJdbcTemplate() {
         return new JdbcTemplate(scienceDataSource());
     }
 
