@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/087c83d0601a46c7a4dd91f2e5935a5a)](https://www.codacy.com/app/mirco-nasuti/portal-backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LREN-CHUV/portal-backend&amp;utm_campaign=Badge_Grade)
+[![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--backend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-backend/)
 ![CircleCI](https://circleci.com/gh/LREN-CHUV/portal-backend/tree/master.svg?style=svg)
 
 ## Usage
@@ -9,7 +10,7 @@
 * Build a versioned image: `./build.sh`
 * Build and test an image: `./test.sh`
 
-## Deployment
+## Deployment (using a Docker image)
 
 * See here: https://hub.docker.com/r/hbpmip/portal-backend/
 
