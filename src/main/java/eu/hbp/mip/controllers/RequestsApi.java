@@ -55,7 +55,6 @@ public class RequestsApi {
         List<String> variables = new LinkedList<>();
         List<String> groupings = new LinkedList<>();
         List<String> covariables = new LinkedList<>();
-        JsonObject data = new JsonObject();
 
         Gson gson = new Gson();
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);

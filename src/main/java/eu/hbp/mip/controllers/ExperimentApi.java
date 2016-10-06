@@ -233,7 +233,6 @@ public class ExperimentApi {
             String modelSlug
     ) {
         User user = securityConfiguration.getUser();
-        Iterable<Experiment> experiments = null;
 
         Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
         List<Experiment> expList = Lists.newLinkedList(myExperiments);
