@@ -32,10 +32,10 @@ public class ArticlesApi {
     private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
 
     @Autowired
-    SecurityConfiguration securityConfiguration;
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
-    ArticleRepository articleRepository;
+    private ArticleRepository articleRepository;
 
     @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })

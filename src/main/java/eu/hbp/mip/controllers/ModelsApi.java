@@ -37,22 +37,22 @@ public class ModelsApi {
     private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
 
     @Autowired
-    SecurityConfiguration securityConfiguration;
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
-    DatasetRepository datasetRepository;
+    private DatasetRepository datasetRepository;
 
     @Autowired
-    ModelRepository modelRepository;
+    private ModelRepository modelRepository;
 
     @Autowired
-    QueryRepository queryRepository;
+    private QueryRepository queryRepository;
 
     @Autowired
-    ConfigRepository configRepository;
+    private ConfigRepository configRepository;
 
     @Autowired
-    VariableRepository variableRepository;
+    private VariableRepository variableRepository;
 
     @Autowired
     @Qualifier("scienceJdbcTemplate")

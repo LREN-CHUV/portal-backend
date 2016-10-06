@@ -33,16 +33,16 @@ public class AppsApi {
     private static final Logger LOGGER = Logger.getLogger(AppsApi.class);
 
     @Autowired
-    SecurityConfiguration securityConfiguration;
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
-    AppRepository appRepository;
+    private AppRepository appRepository;
 
     @Autowired
-    VoteRepository voteRepository;
+    private VoteRepository voteRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })

@@ -26,7 +26,7 @@ public class DatasetsApi {
     private static final Logger LOGGER = Logger.getLogger(DatasetsApi.class);
 
     @Autowired
-    DatasetRepository datasetRepository;
+    private DatasetRepository datasetRepository;
 
     @ApiOperation(value = "Get a dataset", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })

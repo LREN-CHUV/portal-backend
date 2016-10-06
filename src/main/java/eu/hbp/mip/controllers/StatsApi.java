@@ -31,10 +31,10 @@ public class StatsApi {
     private static final Logger LOGGER = Logger.getLogger(StatsApi.class);
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    ArticleRepository articleRepository;
+    private ArticleRepository articleRepository;
 
     @Autowired
     @Qualifier("scienceJdbcTemplate")

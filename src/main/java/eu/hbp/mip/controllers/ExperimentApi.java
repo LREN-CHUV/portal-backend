@@ -60,13 +60,13 @@ public class ExperimentApi {
     private String miningExaremeQueryUrl;
 
     @Autowired
-    SecurityConfiguration securityConfiguration;
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
-    ModelRepository modelRepository;
+    private ModelRepository modelRepository;
 
     @Autowired
-    ExperimentRepository experimentRepository;
+    private ExperimentRepository experimentRepository;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)

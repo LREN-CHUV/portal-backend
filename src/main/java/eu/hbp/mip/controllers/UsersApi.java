@@ -25,7 +25,7 @@ public class UsersApi {
     private static final Logger LOGGER = Logger.getLogger(UsersApi.class);
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @ApiOperation(value = "Get a user", response = User.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
