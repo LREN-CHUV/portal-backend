@@ -146,7 +146,7 @@ public class ExperimentApi {
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
-        experiment = experimentRepository.findOne(experimentUuid);;
+        experiment = experimentRepository.findOne(experimentUuid);
         if (!experiment.getCreatedBy().getUsername().equals(user.getUsername()))
             return new ResponseEntity<>("You're not the owner of this experiment", HttpStatus.BAD_REQUEST);
         experiment.setResultsViewed(true);
