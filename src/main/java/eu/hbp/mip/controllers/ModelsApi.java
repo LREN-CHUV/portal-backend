@@ -18,6 +18,7 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -57,6 +58,9 @@ public class ModelsApi {
     @Autowired
     @Qualifier("scienceJdbcTemplate")
     private JdbcTemplate scienceJdbcTemplate;
+
+    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
+    private String scienceMainTable;
 
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
@@ -284,7 +288,7 @@ public class ModelsApi {
         Gson gson = new Gson();
         JsonObject jsonModel = gson.fromJson(gson.toJson(model, Model.class), JsonObject.class);
         jsonModel.get("dataset").getAsJsonObject()
-                .add("data", new DataUtil(scienceJdbcTemplate).getDataFromVariables(allVars));
+                .add("data", new DataUtil(scienceJdbcTemplate, scienceMainTable).getDataFromVariables(allVars));
 
         return gson.fromJson(jsonModel, Model.class);
     }

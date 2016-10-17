@@ -17,6 +17,7 @@ spring:
   scienceDatasource:
       url: {{ default .Env.SCIENCE_DB_URL "jdbc:postgresql://172.22.0.1:5433/science" }}
       schema: {{ default .Env.SCIENCE_DB_SCHEMA "public" }}
+      main-table: {{ default .Env.SCIENCE_DB_MAIN_TABLE "adni_merge" }}
       username: {{ default .Env.SCIENCE_DB_USER "postgres" }}
       password: {{ .Env.SCIENCE_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver

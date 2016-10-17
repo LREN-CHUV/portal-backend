@@ -17,10 +17,12 @@ public class DataUtil {
     private static final int TABLESAMPLE_SEED = 42;
 
     private JdbcTemplate jdbcTemplate;
+    private String scienceMainTable;
 
-    public DataUtil(JdbcTemplate jdbcTemplate)
+    public DataUtil(JdbcTemplate jdbcTemplate, String scienceMainTable)
     {
         this.jdbcTemplate = jdbcTemplate;
+        this.scienceMainTable = scienceMainTable;
     }
 
     @Cacheable("varsdata")
@@ -32,7 +34,7 @@ public class DataUtil {
             JsonArray currentVarData = new JsonArray();
             int samplingPercentage = 100 * NB_ROWS_SAMPLING / (int) countAdniRows();
             List<Object> queryResult = jdbcTemplate.queryForList(
-                    "SELECT " + var + " FROM adni_merge " +
+                    "SELECT " + var + " FROM "+scienceMainTable+" " +
                             "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
             for (Object value : queryResult)
             {
@@ -55,7 +57,7 @@ public class DataUtil {
     {
         long count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE table_name = 'adni_merge'", Long.class);
+                        "WHERE table_name = '"+scienceMainTable+"'", Long.class);
         return count;
     }
 
@@ -63,7 +65,7 @@ public class DataUtil {
     public long countAdniRows()
     {
         long count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM adni_merge", Long.class);
+                "SELECT COUNT(*) FROM "+scienceMainTable, Long.class);
         return count;
     }
 
