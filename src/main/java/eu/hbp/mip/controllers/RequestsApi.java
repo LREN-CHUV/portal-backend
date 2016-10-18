@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,13 +61,15 @@ public class RequestsApi {
         List<String> variables = new LinkedList<>();
         List<String> groupings = new LinkedList<>();
         List<String> covariables = new LinkedList<>();
+        List<String> filters = new LinkedList<>();
 
         Gson gson = new Gson();
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);
 
-        JsonArray queryVars = q.getAsJsonArray("variables");
-        JsonArray queryGrps = q.getAsJsonArray("grouping");
-        JsonArray queryCoVars = q.getAsJsonArray("covariables");
+        JsonArray queryVars = q.getAsJsonArray("variables") != null ? q.getAsJsonArray("variables") : new JsonArray();
+        JsonArray queryGrps = q.getAsJsonArray("grouping") != null ? q.getAsJsonArray("grouping") : new JsonArray();
+        JsonArray queryCoVars = q.getAsJsonArray("covariables") != null ? q.getAsJsonArray("covariables") : new JsonArray();
+        JsonArray queryfltrs = q.getAsJsonArray("filter") != null ? q.getAsJsonArray("filter") : new JsonArray();
 
         List<String> allVars = new LinkedList<>();
 
@@ -87,11 +91,18 @@ public class RequestsApi {
             allVars.add(varCode);
         }
 
+        for (JsonElement var : queryfltrs) {
+            String fltCode = var.getAsJsonObject().get("code").getAsString();
+            filters.add(fltCode);
+            allVars.add(fltCode);
+        }
+
         dataset.addProperty("code", code);
         dataset.addProperty("date", date.getTime());
         dataset.add("variable", gson.toJsonTree(variables));
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
+        dataset.add("filter", gson.toJsonTree(filters));
         dataset.add("data", new DataUtil(scienceJdbcTemplate, scienceMainTable).getDataFromVariables(allVars));
 
         return ResponseEntity.ok(new Gson().fromJson(dataset, Object.class));

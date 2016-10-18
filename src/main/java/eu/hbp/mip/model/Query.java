@@ -47,8 +47,12 @@ public class Query {
                     nullable = false, updatable = false) })
     private List<Variable> grouping = new LinkedList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Filter> filters = new LinkedList<>();
+    @ManyToMany
+    @JoinTable(name = "query_filter", joinColumns = {
+            @JoinColumn(name = "query_id", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "code",
+                    nullable = false, updatable = false) })
+    private List<Variable> filters = new LinkedList<>();
 
     @Column(columnDefinition = "text", name = "sql_filter")
     private String sqlFilter = null;
@@ -99,14 +103,14 @@ public class Query {
     }
 
 
-    public List<Filter> getFilters() {
+    @JsonProperty("filter")
+    public List<Variable> getFilters() {
         return filters;
     }
 
-    public void setFilters(List<Filter> filters) {
+    public void setFilters(List<Variable> filters) {
         this.filters = filters;
     }
-
 
     public String getRequest() {
         return request;

@@ -8,7 +8,6 @@ import com.github.slugify.Slugify;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import eu.hbp.mip.configuration.SecurityConfiguration;
-import eu.hbp.mip.model.Filter;
 import eu.hbp.mip.model.Model;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
@@ -217,10 +216,6 @@ public class ModelsApi {
         List<String> yAxisVars = configRepository.findOne(model.getConfig().getId()).getyAxisVariables();
         Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
         model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
-
-        List<Filter> fltrs = queryRepository.findOne(model.getQuery().getId()).getFilters();
-        Collection<Filter> fltrsColl = new LinkedHashSet<>(fltrs);
-        model.getQuery().setFilters(new LinkedList<>(fltrsColl));
 
         return new ResponseEntity<>(HttpStatus.OK).ok(getModelWithDataset(model));
     }
