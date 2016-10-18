@@ -1,0 +1,1 @@
+ALTER TABLE query ADD COLUMN sql_filter text;

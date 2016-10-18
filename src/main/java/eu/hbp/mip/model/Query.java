@@ -50,6 +50,9 @@ public class Query {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Filter> filters = new LinkedList<>();
 
+    @Column(columnDefinition = "text", name = "sql_filter")
+    private String sqlFilter = null;
+
 
     public Query() {
         /*
@@ -113,4 +116,13 @@ public class Query {
         this.request = request;
     }
 
+
+    @JsonProperty("sql_filter")
+    public String getSqlFilter() {
+        return sqlFilter;
+    }
+
+    public void setSqlFilter(String sqlFilter) {
+        this.sqlFilter = sqlFilter;
+    }
 }
