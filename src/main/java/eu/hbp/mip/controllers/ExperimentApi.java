@@ -101,7 +101,7 @@ public class ExperimentApi {
             }
         } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
 
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
@@ -126,7 +126,7 @@ public class ExperimentApi {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
@@ -154,7 +154,7 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as viewed)");
 
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
@@ -282,7 +282,7 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as shared)");
 
-        return new ResponseEntity<>(gson.toJson(experiment), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {

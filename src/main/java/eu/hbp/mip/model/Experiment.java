@@ -1,15 +1,15 @@
 package eu.hbp.mip.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by habfast on 21/04/16.
@@ -135,6 +135,34 @@ public class Experiment {
         queryElements.add(formatEl);
 
         return new Gson().toJson(queryElements);
+    }
+
+    public JsonObject jsonify() {
+        JsonObject exp = new Gson().toJsonTree(this).getAsJsonObject();
+        JsonParser parser = new JsonParser();
+
+        if (this.algorithms != null)
+        {
+            exp.remove("algorithms");
+            JsonArray jsonAlgorithms = parser.parse(this.algorithms).getAsJsonArray();
+            exp.add("algorithms", jsonAlgorithms);
+        }
+
+        if (this.validations != null)
+        {
+            exp.remove("validations");
+            JsonArray jsonValidations = parser.parse(this.validations).getAsJsonArray();
+            exp.add("validations", jsonValidations);
+        }
+
+        if (this.result != null)
+        {
+            exp.remove("result");
+            JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
+            exp.add("result", jsonResult);
+        }
+
+        return exp;
     }
 
     public String getValidations() {
