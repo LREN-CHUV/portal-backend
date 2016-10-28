@@ -342,7 +342,7 @@ public class ExperimentApi {
     private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
         StringBuilder results = new StringBuilder();
         int code = HTTPUtil.sendPost(url, query, results);
-        experiment.setResult(results.toString().replaceAll("[\n\t ]",""));
+        experiment.setResult(results.toString());
         experiment.setHasError(code >= 400);
         experiment.setHasServerError(code >= 500);
     }
