@@ -208,6 +208,13 @@ public class ModelsApi {
         User user = securityConfiguration.getUser();
 
         Model model = modelRepository.findOne(slug);
+
+        if(model == null)
+        {
+            LOGGER.warn("Cannot find model : " + slug);
+            return ResponseEntity.badRequest().body(null);
+        }
+
         if (!model.getValid() && !model.getCreatedBy().getUsername().equals(user.getUsername()))
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

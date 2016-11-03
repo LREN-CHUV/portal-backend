@@ -148,6 +148,13 @@ public class ArticlesApi {
         User user = securityConfiguration.getUser();
         Article article;
         article = articleRepository.findOne(slug);
+
+        if(article == null)
+        {
+            LOGGER.warn("Cannot find article : " + slug);
+            return ResponseEntity.badRequest().body(null);
+        }
+
         if (!"published".equals(article.getStatus()) && !article.getCreatedBy().getUsername().equals(user.getUsername()))
         {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
