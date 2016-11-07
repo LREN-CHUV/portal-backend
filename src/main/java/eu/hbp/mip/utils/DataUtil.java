@@ -2,7 +2,6 @@ package eu.hbp.mip.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class DataUtil {
         this.scienceMainTable = scienceMainTable;
     }
 
-    @Cacheable("varsdata")
+    // @Cacheable("varsdata")
     public JsonObject getDataFromVariables(List<String> vars)
     {
         JsonObject data = new JsonObject();
@@ -52,7 +51,7 @@ public class DataUtil {
         return data;
     }
 
-    @Cacheable("colscount")
+    // @Cacheable("colscount")
     public long countVariables()
     {
         long count = jdbcTemplate.queryForObject(
@@ -61,7 +60,7 @@ public class DataUtil {
         return count;
     }
 
-    @Cacheable("rowscount")
+    // @Cacheable("rowscount")
     public long countAdniRows()
     {
         long count = jdbcTemplate.queryForObject(

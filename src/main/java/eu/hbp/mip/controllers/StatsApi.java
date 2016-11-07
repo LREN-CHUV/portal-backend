@@ -15,9 +15,7 @@ import io.swagger.annotations.ApiResponses;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,11 +36,9 @@ public class StatsApi {
     private ArticleRepository articleRepository;
 
     @Autowired
-    @Qualifier("scienceJdbcTemplate")
-    private JdbcTemplate scienceJdbcTemplate;
+    @Qualifier("dataUtil")
+    public DataUtil dataUtil;
 
-    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
-    private String scienceMainTable;
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
@@ -54,7 +50,7 @@ public class StatsApi {
 
         stats.setUsers(userRepository.count());
         stats.setArticles(articleRepository.count());
-        stats.setVariables(new DataUtil(scienceJdbcTemplate, scienceMainTable).countVariables());
+        stats.setVariables(dataUtil.countVariables());
 
         return ResponseEntity.ok(stats);
     }

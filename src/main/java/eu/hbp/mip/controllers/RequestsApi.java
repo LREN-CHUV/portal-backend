@@ -15,9 +15,7 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,11 +37,9 @@ public class RequestsApi {
     private static final Logger LOGGER = Logger.getLogger(RequestsApi.class);
 
     @Autowired
-    @Qualifier("scienceJdbcTemplate")
-    private JdbcTemplate scienceJdbcTemplate;
+    @Qualifier("dataUtil")
+    public DataUtil dataUtil;
 
-    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
-    private String scienceMainTable;
 
     @ApiOperation(value = "Post a request", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -103,7 +99,7 @@ public class RequestsApi {
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
         dataset.add("filter", gson.toJsonTree(filters));
-        dataset.add("data", new DataUtil(scienceJdbcTemplate, scienceMainTable).getDataFromVariables(allVars));
+        dataset.add("data", dataUtil.getDataFromVariables(allVars));
 
         return ResponseEntity.ok(new Gson().fromJson(dataset, Object.class));
     }

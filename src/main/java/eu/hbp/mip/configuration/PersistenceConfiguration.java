@@ -1,15 +1,14 @@
 package eu.hbp.mip.configuration;
 
+import eu.hbp.mip.utils.DataUtil;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -60,6 +59,9 @@ public class PersistenceConfiguration {
         return new JdbcTemplate(scienceDataSource());
     }
 
+    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
+    private String scienceMainTable;
+
     @Bean(name = "entityManagerFactory")
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -76,6 +78,12 @@ public class PersistenceConfiguration {
         flyway.setBaselineOnMigrate(true);
         flyway.setDataSource(portalDataSource());
         return flyway;
+    }
+
+    @Bean(name = "dataUtil")
+    @Scope("singleton")
+    public DataUtil dataUtil() {
+        return new DataUtil(scienceJdbcTemplate(), scienceMainTable);
     }
 
 }
