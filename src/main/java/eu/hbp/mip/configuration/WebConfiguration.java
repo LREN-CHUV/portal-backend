@@ -6,6 +6,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
@@ -40,7 +41,7 @@ public class WebConfiguration {
                 .title("Medical Informatics Platform API")
                 .description("Serve the MIP Frontend")
                 .version("1.0")
-                .contact("mirco.nasuti@chuv.ch")
+                .contact(new Contact("Mirco Nasuti", "https://www.unil.ch/lren/en/home.html", "mirco.nasuti@chuv.ch"))
                 .build();
     }
 }
