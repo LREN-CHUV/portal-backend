@@ -11,8 +11,6 @@ import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Group;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,6 @@ public class GroupsApi {
 
 
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Object> getTheRootGroup()  {
         LOGGER.info("Get root group and its whole sub-groups tree");

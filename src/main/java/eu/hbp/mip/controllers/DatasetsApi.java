@@ -29,7 +29,6 @@ public class DatasetsApi {
     private DatasetRepository datasetRepository;
 
     @ApiOperation(value = "Get a dataset", response = Dataset.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Dataset> getADataset(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code

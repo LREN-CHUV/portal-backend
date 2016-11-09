@@ -39,7 +39,6 @@ public class VariablesApi {
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
@@ -64,7 +63,6 @@ public class VariablesApi {
     }
 
     @ApiOperation(value = "Get a variable", response = Object.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Object> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
@@ -89,7 +87,6 @@ public class VariablesApi {
 
 
     @ApiOperation(value = "Get values from a variable", response = List.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}/values", method = RequestMethod.GET)
     public ResponseEntity<Iterable> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
@@ -119,7 +116,6 @@ public class VariablesApi {
     }
 
     @ApiOperation(value = "Get groups and variables hierarchy", response = Object.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
     public ResponseEntity<Object> getVariablesHierarchy(
     )  {

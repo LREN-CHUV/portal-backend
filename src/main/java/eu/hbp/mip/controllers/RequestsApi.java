@@ -38,7 +38,7 @@ public class RequestsApi {
 
     @Autowired
     @Qualifier("dataUtil")
-    public DataUtil dataUtil;
+    private DataUtil dataUtil;
 
 
     @ApiOperation(value = "Post a request", response = Dataset.class)

@@ -29,7 +29,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/models", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/models", description = "the models API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ModelsApi {
 
     private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
@@ -54,16 +53,13 @@ public class ModelsApi {
 
     @Autowired
     @Qualifier("dataUtil")
-    public DataUtil dataUtil;
+    private DataUtil dataUtil;
 
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List> getModels(
-            @ApiParam(value = "Max number of results") @RequestParam(value = "limit", required = false) Integer limit,
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask models from own team") @RequestParam(value = "team", required = false) Boolean team,
             @ApiParam(value = "Only ask published models") @RequestParam(value = "valid", required = false) Boolean valid
     )  {
         LOGGER.info("Get models");
@@ -193,7 +189,6 @@ public class ModelsApi {
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug

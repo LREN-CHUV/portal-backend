@@ -35,7 +35,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/experiments", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/experiments", description = "the experiments API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
 
     private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
@@ -70,7 +69,6 @@ public class ExperimentApi {
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> runExperiment(@RequestBody String incomingQueryString) {
         LOGGER.info("Run an experiment");
@@ -105,7 +103,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Get an experiment");
@@ -130,7 +127,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsViewed", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsViewed(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as viewed");
@@ -158,7 +154,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as shared");
@@ -167,7 +162,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "Mark an experiment as unshared", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as unshared");
@@ -176,7 +170,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
@@ -187,7 +180,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
@@ -203,7 +195,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");

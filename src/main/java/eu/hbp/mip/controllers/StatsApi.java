@@ -10,8 +10,6 @@ import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,11 +35,10 @@ public class StatsApi {
 
     @Autowired
     @Qualifier("dataUtil")
-    public DataUtil dataUtil;
+    private DataUtil dataUtil;
 
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<GeneralStats> getGeneralStatistics()  {
         LOGGER.info("Get statistics (count on users, articles and variables)");

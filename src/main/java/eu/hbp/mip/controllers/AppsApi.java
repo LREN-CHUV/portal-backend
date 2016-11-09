@@ -45,7 +45,6 @@ public class AppsApi {
     private UserRepository userRepository;
 
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getApps(
     ) {
@@ -55,7 +54,6 @@ public class AppsApi {
     }
 
     @ApiOperation(value = "Post a vote")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{id}/vote/{value}", method = RequestMethod.POST)
     public ResponseEntity<Void> vote(
             @ApiParam(value = "id", required = true) @PathVariable("id") Integer id,
