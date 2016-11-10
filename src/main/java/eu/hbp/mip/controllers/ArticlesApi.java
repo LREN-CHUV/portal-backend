@@ -41,7 +41,7 @@ public class ArticlesApi {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status
+            @ApiParam(value = "Only ask results matching status", allowableValues = "draft, published") @RequestParam(value = "status", required = false) String status
     ) {
         LOGGER.info("Get articles");
 
