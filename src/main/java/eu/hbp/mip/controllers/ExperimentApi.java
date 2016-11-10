@@ -14,9 +14,6 @@ import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,8 +72,6 @@ public class ExperimentApi {
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
-    @CachePut("exp")
-    @CacheEvict(value = "exps", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("Run an experiment");
@@ -109,7 +104,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @Cacheable("exp")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Get an experiment");
@@ -177,7 +171,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @Cacheable("exps")
     @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
@@ -203,7 +196,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    @Cacheable("methods")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
