@@ -73,28 +73,24 @@ public class ExperimentApi {
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery incomingQueryObj) {
+    public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("Run an experiment");
-
-        String incomingQueryString = gson.toJson(incomingQueryObj);
-
-        JsonObject incomingQuery = gsonOnlyExposed.fromJson(incomingQueryString, JsonObject.class);
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
         User user = securityConfiguration.getUser();
 
-        experiment.setAlgorithms(incomingQuery.get("algorithms").toString());
-        experiment.setValidations(incomingQuery.get("validations").toString());
-        experiment.setName(incomingQuery.get("name").getAsString());
+        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
+        experiment.setValidations(gson.toJson(expQuery.getValidations()));
+        experiment.setName(expQuery.getName());
         experiment.setCreatedBy(user);
-        experiment.setModel(modelRepository.findOne(incomingQuery.get("model").getAsString()));
+        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment saved");
 
         try {
-            if(isExaremeAlgo(experiment))
+            if(isExaremeAlgo(expQuery))
             {
                 sendExaremeExperiment(experiment);
             }
@@ -349,10 +345,10 @@ public class ExperimentApi {
         experiment.setResult(e.getMessage());
     }
 
-    private static boolean isExaremeAlgo(Experiment experiment)  {
-        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
-        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
-        return "glm_exareme".equals(algoCode);
+    private static boolean isExaremeAlgo(ExperimentQuery expQuery)  {
+        if (expQuery.getAlgorithms().size() < 1)
+            return false;
+        return "glm_exareme".equals(expQuery.getAlgorithms().get(0).getCode());
     }
 
 }
