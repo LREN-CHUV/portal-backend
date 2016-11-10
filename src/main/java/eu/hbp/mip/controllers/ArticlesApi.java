@@ -13,6 +13,9 @@ import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +41,7 @@ public class ArticlesApi {
     private ArticleRepository articleRepository;
 
     @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
+    @Cacheable("Articles")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
@@ -75,6 +79,8 @@ public class ArticlesApi {
 
     @ApiOperation(value = "Create an article")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Article created") })
+    @CachePut("Article")
+    @CacheEvict(value = "Articles", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
             @RequestBody @ApiParam(value = "Article to create", required = true) @Valid Article article
@@ -136,6 +142,7 @@ public class ArticlesApi {
 
 
     @ApiOperation(value = "Get an article", response = Article.class)
+    @Cacheable("Article")
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
@@ -163,6 +170,8 @@ public class ArticlesApi {
 
     @ApiOperation(value = "Update an article")
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Article updated") })
+    @CachePut("Article")
+    @CacheEvict(value = "Articles",allEntries = true)
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
