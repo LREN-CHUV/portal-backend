@@ -3,6 +3,7 @@ package eu.hbp.mip.controllers;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.*;
@@ -70,8 +71,10 @@ public class ExperimentApi {
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> runExperiment(@RequestBody String incomingQueryString) {
+    public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery incomingQueryObj) {
         LOGGER.info("Run an experiment");
+
+        String incomingQueryString = new Gson().toJson(incomingQueryObj);
 
         JsonObject incomingQuery = gson.fromJson(incomingQueryString, JsonObject.class);
 
