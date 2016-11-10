@@ -36,9 +36,11 @@ public class RequestsApi {
 
     private static final Logger LOGGER = Logger.getLogger(RequestsApi.class);
 
+    private static final Gson gson = new Gson();
+
     @Autowired
     @Qualifier("dataUtil")
-    public DataUtil dataUtil;
+    private DataUtil dataUtil;
 
 
     @ApiOperation(value = "Post a request", response = Dataset.class)
@@ -59,7 +61,6 @@ public class RequestsApi {
         List<String> covariables = new LinkedList<>();
         List<String> filters = new LinkedList<>();
 
-        Gson gson = new Gson();
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);
 
         JsonArray queryVars = q.getAsJsonArray("variables") != null ? q.getAsJsonArray("variables") : new JsonArray();
@@ -101,7 +102,7 @@ public class RequestsApi {
         dataset.add("filter", gson.toJsonTree(filters));
         dataset.add("data", dataUtil.getDataFromVariables(allVars));
 
-        return ResponseEntity.ok(new Gson().fromJson(dataset, Object.class));
+        return ResponseEntity.ok(gson.fromJson(dataset, Object.class));
     }
 
 

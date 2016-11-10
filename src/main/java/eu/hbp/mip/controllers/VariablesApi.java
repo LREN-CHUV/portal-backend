@@ -31,6 +31,8 @@ public class VariablesApi {
 
     private static final Logger LOGGER = Logger.getLogger(VariablesApi.class);
 
+    private static final Gson gson = new Gson();
+
     private static LinkedList<String> variables;
 
     @Autowired
@@ -39,7 +41,6 @@ public class VariablesApi {
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
@@ -57,14 +58,13 @@ public class VariablesApi {
 
         for (String var : variables)
         {
-            variablesObjects.add(new Gson().fromJson(var, Object.class));
+            variablesObjects.add(gson.fromJson(var, Object.class));
         }
 
         return ResponseEntity.ok(variablesObjects);
     }
 
     @ApiOperation(value = "Get a variable", response = Object.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Object> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
@@ -75,10 +75,10 @@ public class VariablesApi {
 
         for (String var : variables)
         {
-            JsonObject varObj = new Gson().fromJson(var, JsonElement.class).getAsJsonObject();
+            JsonObject varObj = gson.fromJson(var, JsonElement.class).getAsJsonObject();
             if (varObj.get("code").getAsString().equals(code))
             {
-                return ResponseEntity.ok(new Gson().fromJson(varObj, Object.class));
+                return ResponseEntity.ok(gson.fromJson(varObj, Object.class));
             }
         }
 
@@ -89,7 +89,6 @@ public class VariablesApi {
 
 
     @ApiOperation(value = "Get values from a variable", response = List.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{code}/values", method = RequestMethod.GET)
     public ResponseEntity<Iterable> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
@@ -101,13 +100,13 @@ public class VariablesApi {
 
         for (String var : variables)
         {
-            JsonObject varObj = new Gson().fromJson(var, JsonElement.class).getAsJsonObject();
+            JsonObject varObj = gson.fromJson(var, JsonElement.class).getAsJsonObject();
             if (varObj.get("code").getAsString().equals(code))
             {
                 JsonArray values = varObj.get("enumerations").getAsJsonArray();
                 LinkedList<Object> valuesObjects = new LinkedList<>();
                 for (JsonElement value : values){
-                    valuesObjects.add(new Gson().fromJson(value, Object.class));
+                    valuesObjects.add(gson.fromJson(value, Object.class));
                 }
                 return ResponseEntity.ok(valuesObjects);
             }
@@ -119,7 +118,6 @@ public class VariablesApi {
     }
 
     @ApiOperation(value = "Get groups and variables hierarchy", response = Object.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
     public ResponseEntity<Object> getVariablesHierarchy(
     )  {
@@ -130,7 +128,7 @@ public class VariablesApi {
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-        Object hierarchy = new Gson().fromJson(json, Object.class);
+        Object hierarchy = gson.fromJson(json, Object.class);
 
         return ResponseEntity.ok(hierarchy);
     }
@@ -144,7 +142,7 @@ public class VariablesApi {
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-            JsonObject root = new Gson().fromJson(json, JsonObject.class);
+            JsonObject root = gson.fromJson(json, JsonObject.class);
 
             variables = new LinkedList<>();
             extractVariablesRecursive(root);
@@ -164,7 +162,7 @@ public class VariablesApi {
                 grp.addProperty("label", element.getAsJsonPrimitive("label").getAsString());
                 var.getAsJsonObject().add("group", grp);
                 var.getAsJsonObject().addProperty("isVariable", true);
-                variables.add(new Gson().toJson(var));
+                variables.add(gson.toJson(var));
             }
         }
     }

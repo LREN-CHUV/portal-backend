@@ -28,7 +28,6 @@ public class UsersApi {
     private UserRepository userRepository;
 
     @ApiOperation(value = "Get a user", response = User.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public ResponseEntity<User> getAUser(
             @ApiParam(value = "username", required = true) @PathVariable("username") String username

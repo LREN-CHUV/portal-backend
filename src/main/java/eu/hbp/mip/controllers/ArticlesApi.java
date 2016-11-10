@@ -38,12 +38,10 @@ public class ArticlesApi {
     private ArticleRepository articleRepository;
 
     @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
-            @ApiParam(value = "Only ask results matching status", allowableValues = "{values=[draft, published, closed]}") @RequestParam(value = "status", required = false) String status,
-            @ApiParam(value = "Only ask articles from own team") @RequestParam(value = "team", required = false) Boolean team
+            @ApiParam(value = "Only ask results matching status", allowableValues = "draft, published") @RequestParam(value = "status", required = false) String status
     ) {
         LOGGER.info("Get articles");
 
@@ -75,7 +73,7 @@ public class ArticlesApi {
     }
 
 
-    @ApiOperation(value = "Create an article", response = Void.class)
+    @ApiOperation(value = "Create an article")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Article created") })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
@@ -138,7 +136,6 @@ public class ArticlesApi {
 
 
     @ApiOperation(value = "Get an article", response = Article.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found"), @ApiResponse(code = 404, message = "Not found") })
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
@@ -164,7 +161,7 @@ public class ArticlesApi {
     }
 
 
-    @ApiOperation(value = "Update an article", response = Void.class)
+    @ApiOperation(value = "Update an article")
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Article updated") })
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(

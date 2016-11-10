@@ -3,6 +3,7 @@ package eu.hbp.mip.controllers;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.*;
@@ -35,14 +36,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/experiments", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/experiments", description = "the experiments API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.SpringMVCServerCodegen", date = "2016-01-07T07:38:20.227Z")
 public class ExperimentApi {
 
     private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
 
     private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson gson = new Gson();
+
+    private static final Gson gsonOnlyExposed = new GsonBuilder()
             .serializeNulls()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
@@ -70,28 +72,25 @@ public class ExperimentApi {
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> runExperiment(@RequestBody String incomingQueryString) {
+    public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("Run an experiment");
-
-        JsonObject incomingQuery = gson.fromJson(incomingQueryString, JsonObject.class);
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
         User user = securityConfiguration.getUser();
 
-        experiment.setAlgorithms(incomingQuery.get("algorithms").toString());
-        experiment.setValidations(incomingQuery.get("validations").toString());
-        experiment.setName(incomingQuery.get("name").getAsString());
+        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
+        experiment.setValidations(gson.toJson(expQuery.getValidations()));
+        experiment.setName(expQuery.getName());
         experiment.setCreatedBy(user);
-        experiment.setModel(modelRepository.findOne(incomingQuery.get("model").getAsString()));
+        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment saved");
 
         try {
-            if(isExaremeAlgo(experiment))
+            if(isExaremeAlgo(expQuery))
             {
                 sendExaremeExperiment(experiment);
             }
@@ -101,11 +100,10 @@ public class ExperimentApi {
             }
         } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Get an experiment");
@@ -126,11 +124,10 @@ public class ExperimentApi {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsViewed", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsViewed(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as viewed");
@@ -154,11 +151,10 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as viewed)");
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as shared");
@@ -167,7 +163,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "Mark an experiment as unshared", response = Experiment.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as unshared");
@@ -176,7 +171,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
@@ -187,7 +181,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
@@ -203,7 +196,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
@@ -224,7 +216,7 @@ public class ExperimentApi {
 
         catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
 
-        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+        return new ResponseEntity<>(gson.toJson(catalog), HttpStatus.valueOf(code));
     }
 
     private ResponseEntity<String> doListExperiments(
@@ -257,7 +249,7 @@ public class ExperimentApi {
             }
         }
 
-        return new ResponseEntity<>(gson.toJson(expList), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(expList), HttpStatus.OK);
     }
 
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
@@ -282,7 +274,7 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as shared)");
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
@@ -353,10 +345,10 @@ public class ExperimentApi {
         experiment.setResult(e.getMessage());
     }
 
-    private static boolean isExaremeAlgo(Experiment experiment)  {
-        JsonArray algorithms = new JsonParser().parse(experiment.getAlgorithms()).getAsJsonArray();
-        String algoCode = algorithms.get(0).getAsJsonObject().get("code").getAsString();
-        return "glm_exareme".equals(algoCode);
+    private static boolean isExaremeAlgo(ExperimentQuery expQuery)  {
+        if (expQuery.getAlgorithms().size() < 1)
+            return false;
+        return "glm_exareme".equals(expQuery.getAlgorithms().get(0).getCode());
     }
 
 }
