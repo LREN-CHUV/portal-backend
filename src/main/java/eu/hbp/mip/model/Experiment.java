@@ -20,7 +20,9 @@ public class Experiment {
 
     private static final Logger LOGGER = Logger.getLogger(Experiment.class);
 
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson gson = new Gson();
+
+    private static final Gson gsonOnlyExposed = new GsonBuilder()
             .serializeNulls()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
@@ -85,13 +87,13 @@ public class Experiment {
 
     public String computeQuery() {
         JsonObject outgoingQuery = new JsonObject();
-        outgoingQuery.add("algorithms", gson.fromJson(algorithms, JsonArray.class));
-        outgoingQuery.add("validations", gson.fromJson(validations, JsonArray.class));
+        outgoingQuery.add("algorithms", gsonOnlyExposed.fromJson(algorithms, JsonArray.class));
+        outgoingQuery.add("validations", gsonOnlyExposed.fromJson(validations, JsonArray.class));
 
-        outgoingQuery.add("covariables", gson.toJsonTree(model.getQuery().getCovariables()));
-        outgoingQuery.add("variables", gson.toJsonTree(model.getQuery().getVariables()));
-        outgoingQuery.add("filters", gson.toJsonTree(model.getQuery().getFilters()));
-        outgoingQuery.add("grouping", gson.toJsonTree(model.getQuery().getGrouping()));
+        outgoingQuery.add("covariables", gsonOnlyExposed.toJsonTree(model.getQuery().getCovariables()));
+        outgoingQuery.add("variables", gsonOnlyExposed.toJsonTree(model.getQuery().getVariables()));
+        outgoingQuery.add("filters", gsonOnlyExposed.toJsonTree(model.getQuery().getFilters()));
+        outgoingQuery.add("grouping", gsonOnlyExposed.toJsonTree(model.getQuery().getGrouping()));
         return outgoingQuery.toString();
     }
 
@@ -134,11 +136,11 @@ public class Experiment {
         formatEl.setValue("True");
         queryElements.add(formatEl);
 
-        return new Gson().toJson(queryElements);
+        return gson.toJson(queryElements);
     }
 
     public JsonObject jsonify() {
-        JsonObject exp = new Gson().toJsonTree(this).getAsJsonObject();
+        JsonObject exp = gson.toJsonTree(this).getAsJsonObject();
         JsonParser parser = new JsonParser();
 
         if (this.algorithms != null)

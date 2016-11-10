@@ -31,6 +31,8 @@ public class GroupsApi {
 
     private static final Logger LOGGER = Logger.getLogger(GroupsApi.class);
 
+    private static final Gson gson = new Gson();
+
     private static String groups;
 
     @Autowired
@@ -45,7 +47,7 @@ public class GroupsApi {
 
         loadGroups();
 
-        return ResponseEntity.ok(new Gson().fromJson(groups, Object.class));
+        return ResponseEntity.ok(gson.fromJson(groups, Object.class));
     }
 
     private void loadGroups() {
@@ -56,10 +58,10 @@ public class GroupsApi {
             data.next();
             String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-            JsonObject root = new Gson().fromJson(json, JsonObject.class);
+            JsonObject root = gson.fromJson(json, JsonObject.class);
 
             removeVariablesRecursive(root);
-            groups = new Gson().toJson(root);
+            groups = gson.toJson(root);
         }
     }
 

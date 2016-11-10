@@ -42,7 +42,9 @@ public class ExperimentApi {
 
     private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson gson = new Gson();
+
+    private static final Gson gsonOnlyExposed = new GsonBuilder()
             .serializeNulls()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
@@ -74,9 +76,9 @@ public class ExperimentApi {
     public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery incomingQueryObj) {
         LOGGER.info("Run an experiment");
 
-        String incomingQueryString = new Gson().toJson(incomingQueryObj);
+        String incomingQueryString = gson.toJson(incomingQueryObj);
 
-        JsonObject incomingQuery = gson.fromJson(incomingQueryString, JsonObject.class);
+        JsonObject incomingQuery = gsonOnlyExposed.fromJson(incomingQueryString, JsonObject.class);
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
@@ -102,7 +104,7 @@ public class ExperimentApi {
             }
         } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
@@ -126,7 +128,7 @@ public class ExperimentApi {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
@@ -153,7 +155,7 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as viewed)");
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
@@ -218,7 +220,7 @@ public class ExperimentApi {
 
         catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
 
-        return new ResponseEntity<>(new Gson().toJson(catalog), HttpStatus.valueOf(code));
+        return new ResponseEntity<>(gson.toJson(catalog), HttpStatus.valueOf(code));
     }
 
     private ResponseEntity<String> doListExperiments(
@@ -251,7 +253,7 @@ public class ExperimentApi {
             }
         }
 
-        return new ResponseEntity<>(gson.toJson(expList), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(expList), HttpStatus.OK);
     }
 
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
@@ -276,7 +278,7 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment updated (marked as shared)");
 
-        return new ResponseEntity<>(gson.toJson(experiment.jsonify()), HttpStatus.OK);
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
