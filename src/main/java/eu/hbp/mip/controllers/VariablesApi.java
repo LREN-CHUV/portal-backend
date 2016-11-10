@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -33,14 +34,13 @@ public class VariablesApi {
 
     private static final Gson gson = new Gson();
 
-    private static LinkedList<String> variables;
-
     @Autowired
     @Qualifier("metaJdbcTemplate")
     private JdbcTemplate metaJdbcTemplate;
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
+    @Cacheable("variables")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getVariables(
             @ApiParam(value = "List of groups formatted like : (\"val1\", \"val2\", ...)") @RequestParam(value = "group", required = false) String group,
@@ -52,11 +52,9 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get variables");
 
-        loadVariables();
-
         LinkedList<Object> variablesObjects = new LinkedList<>();
 
-        for (String var : variables)
+        for (String var : loadVariables())
         {
             variablesObjects.add(gson.fromJson(var, Object.class));
         }
@@ -65,15 +63,14 @@ public class VariablesApi {
     }
 
     @ApiOperation(value = "Get a variable", response = Object.class)
+    @Cacheable("variable")
     @RequestMapping(value = "/{code}", method = RequestMethod.GET)
     public ResponseEntity<Object> getAVariable(
             @ApiParam(value = "code of the variable ( multiple codes are allowed, separated by \",\" )", required = true) @PathVariable("code") String code
     )  {
         LOGGER.info("Get a variable");
 
-        loadVariables();
-
-        for (String var : variables)
+        for (String var : loadVariables())
         {
             JsonObject varObj = gson.fromJson(var, JsonElement.class).getAsJsonObject();
             if (varObj.get("code").getAsString().equals(code))
@@ -89,6 +86,7 @@ public class VariablesApi {
 
 
     @ApiOperation(value = "Get values from a variable", response = List.class, responseContainer = "List")
+    @Cacheable("values")
     @RequestMapping(value = "/{code}/values", method = RequestMethod.GET)
     public ResponseEntity<Iterable> getValuesFromAVariable(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code,
@@ -96,9 +94,7 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get values from a variable");
 
-        loadVariables();
-
-        for (String var : variables)
+        for (String var : loadVariables())
         {
             JsonObject varObj = gson.fromJson(var, JsonElement.class).getAsJsonObject();
             if (varObj.get("code").getAsString().equals(code))
@@ -118,6 +114,7 @@ public class VariablesApi {
     }
 
     @ApiOperation(value = "Get groups and variables hierarchy", response = Object.class)
+    @Cacheable("vars_hierarchy")
     @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
     public ResponseEntity<Object> getVariablesHierarchy(
     )  {
@@ -134,25 +131,24 @@ public class VariablesApi {
     }
 
 
-    private void loadVariables() {
-        if(variables == null)
-        {
-            String sqlQuery = "SELECT * FROM meta_variables";
-            SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
-            data.next();
-            String json = ((PGobject) data.getObject("hierarchy")).getValue();
+    private List<String> loadVariables() {
+        String sqlQuery = "SELECT * FROM meta_variables";
+        SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
+        data.next();
+        String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-            JsonObject root = gson.fromJson(json, JsonObject.class);
+        JsonObject root = gson.fromJson(json, JsonObject.class);
 
-            variables = new LinkedList<>();
-            extractVariablesRecursive(root);
-        }
+        List<String> variables = new LinkedList<>();
+        extractVariablesRecursive(root, variables);
+
+        return variables;
     }
 
-    private void extractVariablesRecursive(JsonObject element) {
+    private void extractVariablesRecursive(JsonObject element, List<String> variables) {
         if (element.has("groups")){
             for(JsonElement child : element.getAsJsonArray("groups")) {
-                extractVariablesRecursive(child.getAsJsonObject());
+                extractVariablesRecursive(child.getAsJsonObject(), variables);
             }
         }
         if (element.has("variables")){
