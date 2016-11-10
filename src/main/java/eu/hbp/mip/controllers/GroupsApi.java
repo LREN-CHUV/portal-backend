@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -33,36 +34,30 @@ public class GroupsApi {
 
     private static final Gson gson = new Gson();
 
-    private static String groups;
-
     @Autowired
     @Qualifier("metaJdbcTemplate")
     private JdbcTemplate metaJdbcTemplate;
 
 
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
+    @Cacheable("groups")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Object> getTheRootGroup()  {
         LOGGER.info("Get root group and its whole sub-groups tree");
 
-        loadGroups();
-
-        return ResponseEntity.ok(gson.fromJson(groups, Object.class));
+        return ResponseEntity.ok(gson.fromJson(loadGroups(), Object.class));
     }
 
-    private void loadGroups() {
-        if(groups == null)
-        {
-            String sqlQuery = "SELECT * FROM meta_variables";
-            SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
-            data.next();
-            String json = ((PGobject) data.getObject("hierarchy")).getValue();
+    private String loadGroups() {
+        String sqlQuery = "SELECT * FROM meta_variables";
+        SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
+        data.next();
+        String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-            JsonObject root = gson.fromJson(json, JsonObject.class);
+        JsonObject root = gson.fromJson(json, JsonObject.class);
+        removeVariablesRecursive(root);
 
-            removeVariablesRecursive(root);
-            groups = gson.toJson(root);
-        }
+        return gson.toJson(root);
     }
 
     private void removeVariablesRecursive(JsonObject element) {
