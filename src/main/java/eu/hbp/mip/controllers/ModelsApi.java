@@ -17,6 +17,9 @@ import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +60,7 @@ public class ModelsApi {
 
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
+    @Cacheable("Models")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List> getModels(
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
@@ -103,6 +107,8 @@ public class ModelsApi {
 
     @ApiOperation(value = "Create a model", response = Model.class)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Model created") })
+    @CachePut("Model")
+    @CacheEvict(value = "Models", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Model> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
@@ -189,6 +195,7 @@ public class ModelsApi {
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
+    @Cacheable("model")
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
@@ -220,6 +227,8 @@ public class ModelsApi {
 
     @ApiOperation(value = "Update a model", response = Void.class)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Model updated") })
+    @CachePut("model")
+    @CacheEvict(value = "Models", allEntries = true)
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
