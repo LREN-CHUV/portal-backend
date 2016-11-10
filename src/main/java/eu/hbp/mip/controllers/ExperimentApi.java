@@ -1,21 +1,24 @@
 package eu.hbp.mip.controllers;
 
 import com.google.common.collect.Lists;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
-import eu.hbp.mip.utils.HTTPUtil;
-import io.swagger.annotations.*;
-import org.apache.log4j.Logger;
-import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
+import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,8 +78,6 @@ public class ExperimentApi {
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
-    @CachePut("exp")
-    @CacheEvict(value = "exps", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("Run an experiment");
@@ -109,7 +110,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
-    @Cacheable("exp")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Get an experiment");
@@ -177,7 +177,6 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @Cacheable("exps")
     @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
