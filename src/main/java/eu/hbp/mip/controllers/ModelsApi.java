@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,7 +109,12 @@ public class ModelsApi {
     @ApiOperation(value = "Create a model", response = Model.class)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Model created") })
     @CachePut(value = "Model", key = "#model.getSlug() + #root.target")
-    @CacheEvict(value = "Models", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "Models", key = "'false' + 'false' + #root.target"),
+            @CacheEvict(value = "Models", key = "'false' + 'true' + #root.target"),
+            @CacheEvict(value = "Models", key = "'true' + 'false' + #root.target"),
+            @CacheEvict(value = "Models", key = "'true' + 'true' + #root.target")
+    })
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Model> addAModel(
             @RequestBody @ApiParam(value = "Model to create", required = true) Model model
@@ -228,7 +234,12 @@ public class ModelsApi {
     @ApiOperation(value = "Update a model", response = Void.class)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Model updated") })
     @CachePut(value = "model", key = "#slug + #root.target")
-    @CacheEvict(value = "Models", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "Models", key = "'false' + 'false' + #root.target"),
+            @CacheEvict(value = "Models", key = "'false' + 'true' + #root.target"),
+            @CacheEvict(value = "Models", key = "'true' + 'false' + #root.target"),
+            @CacheEvict(value = "Models", key = "'true' + 'true' + #root.target")
+    })
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug,
