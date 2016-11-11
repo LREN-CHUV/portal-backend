@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/models", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/models", description = "the models API")
+@Scope("session")
 public class ModelsApi {
 
     private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
@@ -60,7 +62,7 @@ public class ModelsApi {
 
 
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
-    @Cacheable("Models")
+    @Cacheable(value = "Models", key = "(#own != null and #own).toString() + (#valid != null and #valid).toString() + #root.target")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List> getModels(
             @ApiParam(value = "Only ask own models") @RequestParam(value = "own", required = false) Boolean own,
@@ -70,7 +72,7 @@ public class ModelsApi {
 
         User user = securityConfiguration.getUser();
 
-        Iterable<Model> models = null;
+        Iterable<Model> models;
         if(own != null && own)
         {
             models = modelRepository.findByCreatedByOrderByCreatedAt(user);
@@ -93,21 +95,19 @@ public class ModelsApi {
         }
 
         List<Object> modelsList = new LinkedList<>();
-        for (Iterator<Model> i = models.iterator(); i.hasNext(); )
-        {
-            Model m = i.next();
+        models = models != null ? models : new LinkedList<>();
+        for (Model m : models) {
             m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
             modelsList.add(getModelWithDataset(m));
         }
 
-        return new ResponseEntity<List<Model>>(HttpStatus.OK).ok(modelsList);
-
+        return ResponseEntity.ok(modelsList);
     }
 
 
     @ApiOperation(value = "Create a model", response = Model.class)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Model created") })
-    @CachePut("Model")
+    @CachePut(value = "Model", key = "#model.getSlug() + #root.target")
     @CacheEvict(value = "Models", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Model> addAModel(
@@ -143,7 +143,7 @@ public class ModelsApi {
         }
 
         // Create slug from title
-        String slug = null;
+        String slug;
         try {
             slug = new Slugify().slugify(model.getTitle());
         } catch (IOException e) {
@@ -191,11 +191,11 @@ public class ModelsApi {
 
         LOGGER.info("Model saved (also saved model.config and model.query)");
 
-        return new ResponseEntity<Model>(HttpStatus.CREATED).ok(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(model);
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
-    @Cacheable("model")
+    @Cacheable(value = "model", key = "#slug + #root.target")
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Model> getAModel(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
@@ -221,13 +221,13 @@ public class ModelsApi {
         Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
         model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
 
-        return new ResponseEntity<>(HttpStatus.OK).ok(getModelWithDataset(model));
+        return ResponseEntity.ok(getModelWithDataset(model));
     }
 
 
     @ApiOperation(value = "Update a model", response = Void.class)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Model updated") })
-    @CachePut("model")
+    @CachePut(value = "model", key = "#slug + #root.target")
     @CacheEvict(value = "Models", allEntries = true)
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAModel(

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/articles", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/articles", description = "the articles API")
+@Scope("session")
 public class ArticlesApi {
 
     private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
@@ -41,7 +43,7 @@ public class ArticlesApi {
     private ArticleRepository articleRepository;
 
     @ApiOperation(value = "Get articles", response = Article.class, responseContainer = "List")
-    @Cacheable("Articles")
+    @Cacheable(value = "Articles", key = "(#own != null and #own).toString() + #status + #root.target")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Iterable> getArticles(
             @ApiParam(value = "Only ask own articles") @RequestParam(value = "own", required = false) Boolean own,
@@ -79,7 +81,7 @@ public class ArticlesApi {
 
     @ApiOperation(value = "Create an article")
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Article created") })
-    @CachePut("Article")
+    @CachePut(value = "Article", key = "#article.getSlug() + #root.target")
     @CacheEvict(value = "Articles", allEntries = true)
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> addAnArticle(
@@ -142,7 +144,7 @@ public class ArticlesApi {
 
 
     @ApiOperation(value = "Get an article", response = Article.class)
-    @Cacheable("Article")
+    @Cacheable(value = "Article", key = "#slug + #root.target")
     @RequestMapping(value = "/{slug}", method = RequestMethod.GET)
     public ResponseEntity<Article> getAnArticle(
             @ApiParam(value = "slug", required = true) @PathVariable("slug") String slug
@@ -170,7 +172,7 @@ public class ArticlesApi {
 
     @ApiOperation(value = "Update an article")
     @ApiResponses(value = { @ApiResponse(code = 204, message = "Article updated") })
-    @CachePut("Article")
+    @CachePut(value = "Article", key = "#slug + #root.target")
     @CacheEvict(value = "Articles",allEntries = true)
     @RequestMapping(value = "/{slug}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateAnArticle(

@@ -179,18 +179,18 @@ public class ExperimentApi {
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
     @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
-            @ApiParam(value = "maxResultCount", required = false) @RequestParam int maxResultCount
+            @ApiParam(value = "maxResultCount") @RequestParam int maxResultCount
     ) {
         LOGGER.info("List experiments");
 
-        return doListExperiments(true, maxResultCount, null);
+        return doListExperiments(true, null);
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
     @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
     public ResponseEntity<String> listExperiments(
-            @ApiParam(value = "slug", required = false) @RequestParam("slug") String modelSlug,
-            @ApiParam(value = "maxResultCount", required = false) @RequestParam("maxResultCount") int maxResultCount
+            @ApiParam(value = "slug") @RequestParam("slug") String modelSlug,
+            @ApiParam(value = "maxResultCount") @RequestParam("maxResultCount") int maxResultCount
     ) {
         LOGGER.info("List experiments");
 
@@ -198,7 +198,7 @@ public class ExperimentApi {
             return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
         }
 
-        return doListExperiments(false, maxResultCount, modelSlug);
+        return doListExperiments(false, modelSlug);
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
@@ -228,7 +228,6 @@ public class ExperimentApi {
 
     private ResponseEntity<String> doListExperiments(
             boolean mine,
-            int maxResultCount,
             String modelSlug
     ) {
         User user = securityConfiguration.getUser();
@@ -352,10 +351,8 @@ public class ExperimentApi {
         experiment.setResult(e.getMessage());
     }
 
-    private static boolean isExaremeAlgo(ExperimentQuery expQuery)  {
-        if (expQuery.getAlgorithms().size() < 1)
-            return false;
-        return "glm_exareme".equals(expQuery.getAlgorithms().get(0).getCode());
+    private static boolean isExaremeAlgo(ExperimentQuery expQuery) {
+        return expQuery.getAlgorithms().size() >= 1 && "glm_exareme".equals(expQuery.getAlgorithms().get(0).getCode());
     }
 
 }
