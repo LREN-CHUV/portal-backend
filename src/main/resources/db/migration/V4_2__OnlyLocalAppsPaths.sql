@@ -1,4 +1,4 @@
-UPDATE app SET link='/GenExpression/index.html' WHERE id=1;
+UPDATE app SET link='/GeneExpression/index.html' WHERE id=1;
 UPDATE app SET link='/Bargraph/index.html' WHERE id=4;
 UPDATE app SET link='/Sunburst/index.html' WHERE id=5;
 UPDATE app SET link='/3d-brain/index.html' WHERE id=6;
