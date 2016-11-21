@@ -45,6 +45,7 @@ hbp:
     preEstablishedRedirectUri: {{ default .Env.FRONTEND_LOGIN_URL "http://frontend/services/login/hbp" }}
   resource:
     userInfoUri: {{ default .Env.USER_INFO_URI "https://services.humanbrainproject.eu/oidc/userinfo" }}
+    revokeTokenUri: {{ default .Env.REVOKE_TOKEN_URI "https://services.humanbrainproject.eu/oidc/slo" }}
   sso:
     login-path:
 

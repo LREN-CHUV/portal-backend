@@ -2,15 +2,17 @@ package eu.hbp.mip.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.hbp.mip.controllers.ArticlesApi;
-import eu.hbp.mip.utils.CORSFilter;
-import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
+import com.google.gson.Gson;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.UserRepository;
+import eu.hbp.mip.utils.CORSFilter;
 import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
+import eu.hbp.mip.utils.HTTPUtil;
+import io.swagger.annotations.ApiParam;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -33,6 +35,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -67,7 +70,7 @@ import java.security.Principal;
 @RestController
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
+    private static final Logger LOGGER = Logger.getLogger(SecurityConfiguration.class);
 
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
@@ -99,6 +102,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("#{'${frontend.redirectAfterLogoutUrl:/login/hbp}'}")
     private String redirectAfterLogoutUrl;
 
+    /**
+     * URL to revoke auth token
+     */
+    @Value("#{'${hbp.resource.revokeTokenUri:https://services.humanbrainproject.eu/oidc/revoke}'}")
+    private String revokeTokenURI;
+
+    /**
+     * Set to true if using no-auth mode
+     */
+    private boolean fakeAuth = false;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
@@ -112,7 +126,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     ).permitAll()
                     .anyRequest().authenticated()
                     .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
-                    .and().logout().logoutSuccessUrl(redirectAfterLogoutUrl)
+                    .and().logout().addLogoutHandler(new CustomLogoutHandler()).logoutSuccessUrl(redirectAfterLogoutUrl)
                     .and().logout().permitAll()
                     .and().csrf().ignoringAntMatchers("/logout").csrfTokenRepository(csrfTokenRepository())
                     .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
@@ -202,15 +216,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the user for the current session
      */
     public synchronized User getUser() {
+        User user;
+
         if (!authentication)
         {
-            User user = new User();
-            user.setUsername("Anonymous");
-            user.setFullname("Anonymous");
-            user.setAgreeNDA(true);
-            return user;
+            user = new User();
+            user.setUsername("anonymous");
+            user.setFullname("anonymous");
+            user.setPicture("images/users/default_user.png");
         }
-        User user = new User(getUserInfos());
+        else
+        {
+            user = new User(getUserInfos());
+        }
         User foundUser = userRepository.findOne(user.getUsername());
         if (foundUser != null) {
             user.setAgreeNDA(foundUser.getAgreeNDA());
@@ -220,7 +238,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @RequestMapping(path = "/user", method = RequestMethod.GET)
-    public Principal user(Principal principal, HttpServletResponse response) {
+    public Object user(Principal principal, HttpServletResponse response) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -232,6 +250,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
             LOGGER.trace(e);
         }
+
+        if(!authentication)
+        {
+            if(!fakeAuth)
+            {
+                response.setStatus(401);
+            }
+            String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {" +
+                    "\"details\": {\"preferred_username\": \"anonymous\"}}}";
+            return new Gson().fromJson(principalJson, Object.class);
+        }
+
         return principal;
     }
 
@@ -245,4 +275,48 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @RequestMapping(path = "/login/hbp", method = RequestMethod.GET)
+    @ConditionalOnExpression("${hbp.authentication.enabled:0}")
+    public void noLogin(HttpServletResponse httpServletResponse) throws IOException {
+        fakeAuth = true;
+        httpServletResponse.sendRedirect(frontendRedirectAfterLogin);
+    }
+
+    private class CustomLogoutHandler implements LogoutHandler {
+        @Override
+        public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) {
+
+            fakeAuth = false;
+
+            if (oauth2ClientContext == null || oauth2ClientContext.getAccessToken() == null)
+            {
+                return;
+            }
+
+            String idToken = oauth2ClientContext.getAccessToken().getAdditionalInformation().get("id_token").toString();
+
+            StringBuilder query = new StringBuilder();
+            query.append("{");
+            query.append("\"token\":");
+            query.append("\"").append(idToken).append("\"");
+            query.append("}");
+
+
+            try {
+                int responseCode = HTTPUtil.sendPost(revokeTokenURI, query.toString(), new StringBuilder());
+                if (responseCode != 200)
+                {
+                    LOGGER.warn("Cannot send request to OIDC server for revocation ! ");
+                }
+                else{
+                    LOGGER.info("Should be logged out");
+                }
+
+            } catch (IOException e) {
+                LOGGER.warn("Cannot notify logout to OIDC server !");
+                LOGGER.trace(e);
+
+            }
+        }
+    }
 }
