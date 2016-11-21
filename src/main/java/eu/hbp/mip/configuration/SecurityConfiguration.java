@@ -109,7 +109,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String revokeTokenURI;
 
     /**
-     * Set to true if using no-auth mode
+     * Set to true if using no-auth mode and user has clicked on the login button
      */
     private boolean fakeAuth = false;
 
