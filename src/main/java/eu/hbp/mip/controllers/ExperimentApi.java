@@ -1,5 +1,7 @@
 package eu.hbp.mip.controllers;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,6 +77,9 @@ public class ExperimentApi {
 
     @Autowired
     private ExperimentRepository experimentRepository;
+
+    @Autowired
+    private ActorSystem actorSystem;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -287,6 +292,16 @@ public class ExperimentApi {
         // this runs in the background. For future optimization: use a thread pool
         final String url = experimentUrl;
         final String query = experiment.computeQuery();
+
+        ActorRef wokenActor = actorSystem.actorFor("woken");
+
+        // Should maybe use this instead ???
+        // ActorRef wokenActor = actorSystem.actorOf(
+        //        SpringExtension.SpringExtProvider.get(actorSystem).props("Woken"), "woken");
+
+        wokenActor.tell(query, null);
+
+
         new Thread() {
             @Override
             public void run() {
@@ -321,9 +336,9 @@ public class ExperimentApi {
                 }
 
                 if(!JSONUtil.isJSONValid(experiment.getResult()))
-                    {
-                        experiment.setResult("Unsupported variables !");
-                    }
+                {
+                    experiment.setResult("Unsupported variables !");
+                }
                 finishExpermient(experiment);
             }
         }.start();

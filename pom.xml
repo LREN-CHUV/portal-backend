@@ -49,6 +49,10 @@
         <spring-data-jpa.version>1.10.2.RELEASE</spring-data-jpa.version>
         <spring-boot-starter-actuator.version>1.4.0.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
+        <woken-messages.version>a0244b0</woken-messages.version>
+        <javax-inject.version>1</javax-inject.version>
+        <akka-actor.version>2.4.11</akka-actor.version>
+        <akka-remote.version>2.4.11</akka-remote.version>
     </properties>
 
     <repositories>
@@ -177,7 +181,22 @@
         <dependency>
             <groupId>woken-messages</groupId>
             <artifactId>woken-messages_2.11</artifactId>
-            <version>a0244b0</version>
+            <version>${woken-messages.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax-inject.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.11</artifactId>
+            <version>${akka-actor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-remote_2.11</artifactId>
+            <version>${akka-remote.version}</version>
         </dependency>
     </dependencies>
 
@@ -206,6 +225,7 @@
                     <include>**/*.json</include>
                     <include>**/*.csv</include>
                     <include>**/*.sql</include>
+                    <include>**/*.conf</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
