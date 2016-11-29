@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import eu.hbp.mip.akka.ListenerActor;
+import eu.hbp.mip.akka.ListeningService;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
@@ -289,11 +291,10 @@ public class ExperimentApi {
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
         // this runs in the background. For future optimization: use a thread pool
-        final String url = experimentUrl;
         final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
 
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
-        wokenActor.tell(experimentQuery, null);
+        wokenActor.tell(experimentQuery, new ListenerActor(new ListeningService()).getSelf());
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
