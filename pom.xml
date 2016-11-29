@@ -51,6 +51,14 @@
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>artifactory</id>
+            <name>artifactory</name>
+            <url>http://lab01560.intranet.chuv:9082/artifactory/libs-release-local</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -165,6 +173,11 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectjweaver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>woken-messages</groupId>
+            <artifactId>woken-messages_2.11</artifactId>
+            <version>a0244b0</version>
         </dependency>
     </dependencies>
 
