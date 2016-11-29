@@ -2,14 +2,20 @@ package eu.hbp.mip.model;
 
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
+import eu.hbp.mip.messages.external.*;
+import eu.hbp.mip.messages.external.Algorithm;
+import eu.hbp.mip.messages.external.ExperimentQuery;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
+import scala.collection.JavaConverters;
+import scala.collection.Seq;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
 
 /**
  * Created by habfast on 21/04/16.
@@ -85,16 +91,39 @@ public class Experiment {
         */
     }
 
-    public String computeQuery() {
-        JsonObject outgoingQuery = new JsonObject();
-        outgoingQuery.add("algorithms", gsonOnlyExposed.fromJson(algorithms, JsonArray.class));
-        outgoingQuery.add("validations", gsonOnlyExposed.fromJson(validations, JsonArray.class));
+    public ExperimentQuery computeQuery() {
+        List<VariableId> variables = new LinkedList<>();
+        List<VariableId> covariables = new LinkedList<>();
+        List<VariableId> grouping = new LinkedList<>();
+        List<Filter> filters = new LinkedList<>();
+        List<eu.hbp.mip.messages.external.Algorithm> algorithms = new LinkedList<>();
+        List<Validation> validations = new LinkedList<>();
 
-        outgoingQuery.add("covariables", gsonOnlyExposed.toJsonTree(model.getQuery().getCovariables()));
-        outgoingQuery.add("variables", gsonOnlyExposed.toJsonTree(model.getQuery().getVariables()));
-        outgoingQuery.add("filters", gsonOnlyExposed.toJsonTree(model.getQuery().getFilters()));
-        outgoingQuery.add("grouping", gsonOnlyExposed.toJsonTree(model.getQuery().getGrouping()));
-        return outgoingQuery.toString();
+        for (Variable v: model.getQuery().getVariables()
+                ) {
+            variables.add(new VariableId(v.getCode()));
+        }
+
+        for (Variable v: model.getQuery().getCovariables()
+             ) {
+            covariables.add(new VariableId(v.getCode()));
+        }
+
+        for (Variable v: model.getQuery().getGrouping()
+                ) {
+            grouping.add(new VariableId(v.getCode()));
+        }
+
+        // TODO: convert algorithms and so on
+
+        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(variables.iterator()).asScala().toSeq();
+        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(covariables.iterator()).asScala().toSeq();
+        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(grouping.iterator()).asScala().toSeq();
+        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(filters.iterator()).asScala().toSeq();
+        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(algorithms.iterator()).asScala().toSeq();
+        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(validations.iterator()).asScala().toSeq();
+
+        return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filtersSeq, algorithmsSeq, validationsSeq);
     }
 
     public String computeExaremeQuery() {

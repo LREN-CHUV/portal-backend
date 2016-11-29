@@ -1,6 +1,7 @@
 package eu.hbp.mip.akka;
 
 import akka.actor.UntypedActor;
+import eu.hbp.mip.messages.external.QueryResult;
 import org.springframework.context.annotation.Scope;
 
 import javax.inject.Inject;
@@ -14,24 +15,6 @@ import javax.inject.Named;
 @Scope("prototype")
 public class ListenerActor extends UntypedActor {
 
-    public static class AlgoQuery {
-        private final String query;
-        public AlgoQuery(String query) {
-            this.query = query;
-        }
-        public String getQuery() {
-            return query;
-        }
-    }
-    public static class AlgoResult {
-        private final String result;
-        public AlgoResult(String result) {
-            this.result = result;
-        }
-        public String getResult() {
-            return result;
-        }
-    }
     final ListeningService listeningService;
     @Inject
     public ListenerActor(@Named("ListeningService") ListeningService listeningService) {
@@ -40,9 +23,9 @@ public class ListenerActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof AlgoResult) {
-            AlgoResult algoResult = (AlgoResult) message;
-            listeningService.listen(algoResult.getResult());
+        if (message instanceof QueryResult) {
+            QueryResult queryResult = (QueryResult) message;
+            listeningService.listen(queryResult.data().get());
         }
         else {
             unhandled(message);

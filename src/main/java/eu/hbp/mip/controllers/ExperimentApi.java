@@ -1,6 +1,6 @@
 package eu.hbp.mip.controllers;
 
-import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -13,7 +13,6 @@ import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
-import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -216,10 +215,8 @@ public class ExperimentApi {
 
         StringBuilder response = new StringBuilder();
 
-        int code = HTTPUtil.sendGet(listMethodsUrl, response);
-        if (code < 200 || code > 299) {
-            return new ResponseEntity<>(response.toString(), HttpStatus.valueOf(code));
-        }
+        // TODO: Use akka
+        int code = 500;
 
         JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
 
@@ -293,16 +290,10 @@ public class ExperimentApi {
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
         // this runs in the background. For future optimization: use a thread pool
         final String url = experimentUrl;
-        final String query = experiment.computeQuery();
+        final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
 
-        ActorRef wokenActor = actorSystem.actorFor(wokenPath);
-
-        // Should maybe use this instead ???
-        // ActorRef wokenActor = actorSystem.actorOf(
-        //        SpringExtension.SpringExtProvider.get(actorSystem).props("Woken"), "woken");
-
-        wokenActor.tell(query, null);
-
+        ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
+        wokenActor.tell(experimentQuery, null);
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
@@ -341,7 +332,8 @@ public class ExperimentApi {
 
     private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
         StringBuilder results = new StringBuilder();
-        int code = HTTPUtil.sendPost(url, query, results);
+        // TODO: use akka
+        int code = 500;
         experiment.setResult(results.toString());
         experiment.setHasError(code >= 400);
         experiment.setHasServerError(code >= 500);
