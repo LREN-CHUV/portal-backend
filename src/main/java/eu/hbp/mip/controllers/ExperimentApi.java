@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 /**
  * Created by habfast on 21/04/16.
  */
@@ -80,6 +79,9 @@ public class ExperimentApi {
 
     @Autowired
     private ActorSystem actorSystem;
+
+    @Value("#{'${akka.woken-path:akka.tcp://woken@127.0.0.1:8088/user/entrypoint}'}")
+    private String wokenPath;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -293,7 +295,7 @@ public class ExperimentApi {
         final String url = experimentUrl;
         final String query = experiment.computeQuery();
 
-        ActorRef wokenActor = actorSystem.actorFor("woken");
+        ActorRef wokenActor = actorSystem.actorFor(wokenPath);
 
         // Should maybe use this instead ???
         // ActorRef wokenActor = actorSystem.actorOf(
@@ -301,21 +303,6 @@ public class ExperimentApi {
 
         wokenActor.tell(query, null);
 
-
-        new Thread() {
-            @Override
-            public void run() {
-                // Results are stored in the experiment object
-                try {
-                    executeExperiment(url, query, experiment);
-                } catch (IOException e) {
-                    LOGGER.trace(e);
-                    LOGGER.warn("Experiment failed to run properly !");
-                    setExperimentError(e, experiment);
-                }
-                finishExpermient(experiment);
-            }
-        }.start();
     }
 
     private void sendExaremeExperiment(Experiment experiment) {

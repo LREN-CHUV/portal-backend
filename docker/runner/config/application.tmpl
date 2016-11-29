@@ -82,3 +82,6 @@ services:
     listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
   exareme:
     miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
+
+akka:
+  woken-path: {{ default .Env.WOKEN_PATH "akka.tcp://woken@127.0.0.1:8088/user/entrypoint" }}
