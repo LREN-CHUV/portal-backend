@@ -10,12 +10,12 @@ import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.ListenerActor;
 import eu.hbp.mip.akka.ListeningService;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
-import eu.hbp.mip.utils.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,10 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Iterator;
@@ -217,18 +214,21 @@ public class ExperimentApi {
 
         StringBuilder response = new StringBuilder();
 
-        // TODO: Use akka
-        int code = 500;
+        ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
+        wokenActor.tell(new MethodsQuery(), new ListenerActor(new ListeningService()).getSelf());
 
+
+        // TODO: remove this
+        int code = 200;
         JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
-
-        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-
-        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-
+//
+//        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+//        InputStreamReader isr = new InputStreamReader(is);
+//        BufferedReader br = new BufferedReader(isr);
+//        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+//
+//        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+//
         return new ResponseEntity<>(gson.toJson(catalog), HttpStatus.valueOf(code));
     }
 
@@ -306,19 +306,19 @@ public class ExperimentApi {
                 String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
 
                 // Results are stored in the experiment object
-                try {
-                    executeExperiment(url, query, experiment);
-                } catch (IOException e) {
-                    LOGGER.trace(e);
-                    LOGGER.warn("Exareme experiment failed to run properly !");
-                    setExperimentError(e, experiment);
-                }
-
-                if(!JSONUtil.isJSONValid(experiment.getResult()))
-                {
-                    experiment.setResult("Unsupported variables !");
-                }
-                finishExpermient(experiment);
+//                try {
+//                    executeExperiment(url, query, experiment);
+//                } catch (IOException e) {
+//                    LOGGER.trace(e);
+//                    LOGGER.warn("Exareme experiment failed to run properly !");
+//                    setExperimentError(e, experiment);
+//                }
+//
+//                if(!JSONUtil.isJSONValid(experiment.getResult()))
+//                {
+//                    experiment.setResult("Unsupported variables !");
+//                }
+//                finishExpermient(experiment);
             }
         }.start();
     }
@@ -329,15 +329,6 @@ public class ExperimentApi {
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment updated (finished)");
-    }
-
-    private static void executeExperiment(String url, String query, Experiment experiment) throws IOException {
-        StringBuilder results = new StringBuilder();
-        // TODO: use akka
-        int code = 500;
-        experiment.setResult(results.toString());
-        experiment.setHasError(code >= 400);
-        experiment.setHasServerError(code >= 500);
     }
 
     private static void setExperimentError(IOException e, Experiment experiment) {

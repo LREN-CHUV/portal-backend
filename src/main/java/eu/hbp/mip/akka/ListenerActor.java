@@ -1,6 +1,7 @@
 package eu.hbp.mip.akka;
 
 import akka.actor.UntypedActor;
+import eu.hbp.mip.messages.external.Methods;
 import eu.hbp.mip.messages.external.QueryResult;
 import org.springframework.context.annotation.Scope;
 
@@ -25,7 +26,11 @@ public class ListenerActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;
-            listeningService.listen(queryResult.data().get());
+            listeningService.listen("received query result");
+        }
+        else if (message instanceof Methods) {
+            Methods methods = (Methods) message;
+            listeningService.listen("received methods");
         }
         else {
             unhandled(message);
