@@ -2,19 +2,19 @@ package eu.hbp.mip.model;
 
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
-import eu.hbp.mip.messages.external.*;
+import com.google.gson.reflect.TypeToken;
 import eu.hbp.mip.messages.external.Algorithm;
 import eu.hbp.mip.messages.external.ExperimentQuery;
+import eu.hbp.mip.messages.external.*;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
+import scala.collection.immutable.HashMap;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Type;
+import java.util.*;
 
 
 /**
@@ -114,7 +114,29 @@ public class Experiment {
             grouping.add(new VariableId(v.getCode()));
         }
 
-        // TODO: convert algorithms and so on
+        Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
+        List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
+        for (eu.hbp.mip.model.Algorithm a: algos
+             ) {
+            scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
+            for (AlgorithmParam ap: a.getParameters()
+                 ) {
+                params.updated(ap.getCode(), ap.getValue());
+            }
+            algorithms.add(new Algorithm(a.getCode(), a.getName(), params));
+        }
+
+        Type validList = new TypeToken<LinkedList<eu.hbp.mip.model.ExperimentValidator>>(){}.getType();
+        List<eu.hbp.mip.model.ExperimentValidator> valids = new Gson().fromJson(this.validations, validList);
+        for (ExperimentValidator v: valids
+                ) {
+            scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
+            for (AlgorithmParam ap: v.getParameters()
+                    ) {
+                params.updated(ap.getCode(), ap.getValue());
+            }
+            validations.add(new Validation(v.getCode(), v.getName(), params));
+        }
 
         Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(variables.iterator()).asScala().toSeq();
         Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(covariables.iterator()).asScala().toSeq();
