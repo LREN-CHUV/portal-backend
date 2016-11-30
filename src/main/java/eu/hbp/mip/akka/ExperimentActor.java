@@ -6,13 +6,20 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Creator;
 import eu.hbp.mip.messages.external.QueryResult;
+import eu.hbp.mip.model.Experiment;
+import eu.hbp.mip.repositories.ExperimentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
  * Created by mirco on 30.11.16.
  */
 public class ExperimentActor extends UntypedActor {
+
+    @Autowired
+    private ExperimentRepository experimentRepository;
 
     public static Props props(final UUID expUUID) {
         return Props.create(new Creator<ExperimentActor>() {
@@ -38,6 +45,11 @@ public class ExperimentActor extends UntypedActor {
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;
             log.info("received query result for : " + expUUID.toString());
+            Experiment experiment = experimentRepository.findOne(expUUID);
+            experiment.setResult(queryResult.data().get());
+            experiment.setFinished(new Date());
+            experimentRepository.save(experiment);
+            log.info("Experiment "+ expUUID +" updated (finished)");
         }
         else {
             unhandled(message);
