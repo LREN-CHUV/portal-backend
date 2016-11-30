@@ -1,14 +1,16 @@
 package eu.hbp.mip.controllers;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.hbp.mip.akka.ListenerActor;
-import eu.hbp.mip.akka.ListeningService;
+import eu.hbp.mip.akka.ExperimentActor;
+import eu.hbp.mip.akka.SimpleActor;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
@@ -215,7 +217,8 @@ public class ExperimentApi {
         StringBuilder response = new StringBuilder();
 
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
-        wokenActor.tell(new MethodsQuery(), new ListenerActor(new ListeningService()).getSelf());
+        ActorRef simpleActor = actorSystem.actorOf(Props.create(SimpleActor.class));
+        wokenActor.tell(new MethodsQuery(), simpleActor);
 
 
         // TODO: remove this
@@ -294,18 +297,19 @@ public class ExperimentApi {
         final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
 
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
-        wokenActor.tell(experimentQuery, new ListenerActor(new ListeningService()).getSelf());
+        ActorRef experimentActor = actorSystem.actorOf(Props.create(ExperimentActor.class, experiment.getUuid()));
+        wokenActor.tell(experimentQuery, experimentActor);
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
         // this runs in the background. For future optimization: use a thread pool
-        new Thread() {
-            @Override
-            public void run() {
-                String query = experiment.computeExaremeQuery();
-                String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
-
-                // Results are stored in the experiment object
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                String query = experiment.computeExaremeQuery();
+//                String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+//
+//                // Results are stored in the experiment object
 //                try {
 //                    executeExperiment(url, query, experiment);
 //                } catch (IOException e) {
@@ -319,8 +323,8 @@ public class ExperimentApi {
 //                    experiment.setResult("Unsupported variables !");
 //                }
 //                finishExpermient(experiment);
-            }
-        }.start();
+//            }
+//        }.start();
     }
 
     private void finishExpermient(Experiment experiment)
