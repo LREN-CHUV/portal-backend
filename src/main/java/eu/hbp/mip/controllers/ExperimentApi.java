@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +45,6 @@ public class ExperimentApi {
 
     private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
 
-    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
-
     private static final Gson gson = new Gson();
 
     private static final Gson gsonOnlyExposed = new GsonBuilder()
@@ -55,6 +52,8 @@ public class ExperimentApi {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
+
+    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
     private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
 
@@ -78,9 +77,6 @@ public class ExperimentApi {
 
     @Autowired
     private ActorSystem actorSystem;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Value("#{'${akka.woken-path:akka.tcp://woken@127.0.0.1:8088/user/entrypoint}'}")
     private String wokenPath;
@@ -216,8 +212,6 @@ public class ExperimentApi {
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
 
-        StringBuilder response = new StringBuilder();
-
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
         ActorRef simpleActor = actorSystem.actorOf(Props.create(SimpleActor.class));
         wokenActor.tell(new MethodsQuery(), simpleActor);
@@ -292,6 +286,7 @@ public class ExperimentApi {
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
+        // TODO: integrate Exareme
         // this runs in the background. For future optimization: use a thread pool
 //        new Thread() {
 //            @Override
@@ -323,12 +318,6 @@ public class ExperimentApi {
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment updated (finished)");
-    }
-
-    private static void setExperimentError(IOException e, Experiment experiment) {
-        experiment.setHasError(true);
-        experiment.setHasServerError(true);
-        experiment.setResult(e.getMessage());
     }
 
     private static boolean isExaremeAlgo(ExperimentQuery expQuery) {

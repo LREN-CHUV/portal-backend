@@ -47,15 +47,26 @@ public class ExperimentActor extends UntypedActor {
             QueryResult queryResult = (QueryResult) message;
             log.info("received query result for : " + expUUID.toString());
             Experiment experiment = experimentRepository.findOne(expUUID);
+            if(experiment == null)
+            {
+                log.error("Experiment with UUID="+expUUID+" not found in DB");
+                return;
+            }
             experiment.setResult(queryResult.data().get());
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ expUUID +" updated (finished)");
         }
+
         else if (message instanceof QueryError) {
             QueryError queryError = (QueryError) message;
             log.warning("received query error");
             Experiment experiment = experimentRepository.findOne(expUUID);
+            if(experiment == null)
+            {
+                log.error("Experiment with UUID="+expUUID+" not found in DB");
+                return;
+            }
             experiment.setHasServerError(true);
             experiment.setResult(queryError.message());
             experimentRepository.save(experiment);
@@ -63,6 +74,7 @@ public class ExperimentActor extends UntypedActor {
             experimentRepository.save(experiment);
             log.info("Experiment "+ expUUID +" updated (finished)");
         }
+
         else {
             unhandled(message);
         }
