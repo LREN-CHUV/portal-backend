@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Creator;
+import eu.hbp.mip.messages.external.QueryError;
 import eu.hbp.mip.messages.external.QueryResult;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.repositories.ExperimentRepository;
@@ -47,6 +48,17 @@ public class ExperimentActor extends UntypedActor {
             log.info("received query result for : " + expUUID.toString());
             Experiment experiment = experimentRepository.findOne(expUUID);
             experiment.setResult(queryResult.data().get());
+            experiment.setFinished(new Date());
+            experimentRepository.save(experiment);
+            log.info("Experiment "+ expUUID +" updated (finished)");
+        }
+        else if (message instanceof QueryError) {
+            QueryError queryError = (QueryError) message;
+            log.warning("received query error");
+            Experiment experiment = experimentRepository.findOne(expUUID);
+            experiment.setHasServerError(true);
+            experiment.setResult(queryError.message());
+            experimentRepository.save(experiment);
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ expUUID +" updated (finished)");
