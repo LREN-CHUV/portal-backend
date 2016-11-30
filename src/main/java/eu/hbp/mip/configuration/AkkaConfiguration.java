@@ -15,18 +15,14 @@ import static eu.hbp.mip.akka.SpringExtension.SpringExtProvider;
 @Configuration
 class AkkaConfiguration {
 
-    // the application context is needed to initialize the Akka Spring Extension
     @Autowired
     private ApplicationContext applicationContext;
 
-    /**
-     * Actor system singleton for this application.
-     */
     @Bean
     public ActorSystem actorSystem() {
-        ActorSystem system = ActorSystem.create("AkkaJavaSpring");
-        // initialize the application context in the Akka Spring Extension
+        ActorSystem system = ActorSystem.create("AkkaActorSystem");
         SpringExtProvider.get(system).initialize(applicationContext);
         return system;
     }
+
 }

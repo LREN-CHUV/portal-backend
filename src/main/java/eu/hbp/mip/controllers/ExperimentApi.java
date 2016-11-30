@@ -7,8 +7,6 @@ import akka.actor.Props;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.ExperimentActor;
 import eu.hbp.mip.akka.SimpleActor;
 import eu.hbp.mip.configuration.SecurityConfiguration;
@@ -25,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +78,9 @@ public class ExperimentApi {
 
     @Autowired
     private ActorSystem actorSystem;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Value("#{'${akka.woken-path:akka.tcp://woken@127.0.0.1:8088/user/entrypoint}'}")
     private String wokenPath;
@@ -211,7 +213,7 @@ public class ExperimentApi {
     @ApiOperation(value = "List available methods and validations", response = String.class)
     @Cacheable("methods")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity<String> listAvailableMethodsAndValidations() throws IOException {
+    public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
 
         StringBuilder response = new StringBuilder();
@@ -220,19 +222,7 @@ public class ExperimentApi {
         ActorRef simpleActor = actorSystem.actorOf(Props.create(SimpleActor.class));
         wokenActor.tell(new MethodsQuery(), simpleActor);
 
-
-        // TODO: remove this
-        int code = 200;
-        JsonObject catalog = new JsonParser().parse(response.toString()).getAsJsonObject();
-//
-//        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-//        InputStreamReader isr = new InputStreamReader(is);
-//        BufferedReader br = new BufferedReader(isr);
-//        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-//
-//        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-//
-        return new ResponseEntity<>(gson.toJson(catalog), HttpStatus.valueOf(code));
+        return ResponseEntity.ok().build();
     }
 
     private ResponseEntity<String> doListExperiments(
