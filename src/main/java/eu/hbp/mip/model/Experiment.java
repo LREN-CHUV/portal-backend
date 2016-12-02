@@ -99,6 +99,9 @@ public class Experiment {
         List<eu.hbp.mip.messages.external.Algorithm> algorithms = new LinkedList<>();
         List<Validation> validations = new LinkedList<>();
 
+        if (model == null || model.getQuery() == null)
+            return new ExperimentQuery(null, null, null, null, null, null);
+
         for (Variable v: model.getQuery().getVariables()
                 ) {
             variables.add(new VariableId(v.getCode()));
