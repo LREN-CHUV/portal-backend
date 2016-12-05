@@ -1,15 +1,16 @@
 package eu.hbp.mip.akka;
 
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.japi.Creator;
 import eu.hbp.mip.messages.external.QueryError;
 import eu.hbp.mip.messages.external.QueryResult;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,54 +18,42 @@ import java.util.UUID;
 /**
  * Created by mirco on 30.11.16.
  */
+
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ExperimentActor extends UntypedActor {
 
     @Autowired
     private ExperimentRepository experimentRepository;
 
-    public static Props props(final UUID expUUID) {
-        return Props.create(new Creator<ExperimentActor>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public ExperimentActor create() throws Exception {
-                return new ExperimentActor(expUUID);
-            }
-        });
-    }
-
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    private final UUID expUUID;
-
-    private ExperimentActor(UUID expUUID) {
-        this.expUUID = expUUID;
-    }
 
     @Override
     public void onReceive(Object message) throws Throwable {
+        UUID uuid = UUID.fromString(this.getSelf().path().name());
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;
-            log.info("received query result for : " + expUUID.toString());
-            Experiment experiment = experimentRepository.findOne(expUUID);
+            log.info("received query result for : " + uuid.toString());
+            Experiment experiment = experimentRepository.findOne(uuid);
             if(experiment == null)
             {
-                log.error("Experiment with UUID="+expUUID+" not found in DB");
+                log.error("Experiment with UUID="+uuid+" not found in DB");
                 return;
             }
             experiment.setResult(queryResult.data().get());
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
-            log.info("Experiment "+ expUUID +" updated (finished)");
+            log.info("Experiment "+ uuid +" updated (finished)");
         }
 
         else if (message instanceof QueryError) {
             QueryError queryError = (QueryError) message;
             log.warning("received query error");
-            Experiment experiment = experimentRepository.findOne(expUUID);
+            Experiment experiment = experimentRepository.findOne(uuid);
             if(experiment == null)
             {
-                log.error("Experiment with UUID="+expUUID+" not found in DB");
+                log.error("Experiment with UUID="+uuid+" not found in DB");
                 return;
             }
             experiment.setHasServerError(true);
@@ -72,7 +61,7 @@ public class ExperimentActor extends UntypedActor {
             experimentRepository.save(experiment);
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
-            log.info("Experiment "+ expUUID +" updated (finished)");
+            log.info("Experiment "+ uuid +" updated (finished)");
         }
 
         else {

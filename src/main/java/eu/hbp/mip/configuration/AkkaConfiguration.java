@@ -4,15 +4,17 @@ import akka.actor.ActorSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import static eu.hbp.mip.akka.SpringExtension.SpringExtProvider;
+import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
 /**
  * Created by mirco on 24.10.16.
  */
 
 @Configuration
+@ComponentScan
 class AkkaConfiguration {
 
     @Autowired
@@ -21,7 +23,7 @@ class AkkaConfiguration {
     @Bean
     public ActorSystem actorSystem() {
         ActorSystem system = ActorSystem.create("AkkaActorSystem");
-        SpringExtProvider.get(system).initialize(applicationContext);
+        SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }
 

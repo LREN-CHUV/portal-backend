@@ -3,12 +3,10 @@ package eu.hbp.mip.controllers;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
-import akka.actor.Props;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import eu.hbp.mip.akka.ExperimentActor;
-import eu.hbp.mip.akka.SimpleActor;
+import eu.hbp.mip.akka.SpringExtension;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
@@ -76,7 +74,7 @@ public class ExperimentApi {
     private ExperimentRepository experimentRepository;
 
     @Autowired
-    private ActorSystem actorSystem;
+    public ActorSystem actorSystem;
 
     @Value("#{'${akka.woken-path:akka.tcp://woken@127.0.0.1:8088/user/entrypoint}'}")
     private String wokenPath;
@@ -212,9 +210,11 @@ public class ExperimentApi {
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
 
+        LOGGER.info("Akka is trying to reach remote " + wokenPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
-        ActorRef simpleActor = actorSystem.actorOf(Props.create(SimpleActor.class));
-        wokenActor.tell(new MethodsQuery(), simpleActor);
+        ActorRef methodsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
+                .props("simpleActor"));
+        wokenActor.tell(new MethodsQuery(), methodsManager);
 
         return ResponseEntity.ok().build();
     }
@@ -280,9 +280,11 @@ public class ExperimentApi {
         // this runs in the background. For future optimization: use a thread pool
         final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
 
+        LOGGER.info("Akka is trying to reach remote " + wokenPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
-        ActorRef experimentActor = actorSystem.actorOf(Props.create(ExperimentActor.class, experiment.getUuid()));
-        wokenActor.tell(experimentQuery, experimentActor);
+        ActorRef experimentsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
+                .props("experimentActor"), experiment.getUuid().toString());
+        wokenActor.tell(experimentQuery, experimentsManager);
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
