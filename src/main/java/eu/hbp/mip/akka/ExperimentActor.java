@@ -30,7 +30,7 @@ public class ExperimentActor extends UntypedActor {
 
 
     @Override
-    public void onReceive(Object message) throws Throwable {
+    public void onReceive(Object message) {
         UUID uuid = UUID.fromString(this.getSelf().path().name());
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;

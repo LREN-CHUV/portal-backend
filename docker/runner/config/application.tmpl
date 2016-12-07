@@ -84,4 +84,7 @@ services:
     miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
 
 akka:
-  woken-path: {{ default .Env.WOKEN_PATH "akka.tcp://woken@127.0.0.1:8088/user/entrypoint" }}
+  woken:
+    host: {{ default .Env.WOKEN_HOST "woken" }}
+    port: {{ default .Env.WOKEN_PORT "8088" }}
+    path: {{ default .Env.WOKEN_PATH "/user/entrypoint" }}

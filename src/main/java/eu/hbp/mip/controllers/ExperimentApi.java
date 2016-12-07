@@ -19,8 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,15 +53,6 @@ public class ExperimentApi {
 
     private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
 
-    @Value("#{'${services.woken.experimentUrl:http://dockerhost:8087/experiment}'}")
-    private String experimentUrl;
-
-    @Value("#{'${services.woken.listMethodsUrl:http://dockerhost:8087/list-methods}'}")
-    private String listMethodsUrl;
-
-    @Value("#{'${services.exareme.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
-    private String miningExaremeQueryUrl;
-
     @Autowired
     private SecurityConfiguration securityConfiguration;
 
@@ -76,8 +65,8 @@ public class ExperimentApi {
     @Autowired
     public ActorSystem actorSystem;
 
-    @Value("#{'${akka.woken-path:akka.tcp://woken@127.0.0.1:8088/user/entrypoint}'}")
-    private String wokenPath;
+    @Autowired
+    public String wokenRefPath;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -205,13 +194,13 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    @Cacheable("methods")
+    // @Cacheable("methods")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
 
-        LOGGER.info("Akka is trying to reach remote " + wokenPath);
-        ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
+        LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
+        ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
         ActorRef methodsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
                 .props("simpleActor"));
         wokenActor.tell(new MethodsQuery(), methodsManager);
@@ -280,8 +269,8 @@ public class ExperimentApi {
         // this runs in the background. For future optimization: use a thread pool
         final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
 
-        LOGGER.info("Akka is trying to reach remote " + wokenPath);
-        ActorSelection wokenActor = actorSystem.actorSelection(wokenPath);
+        LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
+        ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
         ActorRef experimentsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
                 .props("experimentActor"), experiment.getUuid().toString());
         wokenActor.tell(experimentQuery, experimentsManager);
@@ -289,29 +278,6 @@ public class ExperimentApi {
 
     private void sendExaremeExperiment(Experiment experiment) {
         // TODO: integrate Exareme
-        // this runs in the background. For future optimization: use a thread pool
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                String query = experiment.computeExaremeQuery();
-//                String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
-//
-//                // Results are stored in the experiment object
-//                try {
-//                    executeExperiment(url, query, experiment);
-//                } catch (IOException e) {
-//                    LOGGER.trace(e);
-//                    LOGGER.warn("Exareme experiment failed to run properly !");
-//                    setExperimentError(e, experiment);
-//                }
-//
-//                if(!JSONUtil.isJSONValid(experiment.getResult()))
-//                {
-//                    experiment.setResult("Unsupported variables !");
-//                }
-//                finishExpermient(experiment);
-//            }
-//        }.start();
     }
 
     private void finishExpermient(Experiment experiment)

@@ -19,7 +19,7 @@ public class SimpleActor extends UntypedActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Override
-    public void onReceive(Object message) throws Throwable {
+    public void onReceive(Object message) {
         if (message instanceof Methods) {
             Methods methods = (Methods) message;
             log.info("received methods");
