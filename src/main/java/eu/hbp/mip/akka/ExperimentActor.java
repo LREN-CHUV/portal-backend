@@ -31,6 +31,7 @@ public class ExperimentActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) {
+        log.info("\n\n***** ExperimentActor received response from woken\n");
         UUID uuid = UUID.fromString(this.getSelf().path().name());
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;

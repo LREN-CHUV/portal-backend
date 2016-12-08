@@ -124,7 +124,7 @@ public class Experiment {
             scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
             for (AlgorithmParam ap: a.getParameters()
                  ) {
-                params.updated(ap.getCode(), ap.getValue());
+                params = params.updated(ap.getCode(), ap.getValue());
             }
             algorithms.add(new Algorithm(a.getCode(), a.getName(), params));
         }
@@ -136,7 +136,7 @@ public class Experiment {
             scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
             for (AlgorithmParam ap: v.getParameters()
                     ) {
-                params.updated(ap.getCode(), ap.getValue());
+                params = params.updated(ap.getCode(), ap.getValue());
             }
             validations.add(new Validation(v.getCode(), v.getName(), params));
         }
