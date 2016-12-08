@@ -3,11 +3,14 @@ package eu.hbp.mip.controllers;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.hbp.mip.akka.SpringExtension;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.messages.external.Methods;
 import eu.hbp.mip.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
@@ -22,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -201,11 +207,19 @@ public class ExperimentApi {
 
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
-        ActorRef methodsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
-                .props("simpleActor"));
-        wokenActor.tell(new MethodsQuery(), methodsManager);
 
-        return ResponseEntity.ok().build();
+        Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+        Future<Object> future = Patterns.ask(wokenActor, new MethodsQuery(), timeout);
+        Methods result = null;
+        try {
+            result = (Methods) Await.result(future, timeout.duration());
+        } catch (Exception e) {
+            LOGGER.error("Cannot receive methods list from woken !");
+            LOGGER.trace(e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+
+        return ResponseEntity.ok(result.methods());
     }
 
     private ResponseEntity<String> doListExperiments(
