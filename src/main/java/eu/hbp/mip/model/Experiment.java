@@ -91,7 +91,7 @@ public class Experiment {
         */
     }
 
-    public ExperimentQuery computeQuery() {
+    public ExperimentQuery prepareQuery() {
         List<VariableId> variables = new LinkedList<>();
         List<VariableId> covariables = new LinkedList<>();
         List<VariableId> grouping = new LinkedList<>();
@@ -141,12 +141,12 @@ public class Experiment {
             validations.add(new Validation(v.getCode(), v.getName(), params));
         }
 
-        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(variables.iterator()).asScala().toSeq();
-        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(covariables.iterator()).asScala().toSeq();
-        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(grouping.iterator()).asScala().toSeq();
-        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(filters.iterator()).asScala().toSeq();
-        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(algorithms.iterator()).asScala().toSeq();
-        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(validations.iterator()).asScala().toSeq();
+        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(variables.iterator()).asScala().toSeq().toList();
+        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(covariables.iterator()).asScala().toSeq().toList();
+        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(grouping.iterator()).asScala().toSeq().toList();
+        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(filters.iterator()).asScala().toSeq().toList();
+        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(algorithms.iterator()).asScala().toSeq().toList();
+        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(validations.iterator()).asScala().toSeq().toList();
 
         return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filtersSeq, algorithmsSeq, validationsSeq);
     }

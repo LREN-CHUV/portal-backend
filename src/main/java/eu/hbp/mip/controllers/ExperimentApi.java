@@ -210,7 +210,7 @@ public class ExperimentApi {
 
         Timeout timeout = new Timeout(Duration.create(5, "seconds"));
         Future<Object> future = Patterns.ask(wokenActor, new MethodsQuery(), timeout);
-        Methods result = null;
+        Methods result;
         try {
             result = (Methods) Await.result(future, timeout.duration());
         } catch (Exception e) {
@@ -281,7 +281,7 @@ public class ExperimentApi {
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
         // this runs in the background. For future optimization: use a thread pool
-        final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.computeQuery();
+        final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.prepareQuery();
 
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
