@@ -31,23 +31,23 @@ public class ExperimentActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) {
-        log.info("\n\n***** ExperimentActor received response from woken\n");
+        log.info("ActorExperiment - onReceive method has been called");
         UUID uuid = UUID.fromString(this.getSelf().path().name());
+        log.info("\n\nExperimentActor received response from woken for UUID: \n"+uuid.toString());
         if (message instanceof QueryResult) {
             QueryResult queryResult = (QueryResult) message;
-            log.info("received query result for : " + uuid.toString());
             Experiment experiment = experimentRepository.findOne(uuid);
             if(experiment == null)
             {
                 log.error("Experiment with UUID="+uuid+" not found in DB");
-                // getContext().stop(getSelf());
+                getContext().stop(getSelf());
                 return;
             }
             experiment.setResult(queryResult.data().get());
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ uuid +" updated (finished)");
-            // getContext().stop(getSelf());
+            getContext().stop(getSelf());
         }
 
         else if (message instanceof QueryError) {
@@ -57,7 +57,7 @@ public class ExperimentActor extends UntypedActor {
             if(experiment == null)
             {
                 log.error("Experiment with UUID="+uuid+" not found in DB");
-                // getContext().stop(getSelf());
+                getContext().stop(getSelf());
                 return;
             }
             experiment.setHasServerError(true);
@@ -66,7 +66,7 @@ public class ExperimentActor extends UntypedActor {
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ uuid +" updated (finished)");
-            // getContext().stop(getSelf());
+            getContext().stop(getSelf());
         }
 
         else {
