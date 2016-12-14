@@ -40,12 +40,14 @@ public class ExperimentActor extends UntypedActor {
             if(experiment == null)
             {
                 log.error("Experiment with UUID="+uuid+" not found in DB");
+                // getContext().stop(getSelf());
                 return;
             }
             experiment.setResult(queryResult.data().get());
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ uuid +" updated (finished)");
+            // getContext().stop(getSelf());
         }
 
         else if (message instanceof QueryError) {
@@ -55,6 +57,7 @@ public class ExperimentActor extends UntypedActor {
             if(experiment == null)
             {
                 log.error("Experiment with UUID="+uuid+" not found in DB");
+                // getContext().stop(getSelf());
                 return;
             }
             experiment.setHasServerError(true);
@@ -63,6 +66,7 @@ public class ExperimentActor extends UntypedActor {
             experiment.setFinished(new Date());
             experimentRepository.save(experiment);
             log.info("Experiment "+ uuid +" updated (finished)");
+            // getContext().stop(getSelf());
         }
 
         else {

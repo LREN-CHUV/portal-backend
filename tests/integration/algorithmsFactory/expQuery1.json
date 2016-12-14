@@ -1,0 +1,11 @@
+{
+  "model": "m1",
+  "validations": [],
+  "algorithms": [{
+    "code": "statisticsSummary",
+    "name": "Statistics Summary",
+    "validation": false,
+    "parameters": []
+  }],
+  "name": "exp1"
+}
