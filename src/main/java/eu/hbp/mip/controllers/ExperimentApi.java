@@ -8,6 +8,8 @@ import akka.util.Timeout;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.SpringExtension;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.messages.external.Methods;
@@ -17,11 +19,15 @@ import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
+import eu.hbp.mip.utils.HTTPUtil;
+import eu.hbp.mip.utils.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +35,10 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Iterator;
@@ -58,6 +67,9 @@ public class ExperimentApi {
     private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
 
     private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
+
+    @Value("#{'${services.exareme.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    private String miningExaremeQueryUrl;
 
     @Autowired
     private SecurityConfiguration securityConfiguration;
@@ -200,7 +212,7 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    // @Cacheable("methods")
+    @Cacheable("methods")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
@@ -219,7 +231,16 @@ public class ExperimentApi {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 
-        return ResponseEntity.ok(result.methods());
+        // >> Temporary : should return result.methods() in the future
+        JsonObject catalog = new JsonParser().parse(result.methods()).getAsJsonObject();
+        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+        // << Temporary
+
+        return ResponseEntity.ok(gson.toJson(catalog));
     }
 
     private ResponseEntity<String> doListExperiments(
@@ -291,7 +312,32 @@ public class ExperimentApi {
     }
 
     private void sendExaremeExperiment(Experiment experiment) {
-        // TODO: integrate Exareme
+        // >> Temporary: we should integrate exareme in a proper way in the future
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread(() -> {
+            String query = experiment.computeExaremeQuery();
+            String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+            // Results are stored in the experiment object
+            try {
+                StringBuilder results = new StringBuilder();
+                int code = HTTPUtil.sendPost(url, query, results);
+                experiment.setResult(results.toString());
+                experiment.setHasError(code >= 400);
+                experiment.setHasServerError(code >= 500);
+            } catch (IOException e) {
+                LOGGER.trace(e);
+                LOGGER.warn("Exareme experiment failed to run properly !");
+                experiment.setHasError(true);
+                experiment.setHasServerError(true);
+                experiment.setResult(e.getMessage());
+            }
+            if(!JSONUtil.isJSONValid(experiment.getResult()))
+            {
+                experiment.setResult("Unsupported variables !");
+            }
+            finishExpermient(experiment);
+        }).start();
+        // << Temporary
     }
 
     private void finishExpermient(Experiment experiment)

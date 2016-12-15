@@ -7,6 +7,7 @@ import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.utils.CORSFilter;
 import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
+import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,7 +301,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             query.append("\"").append(idToken).append("\"");
             query.append("}");
 
-            // TODO send request
+            try {
+                int responseCode = HTTPUtil.sendPost(revokeTokenURI, query.toString(), new StringBuilder());
+                if (responseCode != 200)
+                {
+                    LOGGER.warn("Cannot send request to OIDC server for revocation ! ");
+                }
+                else{
+                    LOGGER.info("Should be logged out");
+                }
+            } catch (IOException e) {
+                LOGGER.warn("Cannot notify logout to OIDC server !");
+                LOGGER.trace(e);
+            }
+
         }
     }
 }
