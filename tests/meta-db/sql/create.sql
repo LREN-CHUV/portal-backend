@@ -1,6 +1,3 @@
-CREATE DATABASE meta;
-\c meta
-
 SET datestyle to 'European';
 
 CREATE TABLE IF NOT EXISTS meta_variables (

@@ -1,6 +1,3 @@
-CREATE DATABASE science;
-\c science
-
 SET datestyle to 'European';
 
 CREATE TABLE IF NOT EXISTS ADNI_MERGE

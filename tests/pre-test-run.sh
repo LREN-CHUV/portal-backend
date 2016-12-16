@@ -34,7 +34,7 @@ fi
 echo "Running databases containers..."
 docker run --name science-db-test -p 65432:5432 -v $(pwd)/tests/science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
 docker run --name meta-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
-docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=portal -d postgres:9.5.3
+docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=postgres -d postgres:9.5.3
 
 
 # Get gateway IP
@@ -84,14 +84,14 @@ echo ""
 
 echo "Running backend container..."
 docker run --name backend-test -p 65440:8080 \
--e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:65434/portal" \
--e "PORTAL_DB_SERVER=$GATEWAY_IP:65434/portal" \
+-e "PORTAL_DB_URL=jdbc:postgresql://$GATEWAY_IP:65434/postgres" \
+-e "PORTAL_DB_SERVER=$GATEWAY_IP:65434/postgres" \
 -e "PORTAL_DB_USER=postgres" \
--e "META_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/meta" \
--e "META_DB_SERVER=$GATEWAY_IP:65433/meta" \
+-e "META_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/postgres" \
+-e "META_DB_SERVER=$GATEWAY_IP:65433/postgres" \
 -e "META_DB_USER=postgres" \
--e "SCIENCE_DB_URL=jdbc:postgresql://$GATEWAY_IP:65432/science" \
--e "SCIENCE_DB_SERVER=$GATEWAY_IP:65432/science" \
+-e "SCIENCE_DB_URL=jdbc:postgresql://$GATEWAY_IP:65432/postgres" \
+-e "SCIENCE_DB_SERVER=$GATEWAY_IP:65432/postgres" \
 -e "SCIENCE_DB_USER=postgres" \
 -e "CONTEXT_PATH=/services" \
 -e "AUTHENTICATION=0" \
