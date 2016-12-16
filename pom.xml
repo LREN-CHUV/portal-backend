@@ -55,10 +55,18 @@
     </properties>
 
     <repositories>
-        <repository>
+        <!--<repository>
             <id>artifactory</id>
             <name>artifactory</name>
             <url>http://lab01560.intranet.chuv:9082/artifactory/libs-release-local</url>
+        </repository>-->
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-lren-chuv-mip-portal</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/lren-chuv/mip-portal</url>
         </repository>
     </repositories>
 
@@ -222,6 +230,14 @@
             <id>jcenter-releases</id>
             <name>jcenter</name>
             <url>http://jcenter.bintray.com</url>
+        </pluginRepository>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-lren-chuv-mip-portal</id>
+            <name>bintray-plugins</name>
+            <url>http://dl.bintray.com/lren-chuv/mip-portal</url>
         </pluginRepository>
     </pluginRepositories>
 
