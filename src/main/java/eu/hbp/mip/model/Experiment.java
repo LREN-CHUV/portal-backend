@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken;
 import eu.hbp.mip.messages.external.Algorithm;
 import eu.hbp.mip.messages.external.ExperimentQuery;
 import eu.hbp.mip.messages.external.*;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
@@ -14,7 +13,10 @@ import scala.collection.immutable.HashMap;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -24,15 +26,7 @@ import java.util.*;
 @Table(name = "`experiment`")
 public class Experiment {
 
-    private static final Logger LOGGER = Logger.getLogger(Experiment.class);
-
     private static final Gson gson = new Gson();
-
-    private static final Gson gsonOnlyExposed = new GsonBuilder()
-            .serializeNulls()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
 
     @Id
     @Column(columnDefinition = "uuid")
