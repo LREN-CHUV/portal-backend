@@ -26,6 +26,9 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
+    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
+    private String scienceMainTable;
+
     @Primary
     @Bean(name = "portalDatasource")
     @ConfigurationProperties(prefix="spring.portalDatasource")
@@ -58,9 +61,6 @@ public class PersistenceConfiguration {
     public JdbcTemplate scienceJdbcTemplate() {
         return new JdbcTemplate(scienceDataSource());
     }
-
-    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
-    private String scienceMainTable;
 
     @Bean(name = "entityManagerFactory")
     @DependsOn("flyway")
