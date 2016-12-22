@@ -74,7 +74,7 @@ fi
 # Test - POST and GET an article
 
 echo "Testing articles API..."
-curl -s -H "Content-Type: application/json" -X POST -d ${ARTICLE_BODY} ${GATEWAY_IP}:65440/services/articles
+curl -s -H "Content-Type: application/json" -X POST -d ${ARTICLE_BODY} ${GATEWAY_IP}:65440/services/articles > /dev/null
 response=$(curl -s ${GATEWAY_IP}:65440/services/articles | sed "s/\"createdAt\":[0-9]*,//g")
 response_ref=$(echo "${ARTICLE_REF}" | sed "s/\"createdAt\":[0-9]*,//g")
 if [ "${response}" != "${response_ref}" ]; then
@@ -86,7 +86,7 @@ fi
 # Test - POST and GET a model
 
 echo "Testing models API..."
-curl -s -H "Content-Type: application/json" -X POST -d ${MODEL_BODY} ${GATEWAY_IP}:65440/services/models
+curl -s -H "Content-Type: application/json" -X POST -d ${MODEL_BODY} ${GATEWAY_IP}:65440/services/models > /dev/null
 response=$(curl -s ${GATEWAY_IP}:65440/services/models | sed "s/\"createdAt\":[0-9]*,//g" | sed "s/\"date\":[0-9]*,//g")
 response_ref=$(echo "${MODEL_REF}" | sed "s/\"createdAt\":[0-9]*,//g" | sed "s/\"date\":[0-9]*,//g")
 if [ "${response}" != "${response_ref}" ]; then
