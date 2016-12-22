@@ -26,7 +26,7 @@ public class ExperimentActor extends UntypedActor {
     @Autowired
     private ExperimentRepository experimentRepository;
 
-    LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
 
     @Override

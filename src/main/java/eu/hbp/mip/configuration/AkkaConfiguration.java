@@ -37,7 +37,8 @@ class AkkaConfiguration {
         return system;
     }
 
-    @Bean String wokenRefPath() {
+    @Bean
+    public String wokenRefPath() {
         return "akka.tcp://woken@"+wokenHost+":"+wokenPort+wokenPath;
     }
 

@@ -161,13 +161,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean(name="hbp")
     @ConfigurationProperties("hbp.client")
-    OAuth2ProtectedResourceDetails hbp() {
+    public OAuth2ProtectedResourceDetails hbp() {
         return new AuthorizationCodeResourceDetails();
     }
 
     @Bean(name="hbpResource")
     @ConfigurationProperties("hbp.resource")
-    ResourceServerProperties hbpResource() {
+    public ResourceServerProperties hbpResource() {
         return new ResourceServerProperties();
     }
 
