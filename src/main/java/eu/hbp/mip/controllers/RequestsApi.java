@@ -56,43 +56,19 @@ public class RequestsApi {
 
         String code = generateDSCode(query);
         Date date = new Date();
-        List<String> variables = new LinkedList<>();
-        List<String> groupings = new LinkedList<>();
-        List<String> covariables = new LinkedList<>();
-        List<String> filters = new LinkedList<>();
 
         JsonObject q = gson.fromJson(gson.toJson(query, Query.class), JsonObject.class);
 
-        JsonArray queryVars = q.getAsJsonArray("variables") != null ? q.getAsJsonArray("variables") : new JsonArray();
-        JsonArray queryGrps = q.getAsJsonArray("grouping") != null ? q.getAsJsonArray("grouping") : new JsonArray();
-        JsonArray queryCoVars = q.getAsJsonArray("covariables") != null ? q.getAsJsonArray("covariables") : new JsonArray();
-        JsonArray queryfltrs = q.getAsJsonArray("filter") != null ? q.getAsJsonArray("filter") : new JsonArray();
+        List<String> variables = extractVarCodes(q, "variables");
+        List<String> groupings = extractVarCodes(q, "grouping");
+        List<String> covariables = extractVarCodes(q, "covariables");
+        List<String> filters = extractVarCodes(q, "filter");
 
         List<String> allVars = new LinkedList<>();
-
-        for (JsonElement var : queryVars) {
-            String varCode = var.getAsJsonObject().get("code").getAsString();
-            variables.add(varCode);
-            allVars.add(varCode);
-        }
-
-        for (JsonElement var : queryGrps) {
-            String varCode = var.getAsJsonObject().get("code").getAsString();
-            groupings.add(varCode);
-            allVars.add(varCode);
-        }
-
-        for (JsonElement var : queryCoVars) {
-            String varCode = var.getAsJsonObject().get("code").getAsString();
-            covariables.add(varCode);
-            allVars.add(varCode);
-        }
-
-        for (JsonElement var : queryfltrs) {
-            String fltCode = var.getAsJsonObject().get("code").getAsString();
-            filters.add(fltCode);
-            allVars.add(fltCode);
-        }
+        allVars.addAll(variables);
+        allVars.addAll(groupings);
+        allVars.addAll(covariables);
+        allVars.addAll(filters);
 
         dataset.addProperty("code", code);
         dataset.addProperty("date", date.getTime());
@@ -103,6 +79,16 @@ public class RequestsApi {
         dataset.add("data", dataUtil.getDataFromVariables(allVars));
 
         return ResponseEntity.ok(gson.fromJson(dataset, Object.class));
+    }
+
+    private List<String> extractVarCodes(JsonObject q, String field) {
+        List<String> codes = new LinkedList<>();
+        JsonArray elements = q.getAsJsonArray(field) != null ? q.getAsJsonArray(field) : new JsonArray();
+        for (JsonElement var : elements) {
+            String varCode = var.getAsJsonObject().get("code").getAsString();
+            codes.add(varCode);
+        }
+        return codes;
     }
 
 
