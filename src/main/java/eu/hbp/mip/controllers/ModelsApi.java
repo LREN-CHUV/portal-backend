@@ -118,32 +118,36 @@ public class ModelsApi {
             model.setValid(false);
         }
 
-        // Ensure the title is unique
-        boolean titleExists = true;
-        for(int i = 1; titleExists; i++)
+        ensureTitleUniqueness(model);
+        ensureSlugUniqueness(model);
+
+        Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
+        map.put("text", model.getTitle());
+        model.getConfig().setTitle(map);
+
+        saveVariables(model.getQuery().getVariables());
+        saveVariables(model.getQuery().getCovariables());
+        saveVariables(model.getQuery().getGrouping());
+
+        configRepository.save(model.getConfig());
+        queryRepository.save(model.getQuery());
+        datasetRepository.save(model.getDataset());
+        modelRepository.save(model);
+
+        LOGGER.info("Model saved (also saved model.config and model.query)");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(model);
+    }
+
+    private void saveVariables(@RequestBody @ApiParam(value = "Model to create", required = true) List<Variable> variables) {
+        for (Variable var : variables)
         {
-            String title = model.getTitle();
-            titleExists = modelRepository.countByTitle(title) > 0;
-            if(titleExists)
-            {
-                if(i > 1)
-                {
-                    title = title.substring(0, title.length()-4);
-                }
-                model.setTitle(title + " (" + i + ")");
-            }
+            variableRepository.save(var);
         }
+    }
 
-        // Create slug from title
-        String slug;
-        try {
-            slug = new Slugify().slugify(model.getTitle());
-        } catch (IOException e) {
-            slug = "";  // Should never happen
-            LOGGER.trace(e);
-        }
-
-        // Ensure slug is unique
+    private void ensureSlugUniqueness(@RequestBody @ApiParam(value = "Model to create", required = true) Model model) {
+        String slug = createSlug(model.getTitle());
         boolean slugExists = true;
         for(int i = 1; slugExists; i++)
         {
@@ -158,32 +162,34 @@ public class ModelsApi {
             }
             model.setSlug(slug);
         }
+    }
 
-        Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
-        map.put("text", model.getTitle());
-        model.getConfig().setTitle(map);
-
-        for (Variable var : model.getQuery().getVariables())
-        {
-            variableRepository.save(var);
+    private String createSlug(@RequestBody @ApiParam(value = "Model to create", required = true) String title) {
+        String slug;
+        try {
+            slug = new Slugify().slugify(title);
+        } catch (IOException e) {
+            slug = "";  // Should never happen
+            LOGGER.trace(e);
         }
-        for (Variable var : model.getQuery().getCovariables())
+        return slug;
+    }
+
+    private void ensureTitleUniqueness(@RequestBody @ApiParam(value = "Model to create", required = true) Model model) {
+        boolean titleExists = true;
+        for(int i = 1; titleExists; i++)
         {
-            variableRepository.save(var);
+            String title = model.getTitle();
+            titleExists = modelRepository.countByTitle(title) > 0;
+            if(titleExists)
+            {
+                if(i > 1)
+                {
+                    title = title.substring(0, title.length()-4);
+                }
+                model.setTitle(title + " (" + i + ")");
+            }
         }
-        for (Variable var : model.getQuery().getGrouping())
-        {
-            variableRepository.save(var);
-        }
-
-        configRepository.save(model.getConfig());
-        queryRepository.save(model.getQuery());
-        datasetRepository.save(model.getDataset());
-        modelRepository.save(model);
-
-        LOGGER.info("Model saved (also saved model.config and model.query)");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(model);
     }
 
     @ApiOperation(value = "Get a model", response = Model.class)
