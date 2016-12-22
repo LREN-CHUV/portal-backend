@@ -48,7 +48,7 @@ echo "Gateway IP: $GATEWAY_IP"
 
 echo "Waiting for science-db to start..."
 if [ "$CIRCLECI" = true ] ; then
-  sleep 5
+  sleep 10
 else
   until [ $(docker exec science-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
       printf '.'
@@ -59,7 +59,7 @@ echo ""
 
 echo "Waiting for meta-db to start..."
 if [ "$CIRCLECI" = true ] ; then
-  sleep 5
+  sleep 10
 else
 until [ $(docker exec meta-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
     printf '.'
@@ -70,7 +70,7 @@ echo ""
 
 echo "Waiting for portal-db to start..."
 if [ "$CIRCLECI" = true ] ; then
-  sleep 5
+  sleep 10
 else
 until [ $(docker exec portal-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
     printf '.'
