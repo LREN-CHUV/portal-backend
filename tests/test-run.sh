@@ -76,7 +76,7 @@ fi
 echo "Testing articles API..."
 curl -s -H "Content-Type: application/json" -X POST -d ${ARTICLE_BODY} ${GATEWAY_IP}:65440/services/articles > /dev/null
 response=$(curl -s ${GATEWAY_IP}:65440/services/articles | sed "s/\"createdAt\":[0-9]*,//g")
-response_ref=$(echo "${ARTICLE_REF}" | sed "s/\"createdAt\":[0-9]*,//g")
+response_ref=$(echo "${ARTICLE_REF//\"createdAt\":*[0-9],/}")
 if [ "${response}" != "${response_ref}" ]; then
   echo "Tests failed - failed to save/load article"
   exit 1
