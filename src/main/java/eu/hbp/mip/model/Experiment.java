@@ -86,63 +86,57 @@ public class Experiment {
     }
 
     public ExperimentQuery prepareQuery() {
-        List<VariableId> variables = new LinkedList<>();
-        List<VariableId> covariables = new LinkedList<>();
-        List<VariableId> grouping = new LinkedList<>();
-        List<Filter> filters = new LinkedList<>();
-        List<eu.hbp.mip.messages.external.Algorithm> algorithms = new LinkedList<>();
-        List<Validation> validations = new LinkedList<>();
-
         if (model == null || model.getQuery() == null)
             return new ExperimentQuery(null, null, null, null, null, null);
 
-        for (Variable v: model.getQuery().getVariables()
-                ) {
-            variables.add(new VariableId(v.getCode()));
-        }
-
-        for (Variable v: model.getQuery().getCovariables()
-             ) {
-            covariables.add(new VariableId(v.getCode()));
-        }
-
-        for (Variable v: model.getQuery().getGrouping()
-                ) {
-            grouping.add(new VariableId(v.getCode()));
-        }
-
+        List<eu.hbp.mip.messages.external.Algorithm> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
         List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
         for (eu.hbp.mip.model.Algorithm a: algos
              ) {
-            HashMap<String, String> params = new HashMap<>();
-            for (AlgorithmParam ap: a.getParameters()
-                 ) {
-                params = params.updated(ap.getCode(), ap.getValue());
-            }
-            algorithms.add(new Algorithm(a.getCode(), a.getName(), params));
+            algorithms.add(new Algorithm(a.getCode(), a.getName(), algoParamsToHashMap(a.getParameters())));
         }
 
+        List<Validation> validations = new LinkedList<>();
         Type validList = new TypeToken<LinkedList<eu.hbp.mip.model.ExperimentValidator>>(){}.getType();
         List<eu.hbp.mip.model.ExperimentValidator> valids = new Gson().fromJson(this.validations, validList);
         for (ExperimentValidator v: valids
                 ) {
-            HashMap<String, String> params = new HashMap<>();
-            for (AlgorithmParam ap: v.getParameters()
-                    ) {
-                params = params.updated(ap.getCode(), ap.getValue());
-            }
-            validations.add(new Validation(v.getCode(), v.getName(), params));
+            validations.add(new Validation(v.getCode(), v.getName(), algoParamsToHashMap(v.getParameters())));
         }
 
-        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(variables.iterator()).asScala().toSeq().toList();
-        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(covariables.iterator()).asScala().toSeq().toList();
-        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(grouping.iterator()).asScala().toSeq().toList();
-        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(filters.iterator()).asScala().toSeq().toList();
-        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(algorithms.iterator()).asScala().toSeq().toList();
-        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(validations.iterator()).asScala().toSeq().toList();
+        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
+                variablesToVariableIds(model.getQuery().getVariables()).iterator()).asScala().toSeq().toList();
+        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
+                variablesToVariableIds(model.getQuery().getCovariables()).iterator()).asScala().toSeq().toList();
+        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
+                variablesToVariableIds(model.getQuery().getGrouping()).iterator()).asScala().toSeq().toList();
+        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(
+                new LinkedList<Filter>().iterator()).asScala().toSeq().toList();
+        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(
+                algorithms.iterator()).asScala().toSeq().toList();
+        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(
+                validations.iterator()).asScala().toSeq().toList();
 
         return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filtersSeq, algorithmsSeq, validationsSeq);
+    }
+
+    private HashMap<String, String> algoParamsToHashMap(List<AlgorithmParam> aps) {
+        HashMap<String, String> params = new HashMap<>();
+        for (AlgorithmParam ap: aps
+             ) {
+            params = params.updated(ap.getCode(), ap.getValue());
+        }
+        return params;
+    }
+
+    private List<VariableId> variablesToVariableIds(List<Variable> vars) {
+        List<VariableId> varIds = new LinkedList<>();
+        for (Variable v: vars
+                ) {
+            varIds.add(new VariableId(v.getCode()));
+        }
+        return varIds;
     }
 
     public String computeExaremeQuery() {
