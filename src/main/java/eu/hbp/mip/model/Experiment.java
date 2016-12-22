@@ -115,7 +115,7 @@ public class Experiment {
         List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
         for (eu.hbp.mip.model.Algorithm a: algos
              ) {
-            scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
+            HashMap<String, String> params = new HashMap<>();
             for (AlgorithmParam ap: a.getParameters()
                  ) {
                 params = params.updated(ap.getCode(), ap.getValue());
@@ -127,7 +127,7 @@ public class Experiment {
         List<eu.hbp.mip.model.ExperimentValidator> valids = new Gson().fromJson(this.validations, validList);
         for (ExperimentValidator v: valids
                 ) {
-            scala.collection.immutable.HashMap<String, String> params = new HashMap<>();
+            HashMap<String, String> params = new HashMap<>();
             for (AlgorithmParam ap: v.getParameters()
                     ) {
                 params = params.updated(ap.getCode(), ap.getValue());
