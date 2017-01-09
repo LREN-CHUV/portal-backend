@@ -50,7 +50,7 @@ public class MiningApi {
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
 
-        Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+        Timeout timeout = new Timeout(Duration.create(10, "seconds"));
         Future<Object> future = Patterns.ask(wokenActor, query.prepareQuery(), timeout);
         QueryResult result;
         try {
