@@ -42,7 +42,7 @@ public class MiningApi {
 
 
     @ApiOperation(value = "Run an algorithm", response = String.class)
-    @Cacheable("mining")
+    @Cacheable(value = "mining", condition = "#query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) throws IOException {
         LOGGER.info("Run an algorithm");
@@ -63,4 +63,5 @@ public class MiningApi {
 
         return ResponseEntity.ok(result.data().get());
     }
+
 }

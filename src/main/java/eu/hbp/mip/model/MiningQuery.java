@@ -1,5 +1,6 @@
 package eu.hbp.mip.model;
 
+import com.google.gson.Gson;
 import eu.hbp.mip.messages.external.Filter;
 import eu.hbp.mip.messages.external.VariableId;
 import eu.hbp.mip.utils.TypesConvert;
@@ -75,5 +76,10 @@ public class MiningQuery {
                 new LinkedList<Filter>().iterator()).asScala().toSeq().toList();
 
         return new eu.hbp.mip.messages.external.MiningQuery(variablesSeq, covariablesSeq,groupingSeq,filtersSeq, scalaAlgorithm);
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
