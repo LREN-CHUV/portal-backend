@@ -42,7 +42,7 @@ public class MiningApi {
 
 
     @ApiOperation(value = "Run an algorithm", response = String.class)
-    @Cacheable(value = "mining", condition = "#query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()")
+    @Cacheable(value = "mining", condition = "#query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) throws IOException {
         LOGGER.info("Run an algorithm");
@@ -50,7 +50,7 @@ public class MiningApi {
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
 
-        Timeout timeout = new Timeout(Duration.create(10, "seconds"));
+        Timeout timeout = new Timeout(Duration.create(120, "seconds"));
         Future<Object> future = Patterns.ask(wokenActor, query.prepareQuery(), timeout);
         QueryResult result;
         try {
