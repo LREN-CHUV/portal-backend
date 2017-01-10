@@ -212,7 +212,7 @@ public class ExperimentApi {
     }
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
-    @Cacheable("methods")
+    @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
