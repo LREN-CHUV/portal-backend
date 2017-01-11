@@ -56,7 +56,7 @@ public class MiningApi {
         try {
             result = (QueryResult) Await.result(future, timeout.duration());
         } catch (Exception e) {
-            LOGGER.error("Cannot receive methods list from woken !");
+            LOGGER.error("Cannot receive algorithm result from woken !");
             LOGGER.trace(e.getMessage());
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
