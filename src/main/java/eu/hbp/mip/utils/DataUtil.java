@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DataUtil {
 
-    private static final int NB_ROWS_SAMPLING = 200;
+    private static final int MAX_NB_SAMPLES = 200;
     private static final int TABLESAMPLE_SEED = 42;
 
     private JdbcTemplate jdbcTemplate;
@@ -32,12 +32,12 @@ public class DataUtil {
 
         for (String var : vars) {
             JsonArray currentVarData = new JsonArray();
+
             int nbRows = (int) countDatasetRows();
-            if (nbRows < 1)
-            {
-                return data;
-            }
-            int samplingPercentage = 100 * NB_ROWS_SAMPLING / nbRows;
+            if (nbRows < 1) { return data; }
+
+            int nb_samples = Math.min(nbRows, MAX_NB_SAMPLES);
+            int samplingPercentage = 100 * nb_samples / nbRows;
             List<Object> queryResult = jdbcTemplate.queryForList(
                     "SELECT " + var + " FROM "+scienceMainTable+" " +
                             "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
