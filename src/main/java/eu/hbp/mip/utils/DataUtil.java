@@ -32,7 +32,12 @@ public class DataUtil {
 
         for (String var : vars) {
             JsonArray currentVarData = new JsonArray();
-            int samplingPercentage = 100 * NB_ROWS_SAMPLING / (int) countAdniRows();
+            int nbRows = (int) countDatasetRows();
+            if (nbRows < 1)
+            {
+                return data;
+            }
+            int samplingPercentage = 100 * NB_ROWS_SAMPLING / nbRows;
             List<Object> queryResult = jdbcTemplate.queryForList(
                     "SELECT " + var + " FROM "+scienceMainTable+" " +
                             "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
@@ -55,18 +60,16 @@ public class DataUtil {
     @Cacheable("colscount")
     public long countVariables()
     {
-        long count = jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
                         "WHERE table_name = '"+scienceMainTable+"'", Long.class);
-        return count;
     }
 
     @Cacheable("rowscount")
-    public long countAdniRows()
+    public long countDatasetRows()
     {
-        long count = jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM "+scienceMainTable, Long.class);
-        return count;
     }
 
 }
