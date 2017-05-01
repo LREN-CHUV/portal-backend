@@ -14,12 +14,12 @@ spring:
     username: {{ default .Env.META_DB_USER "postgres" }}
     password: {{ .Env.META_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
-  scienceDatasource:
-      url: {{ default .Env.SCIENCE_DB_URL "jdbc:postgresql://172.22.0.1:5433/science" }}
-      schema: {{ default .Env.SCIENCE_DB_SCHEMA "public" }}
-      main-table: {{ default .Env.SCIENCE_DB_MAIN_TABLE "adni_merge" }}
-      username: {{ default .Env.SCIENCE_DB_USER "postgres" }}
-      password: {{ .Env.SCIENCE_DB_PASSWORD }}
+  featuresDatasource:
+      url: {{ default .Env.FEATURES_DB_URL "jdbc:postgresql://172.22.0.1:5433/features" }}
+      schema: {{ default .Env.FEATURES_DB_SCHEMA "public" }}
+      main-table: {{ default .Env.FEATURES_DB_MAIN_TABLE "adni_merge" }}
+      username: {{ default .Env.FEATURES_DB_USER "postgres" }}
+      password: {{ .Env.FEATURES_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -86,5 +86,5 @@ services:
 akka:
   woken:
     host: {{ default .Env.WOKEN_HOST "woken" }}
-    port: {{ default .Env.WOKEN_PORT "8088" }}
-    path: {{ default .Env.WOKEN_PATH "/user/entrypoint" }}
+    port: {{ default .Env.WOKEN_AKKA_PORT "8088" }}
+    path: {{ default .Env.WOKEN_AKKA_PATH "/user/entrypoint" }}

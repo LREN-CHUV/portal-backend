@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Value("#{'${spring.scienceDatasource.main-table:adni_merge}'}")
-    private String scienceMainTable;
+    @Value("#{'${spring.featuresDatasource.main-table:adni_merge}'}")
+    private String featuresMainTable;
 
     @Primary
     @Bean(name = "portalDatasource")
@@ -42,9 +42,9 @@ public class PersistenceConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "scienceDatasource")
-    @ConfigurationProperties(prefix="spring.scienceDatasource")
-    public DataSource scienceDataSource() {
+    @Bean(name = "featuresDatasource")
+    @ConfigurationProperties(prefix="spring.featuresDatasource")
+    public DataSource featuresDataSource() {
         return DataSourceBuilder.create().build();
     }
 
@@ -57,9 +57,9 @@ public class PersistenceConfiguration {
 
     @Bean
     @Autowired
-    @Qualifier("scienceJdbcTemplate")
-    public JdbcTemplate scienceJdbcTemplate() {
-        return new JdbcTemplate(scienceDataSource());
+    @Qualifier("featuresJdbcTemplate")
+    public JdbcTemplate featuresJdbcTemplate() {
+        return new JdbcTemplate(featuresDataSource());
     }
 
     @Bean(name = "entityManagerFactory")
@@ -83,7 +83,7 @@ public class PersistenceConfiguration {
     @Bean(name = "dataUtil")
     @Scope("singleton")
     public DataUtil dataUtil() {
-        return new DataUtil(scienceJdbcTemplate(), scienceMainTable);
+        return new DataUtil(featuresJdbcTemplate(), featuresMainTable);
     }
 
 }

@@ -13,8 +13,6 @@ get_script_dir () {
      pwd
 }
 
-export WORKSPACE=$(get_script_dir)
-
 if pgrep -lf sshuttle > /dev/null ; then
   echo "sshuttle detected. Please close this program as it messes with networking and prevents builds inside Docker to work"
   exit 1
@@ -26,4 +24,8 @@ else
   CAPTAIN="sudo captain"
 fi
 
-$CAPTAIN build
+BUILD_DATE=$(date --iso-8601=seconds) \
+  VCS_REF=$(git describe --tags --dirty) \
+  VERSION=$(git describe --tags --dirty) \
+  WORKSPACE=$(get_script_dir) \
+  $CAPTAIN build

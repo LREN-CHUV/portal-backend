@@ -21,12 +21,12 @@ Environment variables:
 * META_DB_USER: User to use when connecting to the metadata database
 * META_DB_PASSWORD: Password to use when connecting to the metadata database
 
-* SCIENCE_DB_URL: JDBC URL to connect to the science database
-* SCIENCE_DB_SCHEMA: Database schema, default value is "public"
-* SCIENCE_DB_SERVER: optional, address of the science database server. Used to wait for the database to be up and running.
-* SCIENCE_DB_USER: User to use when connecting to the science database
-* SCIENCE_DB_PASSWORD: Password to use when connecting to the science database
-* SCIENCE_DB_MAIN_TABLE: Table that contains the scientific data to use, default value is adni_merge
+* FEATURES_DB_URL: JDBC URL to connect to the features database
+* FEATURES_DB_SCHEMA: Database schema, default value is "public"
+* FEATURES_DB_SERVER: optional, address of the features database server. Used to wait for the database to be up and running.
+* FEATURES_DB_USER: User to use when connecting to the features database
+* FEATURES_DB_PASSWORD: Password to use when connecting to the features database
+* FEATURES_DB_MAIN_TABLE: Table that contains the scientific data to use, default value is adni_merge
 
 * CONTEXT_PATH:  context path appended to all services running in this container. Default to "/services"
 

@@ -10,8 +10,8 @@ fi
 if [ $(docker ps | grep portal-db-test | wc -l) -gt 0 ]; then
   docker kill portal-db-test
 fi
-if [ $(docker ps | grep science-db-test | wc -l) -gt 0 ]; then
-  docker kill science-db-test
+if [ $(docker ps | grep features-db-test | wc -l) -gt 0 ]; then
+  docker kill features-db-test
 fi
 
 
@@ -24,15 +24,15 @@ fi
 if [ $(docker ps -a | grep portal-db-test | wc -l) -gt 0 ]; then
   docker rm -f portal-db-test
 fi
-if [ $(docker ps -a | grep science-db-test | wc -l) -gt 0 ]; then
-  docker rm -f science-db-test
+if [ $(docker ps -a | grep features-db-test | wc -l) -gt 0 ]; then
+  docker rm -f features-db-test
 fi
 
 
 # Run databases containers
 
 echo "Running databases containers..."
-docker run --name science-db-test -p 65432:5432 -v $(pwd)/tests/science-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
+docker run --name features-db-test -p 65432:5432 -v $(pwd)/tests/features-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
 docker run --name meta-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.5.3
 docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=postgres -d postgres:9.5.3
 
@@ -40,17 +40,17 @@ docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=postgres -d post
 # Get gateway IP
 
 echo "Searching gateway IP..."
-GATEWAY_IP=$(docker inspect science-db-test | grep \"Gateway\":\ \" | sed 's/.*Gateway\":\ \"\([^-]*\)\",/\1/' | head -n 1)
+GATEWAY_IP=$(docker inspect features-db-test | grep \"Gateway\":\ \" | sed 's/.*Gateway\":\ \"\([^-]*\)\",/\1/' | head -n 1)
 echo "Gateway IP: $GATEWAY_IP"
 
 
 # Wait for databases to be ready
 
-echo "Waiting for science-db to start..."
+echo "Waiting for features-db to start..."
 if [ "$CIRCLECI" = true ] ; then
   sleep 10
 else
-  until [ $(docker exec science-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
+  until [ $(docker exec features-db-test psql -U postgres -c "\q" 2>&1 | wc -l) -eq 0 ]; do
       printf '.'
       sleep 1
   done
@@ -90,9 +90,9 @@ docker run --name backend-test -p 65440:8080 \
 -e "META_DB_URL=jdbc:postgresql://$GATEWAY_IP:65433/postgres" \
 -e "META_DB_SERVER=$GATEWAY_IP:65433/postgres" \
 -e "META_DB_USER=postgres" \
--e "SCIENCE_DB_URL=jdbc:postgresql://$GATEWAY_IP:65432/postgres" \
--e "SCIENCE_DB_SERVER=$GATEWAY_IP:65432/postgres" \
--e "SCIENCE_DB_USER=postgres" \
+-e "FEATURES_DB_URL=jdbc:postgresql://$GATEWAY_IP:65432/postgres" \
+-e "FEATURES_DB_SERVER=$GATEWAY_IP:65432/postgres" \
+-e "FEATURES_DB_USER=postgres" \
 -e "CONTEXT_PATH=/services" \
 -e "AUTHENTICATION=0" \
 -d hbpmip/portal-backend:latest

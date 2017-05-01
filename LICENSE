@@ -1,3 +1,17 @@
+Original developer’s Attribution Information
+____________________________________________
+
+Attribution Copyright Notice: © 2016-2017 LREN CHUV.
+Attribution Phrase: Powered by the Medical Informatics Platform of the Human Brain Project
+Attribution URL: https://mip.humanbrainproject.eu
+
+All trademarks, service marks and/or trade names contained within the Attribution
+Information distributed with the covered code are the exclusive property of their
+owners and may only be used with the permission of their owners, or under
+circumstances otherwise permitted by law or as expressly set out in this License.
+
+---
+
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 
@@ -65,7 +79,7 @@ License.
 
   "Copyright" also means copyright-like laws that apply to other kinds
 of works, such as semiconductor masks.
- 
+
   "The Program" refers to any copyrightable work licensed under this
 License.  Each licensee is addressed as "you".  "Licensees" and
 "recipients" may be individuals or organizations.
@@ -660,4 +674,3 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <http://www.gnu.org/licenses/>.
-

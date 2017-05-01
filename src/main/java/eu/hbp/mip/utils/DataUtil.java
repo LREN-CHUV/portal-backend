@@ -17,12 +17,12 @@ public class DataUtil {
     private static final int TABLESAMPLE_SEED = 42;
 
     private JdbcTemplate jdbcTemplate;
-    private String scienceMainTable;
+    private String featuresMainTable;
 
-    public DataUtil(JdbcTemplate jdbcTemplate, String scienceMainTable)
+    public DataUtil(JdbcTemplate jdbcTemplate, String featuresMainTable)
     {
         this.jdbcTemplate = jdbcTemplate;
-        this.scienceMainTable = scienceMainTable;
+        this.featuresMainTable = featuresMainTable;
     }
 
     @Cacheable("varsdata")
@@ -39,7 +39,7 @@ public class DataUtil {
             int nb_samples = Math.min(nbRows, MAX_NB_SAMPLES);
             int samplingPercentage = 100 * nb_samples / nbRows;
             List<Object> queryResult = jdbcTemplate.queryForList(
-                    "SELECT " + var + " FROM "+scienceMainTable+" " +
+                    "SELECT " + var + " FROM "+featuresMainTable+" " +
                             "TABLESAMPLE SYSTEM ("+ samplingPercentage +") REPEATABLE ( "+ TABLESAMPLE_SEED +" )", Object.class);
             for (Object value : queryResult)
             {
@@ -62,14 +62,14 @@ public class DataUtil {
     {
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE table_name = '"+scienceMainTable+"'", Long.class);
+                        "WHERE table_name = '"+featuresMainTable+"'", Long.class);
     }
 
     @Cacheable("rowscount")
     public long countDatasetRows()
     {
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM "+scienceMainTable, Long.class);
+                "SELECT COUNT(*) FROM "+featuresMainTable, Long.class);
     }
 
 }
