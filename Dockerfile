@@ -16,7 +16,7 @@ RUN apk add --update ca-certificates wget \
 COPY docker/runner/config/application.tmpl /config/application.tmpl
 COPY docker/runner/README.md docker/runner/run.sh /
 
-ENV PORTAL_BACKEND_VERSION=2.0.0
+ENV PORTAL_BACKEND_VERSION=2.1.0
 
 COPY target/portal-backend-$PORTAL_BACKEND_VERSION.jar backend.jar
 
