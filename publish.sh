@@ -100,7 +100,7 @@ BUILD_DATE=$(date --iso-8601=seconds) \
   $CAPTAIN push portal-backend --branch-tags=false --commit-tags=false --tag $updated_version
 
 # Notify on slack
-sed "s/USER/${USER^}/" $WORKSPACE/docker/runner/slack.json > $WORKSPACE/target/slack.json
+sed "s/USER/${USER^}/" $WORKSPACE/slack.json > $WORKSPACE/target/slack.json
 sed -i.bak "s/VERSION/$updated_version/" $WORKSPACE/target/slack.json
 curl -k -X POST --data-urlencode payload@$WORKSPACE/target/slack.json https://hbps1.chuv.ch/slack/dev-activity
 rm -f $WORKSPACE/target/slack.json $WORKSPACE/target/slack.json.bak
