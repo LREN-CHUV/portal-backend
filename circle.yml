@@ -2,6 +2,8 @@ machine:
   services:
     - docker
 dependencies:
+  cache_directories:
+    - "~/.m2"
   override:
     - docker info
     - docker build -f Dockerfile.builder -t portal-backend-builder .
