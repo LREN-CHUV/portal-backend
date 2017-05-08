@@ -16,7 +16,7 @@ RUN apk add --no-cache --update ca-certificates wget \
 COPY docker/runner/config/application.tmpl /config/application.tmpl
 COPY docker/runner/README.md docker/runner/run.sh /
 
-COPY target/portal-backend-$VERSION.jar backend.jar
+COPY target/portal-backend.jar backend.jar
 
 EXPOSE 8080
 

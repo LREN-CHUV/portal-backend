@@ -242,6 +242,7 @@
     </pluginRepositories>
 
     <build>
+        <finalName>portal-backend</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
