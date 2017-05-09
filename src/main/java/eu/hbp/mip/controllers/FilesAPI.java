@@ -31,7 +31,7 @@ public class FilesAPI {
     private SecurityConfiguration securityConfiguration;
 
     @ApiOperation(value = "Get protected files")
-    @RequestMapping(value = "/{filename}" , method = RequestMethod.GET)
+    @RequestMapping(value = "/{filename:.+}" , method = RequestMethod.GET)
     public ResponseEntity<Void> getProtectedFile(
             @ApiParam(value = "filename", required = true) @PathVariable("filename") String filename
     ) {
