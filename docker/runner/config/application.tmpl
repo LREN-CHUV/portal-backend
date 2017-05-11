@@ -17,7 +17,7 @@ spring:
   featuresDatasource:
       url: {{ default .Env.FEATURES_DB_URL "jdbc:postgresql://172.22.0.1:5433/features" }}
       schema: {{ default .Env.FEATURES_DB_SCHEMA "public" }}
-      main-table: {{ default .Env.FEATURES_DB_MAIN_TABLE "adni_merge" }}
+      main-table: {{ default .Env.FEATURES_DB_MAIN_TABLE "features" }}
       username: {{ default .Env.FEATURES_DB_USER "postgres" }}
       password: {{ .Env.FEATURES_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver

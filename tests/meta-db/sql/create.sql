@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS meta_variables (
   hierarchy json NOT NULL
 );
 INSERT INTO meta_variables (source, hierarchy) VALUES (
-  'adni',
+  'features',
   '
   {
     "code": "root",

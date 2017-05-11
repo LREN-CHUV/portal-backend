@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Value("#{'${spring.featuresDatasource.main-table:adni_merge}'}")
+    @Value("#{'${spring.featuresDatasource.main-table:features}'}")
     private String featuresMainTable;
 
     @Primary
