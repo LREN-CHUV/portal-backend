@@ -1,6 +1,6 @@
 [![CHUV](https://img.shields.io/badge/CHUV-LREN-AF4C64.svg)](https://www.unil.ch/lren/en/home.html) [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/05ba08087da24b3980475f88e1a591b7)](https://www.codacy.com/app/hbp-mip/portal-backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LREN-CHUV/portal-backend&amp;utm_campaign=Badge_Grade)
 [![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--backend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-backend/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/05ba08087da24b3980475f88e1a591b7)](https://www.codacy.com/app/hbp-mip/portal-backend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LREN-CHUV/portal-backend&amp;utm_campaign=Badge_Grade)
 [![CircleCI](https://circleci.com/gh/LREN-CHUV/portal-backend/tree/master.svg?style=svg)](https://circleci.com/gh/LREN-CHUV/portal-backend/tree/master)
 
 # Backend for the MIP portal
