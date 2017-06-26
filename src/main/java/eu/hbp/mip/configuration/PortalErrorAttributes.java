@@ -19,13 +19,17 @@ public class PortalErrorAttributes extends DefaultErrorAttributes {
         Throwable throwable = getError(requestAttributes);
         LOGGER.warn("Reporting server error", throwable);
 
-        Throwable cause = throwable.getCause();
-        if (cause != null) {
-            Map<String, Object> causeErrorAttributes = new HashMap<>();
-            causeErrorAttributes.put("exception", cause.getClass().getName());
-            causeErrorAttributes.put("message", cause.getMessage());
-            errorAttributes.put("cause", causeErrorAttributes);
+        if (throwable != null) {
+
+            Throwable cause = throwable.getCause();
+            if (cause != null) {
+                Map<String, Object> causeErrorAttributes = new HashMap<>();
+                causeErrorAttributes.put("exception", cause.getClass().getName());
+                causeErrorAttributes.put("message", cause.getMessage());
+                errorAttributes.put("cause", causeErrorAttributes);
+            }
         }
+
         return errorAttributes;
     }
 }
