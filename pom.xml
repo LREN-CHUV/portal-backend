@@ -27,7 +27,7 @@
         <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
-        <spring-data-commons.version>1.12.2.RELEASE</spring-data-commons.version>
+        <spring-data-commons.version>1.13.4.RELEASE</spring-data-commons.version>
         <angularjs.version>1.5.7</angularjs.version>
         <jquery.version>3.0.0</jquery.version>
         <bootstrap.version>3.3.7</bootstrap.version>
@@ -43,9 +43,9 @@
         <hibernate4-maven-plugin.version>1.1.0</hibernate4-maven-plugin.version>
         <flyway-core.version>4.0.3</flyway-core.version>
         <hibernate-jpa-2.1-api.version>1.0.0.Final</hibernate-jpa-2.1-api.version>
-        <hibernate.version>4.3.8.Final</hibernate.version>
+        <hibernate.version>4.3.11.Final</hibernate.version>
         <spring-data-jpa.version>1.10.2.RELEASE</spring-data-jpa.version>
-        <spring-boot-starter-actuator.version>1.4.0.RELEASE</spring-boot-starter-actuator.version>
+        <spring-boot-starter-actuator.version>1.5.4.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <woken-messages.version>76f49ed</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
