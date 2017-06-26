@@ -14,7 +14,6 @@ import java.util.List;
 public class DataUtil {
 
     private static final int MAX_NB_SAMPLES = 200;
-    private static final int TABLESAMPLE_SEED = 42;
 
     private JdbcTemplate jdbcTemplate;
     private String featuresMainTable;
@@ -30,22 +29,25 @@ public class DataUtil {
     {
         JsonObject data = new JsonObject();
 
+        if (filters.length() > 0)
+        {
+            filters = String.format("AND %s", filters);
+        }
+
         for (String var : vars) {
             JsonArray currentVarData = new JsonArray();
 
             long nbRows = countDatasetRows();
 
             if (nbRows >= 1) {
-
-                long nb_samples = Math.min(nbRows, MAX_NB_SAMPLES);
-                int samplingPercentage = (int) (100 * nb_samples / nbRows);
-                if (filters.length() > 0) {
-                    filters = "WHERE " + filters;
+                List<Object> queryResult;
+                synchronized(this){
+                    jdbcTemplate.execute("SELECT SETSEED(0.42)");
+                    queryResult = jdbcTemplate.queryForList(
+                            String.format("SELECT %s FROM %s WHERE %s IS NOT NULL %s ORDER BY Random() LIMIT %d",
+                                    var, featuresMainTable, var, filters, MAX_NB_SAMPLES),
+                            Object.class);
                 }
-                List<Object> queryResult = jdbcTemplate.queryForList(
-                        String.format("SELECT %s FROM %s TABLESAMPLE SYSTEM (%d) REPEATABLE (%d) %s",
-                                var, featuresMainTable, samplingPercentage, TABLESAMPLE_SEED, filters),
-                        Object.class);
                 for (Object value : queryResult) {
                     if (value == null) {
                         currentVarData.add((String) null);
