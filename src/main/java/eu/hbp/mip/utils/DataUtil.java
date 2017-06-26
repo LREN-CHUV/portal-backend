@@ -39,8 +39,11 @@ public class DataUtil {
 
                 long nb_samples = Math.min(nbRows, MAX_NB_SAMPLES);
                 int samplingPercentage = (int) (100 * nb_samples / nbRows);
+                if (filters.length() > 0) {
+                    filters = "WHERE " + filters;
+                }
                 List<Object> queryResult = jdbcTemplate.queryForList(
-                        String.format("SELECT %s FROM %s TABLESAMPLE SYSTEM (%d) REPEATABLE (%d) WHERE %s",
+                        String.format("SELECT %s FROM %s TABLESAMPLE SYSTEM (%d) REPEATABLE (%d) %s",
                                 var, featuresMainTable, samplingPercentage, TABLESAMPLE_SEED, filters),
                         Object.class);
                 for (Object value : queryResult) {
