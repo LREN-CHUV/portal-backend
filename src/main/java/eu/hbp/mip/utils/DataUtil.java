@@ -26,7 +26,7 @@ public class DataUtil {
     }
 
     @Cacheable("varsdata")
-    public JsonObject getDataFromVariables(List<String> vars)
+    public JsonObject getDataFromVariables(List<String> vars, String filters)
     {
         JsonObject data = new JsonObject();
 
@@ -40,8 +40,8 @@ public class DataUtil {
                 long nb_samples = Math.min(nbRows, MAX_NB_SAMPLES);
                 int samplingPercentage = (int) (100 * nb_samples / nbRows);
                 List<Object> queryResult = jdbcTemplate.queryForList(
-                        String.format("SELECT %s FROM %s TABLESAMPLE SYSTEM (%d) REPEATABLE (%d)",
-                                var, featuresMainTable, samplingPercentage, TABLESAMPLE_SEED),
+                        String.format("SELECT %s FROM %s TABLESAMPLE SYSTEM (%d) REPEATABLE (%d) WHERE %s",
+                                var, featuresMainTable, samplingPercentage, TABLESAMPLE_SEED, filters),
                         Object.class);
                 for (Object value : queryResult) {
                     if (value == null) {
@@ -71,6 +71,11 @@ public class DataUtil {
         }
 
         return data;
+    }
+
+    public JsonObject getDataFromVariables(List<String> vars)
+    {
+        return getDataFromVariables(vars);
     }
 
     @Cacheable("colscount")

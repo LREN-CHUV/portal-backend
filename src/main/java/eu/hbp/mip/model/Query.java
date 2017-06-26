@@ -47,15 +47,8 @@ public class Query {
                     nullable = false, updatable = false) })
     private List<Variable> grouping = new LinkedList<>();
 
-    @ManyToMany
-    @JoinTable(name = "query_filter", joinColumns = {
-            @JoinColumn(name = "query_id", nullable = false, updatable = false) },
-            inverseJoinColumns = { @JoinColumn(name = "code",
-                    nullable = false, updatable = false) })
-    private List<Variable> filters = new LinkedList<>();
-
-    @Column(columnDefinition = "text", name = "sql_filter")
-    private String sqlFilter = null;
+    @Column(columnDefinition = "text")
+    private String filters = "";
 
 
     public Query() {
@@ -103,12 +96,11 @@ public class Query {
     }
 
 
-    @JsonProperty("filter")
-    public List<Variable> getFilters() {
+    public String getFilters() {
         return filters;
     }
 
-    public void setFilters(List<Variable> filters) {
+    public void setFilters(String filters) {
         this.filters = filters;
     }
 
@@ -120,13 +112,4 @@ public class Query {
         this.request = request;
     }
 
-
-    @JsonProperty("sql_filter")
-    public String getSqlFilter() {
-        return sqlFilter;
-    }
-
-    public void setSqlFilter(String sqlFilter) {
-        this.sqlFilter = sqlFilter;
-    }
 }

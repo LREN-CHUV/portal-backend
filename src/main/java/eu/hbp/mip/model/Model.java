@@ -54,9 +54,6 @@ public class Model {
     @JoinColumn(name = "updatedby_username")
     private User updatedBy = null;
 
-    @Column(columnDefinition = "text")
-    private String textQuery = null;
-
 
     public Model() {
         /*
@@ -161,15 +158,6 @@ public class Model {
 
     public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-
-    public String getTextQuery() {
-        return textQuery;
-    }
-
-    public void setTextQuery(String textQuery) {
-    this.textQuery = textQuery;
     }
 
 }

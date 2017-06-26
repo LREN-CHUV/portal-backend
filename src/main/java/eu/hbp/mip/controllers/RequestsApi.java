@@ -62,21 +62,19 @@ public class RequestsApi {
         List<String> variables = extractVarCodes(q, "variables");
         List<String> groupings = extractVarCodes(q, "grouping");
         List<String> covariables = extractVarCodes(q, "covariables");
-        List<String> filters = extractVarCodes(q, "filter");
+        String filters = extractFilters(q, "filters");
 
         List<String> allVars = new LinkedList<>();
         allVars.addAll(variables);
         allVars.addAll(groupings);
         allVars.addAll(covariables);
-        allVars.addAll(filters);
 
         dataset.addProperty("code", code);
         dataset.addProperty("date", date.getTime());
         dataset.add("variable", gson.toJsonTree(variables));
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
-        dataset.add("filter", gson.toJsonTree(filters));
-        dataset.add("data", dataUtil.getDataFromVariables(allVars));
+        dataset.add("data", dataUtil.getDataFromVariables(allVars, filters));
 
         return ResponseEntity.ok(gson.fromJson(dataset, Object.class));
     }
@@ -91,6 +89,9 @@ public class RequestsApi {
         return codes;
     }
 
+    private String extractFilters(JsonObject q, String field) {
+        return q.getAsJsonPrimitive(field).getAsString();
+    }
 
     private String generateDSCode(Query query) {
         String prefix = "DS";

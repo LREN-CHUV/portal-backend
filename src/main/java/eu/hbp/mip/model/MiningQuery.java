@@ -1,13 +1,11 @@
 package eu.hbp.mip.model;
 
 import com.google.gson.Gson;
-import eu.hbp.mip.messages.external.Filter;
 import eu.hbp.mip.messages.external.VariableId;
 import eu.hbp.mip.utils.TypesConvert;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +16,7 @@ public class MiningQuery {
     private List<Variable> variables;
     private List<Variable> covariables;
     private List<Variable> grouping;
-    private List<Filter> filters;
+    private String filters;
     private Algorithm algorithm;
 
     public List<Variable> getVariables() {
@@ -45,11 +43,11 @@ public class MiningQuery {
         this.grouping = grouping;
     }
 
-    public List<Filter> getFilters() {
+    public String getFilters() {
         return filters;
     }
 
-    public void setFilters(List<Filter> filters) {
+    public void setFilters(String filters) {
         this.filters = filters;
     }
 
@@ -72,10 +70,9 @@ public class MiningQuery {
                 TypesConvert.variablesToVariableIds(covariables).iterator()).asScala().toSeq().toList();
         Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
                 TypesConvert.variablesToVariableIds(grouping).iterator()).asScala().toSeq().toList();
-        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(
-                new LinkedList<Filter>().iterator()).asScala().toSeq().toList();
 
-        return new eu.hbp.mip.messages.external.MiningQuery(variablesSeq, covariablesSeq,groupingSeq,filtersSeq, scalaAlgorithm);
+        return new eu.hbp.mip.messages.external.MiningQuery(
+                variablesSeq, covariablesSeq, groupingSeq, filters, scalaAlgorithm);
     }
 
     @Override

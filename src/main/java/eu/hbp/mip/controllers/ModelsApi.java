@@ -281,10 +281,12 @@ public class ModelsApi {
         allVars.addAll(model.getDataset().getHeader());
         allVars.addAll(model.getDataset().getGrouping());
 
+        String filters = model.getQuery().getFilters();
+
         Gson gson = new Gson();
         JsonObject jsonModel = gson.fromJson(gson.toJson(model, Model.class), JsonObject.class);
         jsonModel.get("dataset").getAsJsonObject()
-                .add("data", dataUtil.getDataFromVariables(allVars));
+                .add("data", dataUtil.getDataFromVariables(allVars, filters));
 
         return gson.fromJson(jsonModel, Model.class);
     }

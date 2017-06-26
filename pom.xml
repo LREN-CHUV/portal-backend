@@ -47,7 +47,7 @@
         <spring-data-jpa.version>1.10.11.RELEASE</spring-data-jpa.version>
         <spring-boot-starter-actuator.version>1.4.7.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <woken-messages.version>76f49ed</woken-messages.version>
+        <woken-messages.version>ee60327</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
         <akka.version>2.3.14</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
@@ -64,9 +64,9 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>bintray-lren-chuv-mip-portal</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/lren-chuv/mip-portal</url>
+            <id>artifactory-libs-release-local</id>
+            <name>artifactory</name>
+            <url>http://hbps1.chuv.ch/artifactory/libs-release-local</url>
         </repository>
     </repositories>
 
@@ -235,9 +235,9 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>bintray-lren-chuv-mip-portal</id>
-            <name>bintray-plugins</name>
-            <url>http://dl.bintray.com/lren-chuv/mip-portal</url>
+            <id>artifactory-libs-release-local</id>
+            <name>artifactory-plugins</name>
+            <url>http://hbps1.chuv.ch/artifactory/libs-release-local</url>
         </pluginRepository>
     </pluginRepositories>
 

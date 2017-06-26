@@ -114,14 +114,14 @@ public class Experiment {
                 TypesConvert.variablesToVariableIds(model.getQuery().getCovariables()).iterator()).asScala().toSeq().toList();
         Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
                 TypesConvert.variablesToVariableIds(model.getQuery().getGrouping()).iterator()).asScala().toSeq().toList();
-        Seq<Filter> filtersSeq = JavaConverters.asScalaIteratorConverter(
-                new LinkedList<Filter>().iterator()).asScala().toSeq().toList();
         Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(
                 algorithms.iterator()).asScala().toSeq().toList();
         Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(
                 validations.iterator()).asScala().toSeq().toList();
 
-        return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filtersSeq, algorithmsSeq, validationsSeq);
+        String filters = model.getQuery().getFilters();
+
+        return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filters, algorithmsSeq, validationsSeq);
     }
 
 
