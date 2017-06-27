@@ -29,8 +29,11 @@ public class DataUtil {
     {
         JsonObject data = new JsonObject();
 
-        if (filters.length() > 0)
-        {
+        if (filters == null) {
+            filters = "";
+        }
+
+        if (filters.length() > 0) {
             filters = String.format("AND %s", filters);
         }
 
