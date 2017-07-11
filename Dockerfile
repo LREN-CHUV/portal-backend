@@ -1,4 +1,4 @@
-FROM openjdk:8u121-jre-alpine
+FROM openjdk:8u131-jre-alpine
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
 ARG BUILD_DATE
