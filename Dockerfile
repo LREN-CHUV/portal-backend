@@ -1,3 +1,13 @@
+# Build stage for Java classes
+FROM hbpmip/java-base-build:3.5.0-jdk-8-6 as java-build-env
+
+COPY pom.xml /project/
+COPY src/ /project/src/
+
+# Repeating the file copy works better. I dunno why.
+RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
+    && mvn clean package
+
 FROM openjdk:8u131-jre-alpine
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
@@ -13,10 +23,10 @@ RUN apk add --no-cache --update ca-certificates wget \
     && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
     && rm -rf /var/cache/apk/* /tmp/*
 
-COPY docker/runner/config/application.tmpl /config/application.tmpl
-COPY docker/runner/README.md docker/runner/run.sh /
+COPY docker/config/application.tmpl /config/application.tmpl
+COPY docker/README.md docker/run.sh /
 
-COPY target/portal-backend.jar backend.jar
+COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
 EXPOSE 8080
 

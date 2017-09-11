@@ -1,18 +1,4 @@
-# Builder image
-# Creates a portable environemnt to build this project.
-# Do not push this image to Docker hub.
-builder:
-  build: Dockerfile.builder
-  image: portal-backend-builder
-  pre:
-    - echo "Building portal backend builder image"
-  post:
-    - echo "Finished building portal backend builder image"
-    - echo "Building project..."
-    - docker run --rm -v $WORKSPACE:/build/ -v $HOME/.m2:/home/build/.m2/ portal-backend-builder:latest
-    - echo "Finished building project"
-
-portal-backend:
+target_image:
   build: Dockerfile
   image: hbpmip/portal-backend
   pre:
