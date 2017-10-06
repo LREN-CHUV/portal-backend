@@ -1,5 +1,5 @@
 # Build stage for Java classes
-FROM hbpmip/java-base-build:3.5.0-jdk-8-6 as java-build-env
+FROM hbpmip/java-base-build:3.5.0-jdk-8-9 as java-build-env
 
 COPY pom.xml /project/
 COPY src/ /project/src/

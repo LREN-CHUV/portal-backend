@@ -32,9 +32,9 @@ fi
 # Run databases containers
 
 echo "Running databases containers..."
-docker run --name features-db-test -p 65432:5432 -v $(pwd)/tests/features-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.6.3-alpine
-docker run --name meta-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.6.3-alpine
-docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=postgres -d postgres:9.6.3-alpine
+docker run --name features-db-test -p 65432:5432 -v $(pwd)/tests/features-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.6.5-alpine
+docker run --name meta-db-test -p 65433:5432 -v $(pwd)/tests/meta-db/sql:/docker-entrypoint-initdb.d/ -e POSTGRES_USER=postgres -d postgres:9.6.5-alpine
+docker run --name portal-db-test -p 65434:5432 -e POSTGRES_USER=postgres -d postgres:9.6.5-alpine
 
 
 # Get gateway IP
