@@ -34,6 +34,7 @@ public class DataUtil {
         }
 
         if (filters.length() > 0) {
+            filters = filters.replaceAll("\\\\'", "''");  // Quick and dirty workaround
             filters = String.format("AND %s", filters);
         }
 
@@ -45,7 +46,9 @@ public class DataUtil {
             if (nbRows >= 1) {
                 List<Object> queryResult;
                 synchronized(this){
+                    // Dirty
                     jdbcTemplate.execute("SELECT SETSEED(0.42)");
+                    // Dirty
                     queryResult = jdbcTemplate.queryForList(
                             String.format("SELECT %s FROM %s WHERE %s IS NOT NULL %s ORDER BY Random() LIMIT %d",
                                     var, featuresMainTable, var, filters, MAX_NB_SAMPLES),
@@ -89,6 +92,7 @@ public class DataUtil {
     @Cacheable("colscount")
     public long countVariables()
     {
+        // Dirty
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
                         "WHERE table_name = '"+featuresMainTable+"'", Long.class);
@@ -97,6 +101,7 @@ public class DataUtil {
     @Cacheable("rowscount")
     public long countDatasetRows()
     {
+        // Dirty
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM "+featuresMainTable, Long.class);
     }
