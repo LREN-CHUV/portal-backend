@@ -20,7 +20,9 @@ if pgrep -lf sshuttle > /dev/null ; then
   exit 1
 fi
 
-if groups $USER | grep &>/dev/null '\bdocker\b'; then
+if [[ $NO_SUDO || -n "$CIRCLECI" ]]; then
+  CAPTAIN="captain"
+elif groups $USER | grep &>/dev/null '\bdocker\b'; then
   CAPTAIN="captain"
 else
   CAPTAIN="sudo captain"
