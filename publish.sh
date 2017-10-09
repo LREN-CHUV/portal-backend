@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -e
+
+set -o pipefail  # trace ERR through pipes
+set -o errtrace  # trace ERR through 'time command' and other functions
+set -o errexit   ## set -e : exit the script if any statement returns a non-true return value
 
 get_script_dir () {
      SOURCE="${BASH_SOURCE[0]}"
@@ -20,15 +23,21 @@ if pgrep -lf sshuttle > /dev/null ; then
   exit 1
 fi
 
-if groups $USER | grep &>/dev/null '\bdocker\b'; then
+if [ $NO_SUDO ]; then
   CAPTAIN="captain"
+  DOCKER="docker"
+elif groups $USER | grep &>/dev/null '\bdocker\b'; then
+  CAPTAIN="captain"
+  DOCKER="docker"
 else
   CAPTAIN="sudo captain"
+  DOCKER="sudo docker"
 fi
 
 # Build
 echo "Build the project..."
 ./build.sh
+./test.sh
 echo "[ok] Done"
 
 count=$(git status --porcelain | wc -l)
@@ -59,8 +68,8 @@ select_part() {
 
 git pull --tags
 # Look for a version tag in Git. If not found, ask the user to provide one
-[ $(git tag --points-at HEAD | wc -l) == 1 ] || (
-  latest_version=$( (bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,) || echo '0.0.1')
+[ $(git tag --points-at HEAD | grep portal-backend | wc -l) == 1 ] || (
+  latest_version=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",, || echo '0.0.1')
   echo
   echo "Current commit has not been tagged with a version. Latest known version is $latest_version."
   echo
@@ -85,14 +94,13 @@ updated_version=$(bumpversion --dry-run --list patch | grep current_version | se
 # Build again to update the version
 echo "Build the project for distribution..."
 ./build.sh
-echo "[ok] Done"
 
 git push
 git push --tags
 
 # Push on Docker Hub
 #  WARNING: Requires captain 1.1.0 to push user tags
-BUILD_DATE=$(date --iso-8601=seconds) \
+BUILD_DATE=$(date -Iseconds) \
   VCS_REF=$updated_version \
   VERSION=$updated_version \
   WORKSPACE=$WORKSPACE \
