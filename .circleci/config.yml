@@ -16,6 +16,7 @@ jobs:
           name: "Install requirements"
           command: |
             docker --version
+            pip install --upgrade pre-commit
             pre-commit install
       - run:
           name: "Validate code quality"
