@@ -25,17 +25,15 @@ public class DataUtil {
     }
 
     @Cacheable("varsdata")
-    public JsonObject getDataFromVariables(List<String> vars, String filters)
+    public JsonObject getDataFromVariables(List<String> vars, String filterSQL)
     {
         JsonObject data = new JsonObject();
+        String filters = "";
 
-        if (filters == null) {
-            filters = "";
-        }
-
-        if (filters.length() > 0) {
-            filters = filters.replaceAll("\\\\'", "''");  // Quick and dirty workaround
-            filters = String.format("AND %s", filters);
+        if (filterSQL != null && filterSQL.length() > 0) {
+            filters = String.format(
+                    " AND %s",
+                    filterSQL.replaceAll("\\\\'", "''"));  // Quick and dirty workaround
         }
 
         for (String var : vars) {
