@@ -92,7 +92,7 @@ public class Experiment {
         if (model == null || model.getQuery() == null)
             return new ExperimentQuery(null, null, null, null, null, null);
 
-        List<eu.hbp.mip.messages.external.Algorithm> algorithms = new LinkedList<>();
+        List<Algorithm> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
         List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
         for (eu.hbp.mip.model.Algorithm a: algos
