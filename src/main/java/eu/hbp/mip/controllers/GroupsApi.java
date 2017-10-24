@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +39,9 @@ public class GroupsApi {
     @Qualifier("metaJdbcTemplate")
     private JdbcTemplate metaJdbcTemplate;
 
+    @Value("#{'${spring.featuresDatasource.main-table:features}'}")
+    private String featuresMainTable;
+
 
     @ApiOperation(value = "Get the root group (containing all subgroups)", response = Group.class)
     @Cacheable("groups")
@@ -49,7 +53,7 @@ public class GroupsApi {
     }
 
     private String loadGroups() {
-        String sqlQuery = "SELECT * FROM meta_variables";
+        String sqlQuery = String.format("SELECT * FROM meta_variables where target_table='%s'", featuresMainTable);
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();

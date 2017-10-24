@@ -3,9 +3,10 @@ SET datestyle to 'European';
 CREATE TABLE IF NOT EXISTS meta_variables (
   ID serial NOT NULL PRIMARY KEY,
   source varchar(256) UNIQUE NOT NULL,
-  hierarchy json NOT NULL
+  hierarchy json NOT NULL,
+  target_table varchar(256) UNIQUE NOT NULL
 );
-INSERT INTO meta_variables (source, hierarchy) VALUES (
+INSERT INTO meta_variables (source, hierarchy, target_table) VALUES (
   'features',
   '
   {
@@ -40,5 +41,6 @@ INSERT INTO meta_variables (source, hierarchy) VALUES (
         }]
     }]
   }
-  '
+  ',
+  'features'
 );

@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,6 +38,9 @@ public class VariablesApi {
     @Autowired
     @Qualifier("metaJdbcTemplate")
     private JdbcTemplate metaJdbcTemplate;
+
+    @Value("#{'${spring.featuresDatasource.main-table:features}'}")
+    private String featuresMainTable;
 
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
@@ -120,7 +124,7 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get groups and variables hierarchy");
 
-        String sqlQuery = "SELECT * FROM meta_variables";
+        String sqlQuery = String.format("SELECT * FROM meta_variables where target_table='%s'", featuresMainTable);
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
@@ -132,7 +136,7 @@ public class VariablesApi {
 
 
     private List<String> loadVariables() {
-        String sqlQuery = "SELECT * FROM meta_variables";
+        String sqlQuery = String.format("SELECT * FROM meta_variables where target_table='%s'", featuresMainTable);
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
