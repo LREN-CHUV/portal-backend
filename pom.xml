@@ -49,7 +49,7 @@
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <woken-messages.version>ee60327</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
-        <akka.version>2.3.14</akka.version>
+        <akka.version>2.3.16</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
         <protobuf-java.version>3.1.0</protobuf-java.version>
     </properties>
