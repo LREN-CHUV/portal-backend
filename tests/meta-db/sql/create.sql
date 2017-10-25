@@ -42,5 +42,5 @@ INSERT INTO meta_variables (source, hierarchy, target_table) VALUES (
     }]
   }
   ',
-  'features'
+  'FEATURES'
 );

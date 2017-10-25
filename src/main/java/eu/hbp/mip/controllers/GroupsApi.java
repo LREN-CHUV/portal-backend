@@ -53,7 +53,8 @@ public class GroupsApi {
     }
 
     private String loadGroups() {
-        String sqlQuery = String.format("SELECT * FROM meta_variables where target_table='%s'", featuresMainTable);
+        String sqlQuery = String.format(
+                "SELECT * FROM meta_variables where target_table='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
