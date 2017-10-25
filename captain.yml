@@ -6,6 +6,4 @@ target_image:
   post:
     - echo "Finished building portal-backend image"
   test:
-    - ./tests/pre-test-run.sh
-    - ./tests/test-run.sh
-    - ./tests/post-test-run.sh
+    - ./tests/test.sh

@@ -125,7 +125,7 @@ public class VariablesApi {
         LOGGER.info("Get groups and variables hierarchy");
 
         String sqlQuery = String.format(
-                "SELECT * FROM meta_variables where target_table='%s'", featuresMainTable.toUpperCase());
+                "SELECT * FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
@@ -138,7 +138,7 @@ public class VariablesApi {
 
     private List<String> loadVariables() {
         String sqlQuery = String.format(
-                "SELECT * FROM meta_variables where target_table='%s'", featuresMainTable.toUpperCase());
+                "SELECT * FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String json = ((PGobject) data.getObject("hierarchy")).getValue();
