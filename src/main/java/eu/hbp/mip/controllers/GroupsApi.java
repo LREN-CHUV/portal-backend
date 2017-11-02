@@ -56,12 +56,13 @@ public class GroupsApi {
         String sqlQuery = String.format(
                 "SELECT * FROM meta_variables where target_table='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
-        data.next();
-        String json = ((PGobject) data.getObject("hierarchy")).getValue();
 
-        JsonObject root = gson.fromJson(json, JsonObject.class);
-        removeVariablesRecursive(root);
-
+        JsonObject root = new JsonObject();
+        if (data.next()) {
+            String json = ((PGobject) data.getObject("hierarchy")).getValue();
+            root = gson.fromJson(json, JsonObject.class);
+            removeVariablesRecursive(root);
+        }
         return gson.toJson(root);
     }
 

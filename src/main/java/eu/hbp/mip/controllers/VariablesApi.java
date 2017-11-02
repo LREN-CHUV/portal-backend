@@ -140,13 +140,13 @@ public class VariablesApi {
         String sqlQuery = String.format(
                 "SELECT * FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
-        data.next();
-        String json = ((PGobject) data.getObject("hierarchy")).getValue();
-
-        JsonObject root = gson.fromJson(json, JsonObject.class);
 
         List<String> variables = new LinkedList<>();
-        extractVariablesRecursive(root, variables);
+        if (data.next()) {
+            String json = ((PGobject) data.getObject("hierarchy")).getValue();
+            JsonObject root = gson.fromJson(json, JsonObject.class);
+            extractVariablesRecursive(root, variables);
+        }
 
         return variables;
     }
