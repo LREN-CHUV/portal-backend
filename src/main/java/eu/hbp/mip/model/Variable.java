@@ -24,11 +24,14 @@ public class Variable {
     @Expose
     private String code = null;
 
-
+    /**
+     *  Empty constructor is needed by Hibernate
+     */
     public Variable() {
-        /*
-        *  Empty constructor is needed by Hibernate
-        */
+    }
+
+    public Variable(String code) {
+        this.code = code;
     }
 
     public String getCode() {

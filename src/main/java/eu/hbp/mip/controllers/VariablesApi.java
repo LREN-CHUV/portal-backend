@@ -9,6 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import eu.hbp.mip.model.Algorithm;
+import eu.hbp.mip.model.MiningQuery;
+import eu.hbp.mip.model.Variable;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
 import org.postgresql.util.PGobject;
@@ -21,8 +24,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -135,18 +140,25 @@ public class VariablesApi {
         return ResponseEntity.ok(hierarchy);
     }
 
-    @ApiOperation(value = "Get groupings for histograms", response = Object.class)
-    @Cacheable("vars_histogram_groupings")
-    @RequestMapping(value = "/histogram_groupings", method = RequestMethod.GET)
-    public ResponseEntity<String> getHistogramGroupings(
+    @ApiOperation(value = "Get query for histograms", response = Object.class)
+    @Cacheable("vars_histogram_query")
+    @RequestMapping(value = "/{code}/histogram_query", method = RequestMethod.GET)
+    public ResponseEntity<String> getHistogramQuery(
+            @ApiParam(value = "code", required = true) @PathVariable("code") String code
     )  {
-        LOGGER.info("Get groupings for histograms");
+        LOGGER.info("Get query for histograms");
 
         String sqlQuery = String.format(
                 "SELECT histogram_groupings FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String histogramGroupings = data.getString("histogram_groupings");
+
+        MiningQuery query = new MiningQuery();
+        query.getVariables().add(new Variable(code));
+        List<String> groupings = Arrays.asList(histogramGroupings.split(","));
+        query.getGrouping().addAll(groupings.stream().map(Variable::new).collect(Collectors.toList()));
+        query.setAlgorithm(new Algorithm("histograms", "Histograms", false));
 
         return ResponseEntity.ok(histogramGroupings);
     }
