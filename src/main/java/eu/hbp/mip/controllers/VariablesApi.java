@@ -135,6 +135,22 @@ public class VariablesApi {
         return ResponseEntity.ok(hierarchy);
     }
 
+    @ApiOperation(value = "Get groupings for histograms", response = Object.class)
+    @Cacheable("vars_histogram_groupings")
+    @RequestMapping(value = "/histogram_groupings", method = RequestMethod.GET)
+    public ResponseEntity<String> getHistogramGroupings(
+    )  {
+        LOGGER.info("Get groupings for histograms");
+
+        String sqlQuery = String.format(
+                "SELECT histogram_groupings FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
+        SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
+        data.next();
+        String histogramGroupings = data.getString("histogram_groupings");
+
+        return ResponseEntity.ok(histogramGroupings);
+    }
+
 
     private List<String> loadVariables() {
         String sqlQuery = String.format(
