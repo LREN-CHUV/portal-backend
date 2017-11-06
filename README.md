@@ -12,7 +12,7 @@
 
 ## Deployment (using a Docker image)
 
-* See here: https://hub.docker.com/r/hbpmip/portal-backend/
+* See the [documentation for hbpmip/portal-backend Docker image](./docker/README.md)
 
 ## Build
 
