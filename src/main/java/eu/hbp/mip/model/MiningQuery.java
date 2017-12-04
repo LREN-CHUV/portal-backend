@@ -24,6 +24,7 @@ public class MiningQuery {
         this.variables = new LinkedList<>();
         this.covariables = new LinkedList<>();
         this.grouping = new LinkedList<>();
+        this.filters = "";
     }
 
     public List<Variable> getVariables() {
