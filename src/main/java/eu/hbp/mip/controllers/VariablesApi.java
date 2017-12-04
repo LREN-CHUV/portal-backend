@@ -143,7 +143,7 @@ public class VariablesApi {
     @ApiOperation(value = "Get query for histograms", response = Object.class)
     @Cacheable("vars_histogram_query")
     @RequestMapping(value = "/{code}/histogram_query", method = RequestMethod.GET)
-    public ResponseEntity<String> getHistogramQuery(
+    public ResponseEntity<MiningQuery> getHistogramQuery(
             @ApiParam(value = "code", required = true) @PathVariable("code") String code
     )  {
         LOGGER.info("Get query for histograms");
@@ -162,7 +162,7 @@ public class VariablesApi {
         query.setGrouping(groupings);
         query.setAlgorithm(new Algorithm("histograms", "Histograms", false));
 
-        return ResponseEntity.ok(histogramGroupings);
+        return ResponseEntity.ok(query);
     }
 
 
