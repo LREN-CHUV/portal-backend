@@ -6,6 +6,7 @@ import eu.hbp.mip.utils.TypesConvert;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,6 +19,12 @@ public class MiningQuery {
     private List<Variable> grouping;
     private String filters;
     private Algorithm algorithm;
+
+    public MiningQuery() {
+        this.variables = new LinkedList<>();
+        this.covariables = new LinkedList<>();
+        this.grouping = new LinkedList<>();
+    }
 
     public List<Variable> getVariables() {
         return variables;
@@ -37,6 +44,8 @@ public class MiningQuery {
         this.covariables = covariables;
     }
 
+    public  void addCovariable(Variable variable) { this.covariables.add(variable); }
+
     public List<Variable> getGrouping() {
         return grouping;
     }
@@ -44,6 +53,8 @@ public class MiningQuery {
     public void setGrouping(List<Variable> grouping) {
         this.grouping = grouping;
     }
+
+    public  void addGrouping(Variable variable) { this.grouping.add(variable); }
 
     public String getFilters() {
         return filters;

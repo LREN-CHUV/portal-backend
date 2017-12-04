@@ -156,8 +156,10 @@ public class VariablesApi {
 
         MiningQuery query = new MiningQuery();
         query.addVariable(new Variable(code));
-        List<String> groupings = Arrays.asList(histogramGroupings.split(","));
-        query.getGrouping().addAll(groupings.stream().map(Variable::new).collect(Collectors.toList()));
+        List<String> newGroups = Arrays.asList(histogramGroupings.split(","));
+        List<Variable> groupings = query.getGrouping();
+        groupings.addAll(newGroups.stream().map(Variable::new).collect(Collectors.toList()));
+        query.setGrouping(groupings);
         query.setAlgorithm(new Algorithm("histograms", "Histograms", false));
 
         return ResponseEntity.ok(histogramGroupings);
