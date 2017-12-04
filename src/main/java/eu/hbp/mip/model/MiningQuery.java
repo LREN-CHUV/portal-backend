@@ -27,6 +27,8 @@ public class MiningQuery {
         this.variables = variables;
     }
 
+    public  void addVariable(Variable variable) { this.variables.add(variable); }
+
     public List<Variable> getCovariables() {
         return covariables;
     }
