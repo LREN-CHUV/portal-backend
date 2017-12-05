@@ -4,7 +4,7 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import eu.hbp.mip.messages.external.QueryResult;
+import eu.hbp.mip.woken.messages.external.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;

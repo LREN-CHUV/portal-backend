@@ -1,8 +1,8 @@
 package eu.hbp.mip.akka;
 
 import akka.actor.UntypedActor;
-import eu.hbp.mip.messages.external.QueryError;
-import eu.hbp.mip.messages.external.QueryResult;
+import eu.hbp.mip.woken.messages.external.QueryError;
+import eu.hbp.mip.woken.messages.external.QueryResult;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import org.apache.log4j.Logger;

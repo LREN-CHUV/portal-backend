@@ -1,7 +1,7 @@
 package eu.hbp.mip.model;
 
 import com.google.gson.Gson;
-import eu.hbp.mip.messages.external.VariableId;
+import eu.hbp.mip.woken.messages.external.VariableId;
 import eu.hbp.mip.utils.TypesConvert;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
@@ -73,19 +73,19 @@ public class MiningQuery {
         this.algorithm = algorithm;
     }
 
-    public eu.hbp.mip.messages.external.MiningQuery prepareQuery() {
+    public eu.hbp.mip.woken.messages.external.MiningQuery prepareQuery() {
 
-        eu.hbp.mip.messages.external.Algorithm scalaAlgorithm = new eu.hbp.mip.messages.external.Algorithm(
+        eu.hbp.mip.woken.messages.external.Algorithm scalaAlgorithm = new eu.hbp.mip.woken.messages.external.Algorithm(
                 algorithm.getCode(), algorithm.getName(), TypesConvert.algoParamsToHashMap(algorithm.getParameters()));
 
-        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(variables).iterator()).asScala().toSeq().toList();
-        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(covariables).iterator()).asScala().toSeq().toList();
-        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(grouping).iterator()).asScala().toSeq().toList();
+        scala.collection.immutable.List<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(variables).iterator()).asScala().toList();
+        scala.collection.immutable.List<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(covariables).iterator()).asScala().toList();
+        scala.collection.immutable.List<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(grouping).iterator()).asScala().toList();
 
-        return new eu.hbp.mip.messages.external.MiningQuery(
+        return new eu.hbp.mip.woken.messages.external.MiningQuery(
                 variablesSeq, covariablesSeq, groupingSeq, filters, scalaAlgorithm);
     }
 

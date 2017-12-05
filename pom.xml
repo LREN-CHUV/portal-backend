@@ -47,7 +47,7 @@
         <spring-data-jpa.version>1.10.11.RELEASE</spring-data-jpa.version>
         <spring-boot-starter-actuator.version>1.4.7.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <woken-messages.version>ee60327</woken-messages.version>
+        <woken-messages.version>2.1.1</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
         <akka.version>2.3.16</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
@@ -55,18 +55,13 @@
     </properties>
 
     <repositories>
-        <!--<repository>
-            <id>artifactory</id>
-            <name>artifactory</name>
-            <url>http://lab01560.intranet.chuv:9082/artifactory/libs-release-local</url>
-        </repository>-->
         <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>artifactory-libs-release-local</id>
-            <name>artifactory</name>
-            <url>http://hbps1.chuv.ch/artifactory/libs-release-local</url>
+            <id>bintray-hbpmedical-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/hbpmedical/maven</url>
         </repository>
     </repositories>
 
@@ -186,7 +181,7 @@
             <version>${aspectjweaver.version}</version>
         </dependency>
         <dependency>
-            <groupId>woken-messages</groupId>
+            <groupId>eu.humanbrainproject.mip</groupId>
             <artifactId>woken-messages_2.11</artifactId>
             <version>${woken-messages.version}</version>
         </dependency>

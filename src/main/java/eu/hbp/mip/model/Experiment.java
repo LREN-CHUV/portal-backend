@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import eu.hbp.mip.messages.external.Algorithm;
-import eu.hbp.mip.messages.external.ExperimentQuery;
-import eu.hbp.mip.messages.external.*;
+import eu.hbp.mip.woken.messages.external.Algorithm;
+import eu.hbp.mip.woken.messages.external.ExperimentQuery;
+import eu.hbp.mip.woken.messages.external.*;
 import eu.hbp.mip.utils.TypesConvert;
 import org.hibernate.annotations.Cascade;
 import scala.collection.JavaConverters;
@@ -108,15 +108,15 @@ public class Experiment {
             validations.add(new Validation(v.getCode(), v.getName(), TypesConvert.algoParamsToHashMap(v.getParameters())));
         }
 
-        Seq<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getVariables()).iterator()).asScala().toSeq().toList();
-        Seq<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getCovariables()).iterator()).asScala().toSeq().toList();
-        Seq<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getGrouping()).iterator()).asScala().toSeq().toList();
-        Seq<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(
+        scala.collection.immutable.List<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(model.getQuery().getVariables()).iterator()).asScala().toList();
+        scala.collection.immutable.List<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(model.getQuery().getCovariables()).iterator()).asScala().toList();
+        scala.collection.immutable.List<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
+                TypesConvert.variablesToVariableIds(model.getQuery().getGrouping()).iterator()).asScala().toList();
+        scala.collection.immutable.List<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(
                 algorithms.iterator()).asScala().toSeq().toList();
-        Seq<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(
+        scala.collection.immutable.List<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(
                 validations.iterator()).asScala().toSeq().toList();
 
         String filters = model.getQuery().getFilters();

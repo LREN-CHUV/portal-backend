@@ -1,6 +1,6 @@
 package eu.hbp.mip.utils;
 
-import eu.hbp.mip.messages.external.VariableId;
+import eu.hbp.mip.woken.messages.external.VariableId;
 import eu.hbp.mip.model.AlgorithmParam;
 import eu.hbp.mip.model.Variable;
 import scala.collection.immutable.HashMap;

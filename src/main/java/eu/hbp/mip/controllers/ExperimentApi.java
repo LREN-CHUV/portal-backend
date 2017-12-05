@@ -12,8 +12,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.SpringExtension;
 import eu.hbp.mip.configuration.SecurityConfiguration;
-import eu.hbp.mip.messages.external.Methods;
-import eu.hbp.mip.messages.external.MethodsQuery;
+import eu.hbp.mip.woken.messages.external.Methods;
+import eu.hbp.mip.woken.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
@@ -302,7 +302,7 @@ public class ExperimentApi {
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
         // this runs in the background. For future optimization: use a thread pool
-        final eu.hbp.mip.messages.external.ExperimentQuery experimentQuery = experiment.prepareQuery();
+        final eu.hbp.mip.woken.messages.external.ExperimentQuery experimentQuery = experiment.prepareQuery();
 
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
