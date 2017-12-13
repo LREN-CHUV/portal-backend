@@ -61,7 +61,11 @@ public class MiningApi {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 
-        return ResponseEntity.ok(result.data().get());
+        if (result.error().nonEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.error().get());
+        } else {
+            return ResponseEntity.ok(result.data().get());
+        }
     }
 
 }
