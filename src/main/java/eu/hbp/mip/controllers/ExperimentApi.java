@@ -108,7 +108,8 @@ public class ExperimentApi {
         try {
             if(isExaremeAlgo(expQuery))
             {
-                sendExaremeExperiment(experiment);
+                String algoCode = expQuery.getAlgorithms().get(0).getCode();
+                sendExaremeExperiment(experiment, algoCode);
             }
             else
             {
@@ -311,12 +312,12 @@ public class ExperimentApi {
         wokenActor.tell(experimentQuery, experimentsManager);
     }
 
-    private void sendExaremeExperiment(Experiment experiment) {
+    private void sendExaremeExperiment(Experiment experiment, String algoCode) {
         // >> Temporary: we should integrate exareme in a proper way in the future
         // this runs in the background. For future optimization: use a thread pool
         new Thread(() -> {
             String query = experiment.computeExaremeQuery();
-            String url = miningExaremeQueryUrl + "/" + EXAREME_LR_ALGO;
+            String url = miningExaremeQueryUrl + "/" + algoCode;
             // Results are stored in the experiment object
             try {
                 StringBuilder results = new StringBuilder();
@@ -349,7 +350,8 @@ public class ExperimentApi {
     }
 
     private static boolean isExaremeAlgo(ExperimentQuery expQuery) {
-        return expQuery.getAlgorithms().size() >= 1 && "glm_exareme".equals(expQuery.getAlgorithms().get(0).getCode());
+        return expQuery.getAlgorithms().size() > 0 && "WP_".equals(
+                expQuery.getAlgorithms().get(0).getCode().substring(0, 3));
     }
 
 }
