@@ -56,13 +56,13 @@ public class MiningApi {
         try {
             result = (QueryResult) Await.result(future, timeout.duration());
         } catch (Exception e) {
-            LOGGER.error("Cannot receive algorithm result from woken !");
-            LOGGER.trace(e.getMessage());
+            LOGGER.error("Cannot receive algorithm result from woken: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 
         if (result.error().nonEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.error().get());
+            LOGGER.error(result.error().get());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
         } else {
             return ResponseEntity.ok(result.data().get());
         }
