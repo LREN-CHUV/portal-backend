@@ -322,7 +322,7 @@ public class ExperimentApi {
             try {
                 StringBuilder results = new StringBuilder();
                 int code = HTTPUtil.sendPost(url, query, results);
-                experiment.setResult(results.toString());
+                experiment.setResult("[" + results.toString() + "]");
                 experiment.setHasError(code >= 400);
                 experiment.setHasServerError(code >= 500);
             } catch (IOException e) {
