@@ -12,7 +12,6 @@ import eu.hbp.mip.woken.messages.external.*;
 import eu.hbp.mip.utils.TypesConvert;
 import org.hibernate.annotations.Cascade;
 import scala.collection.JavaConverters;
-import scala.collection.Seq;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;

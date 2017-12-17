@@ -4,6 +4,7 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.woken.messages.external.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +22,7 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
+import java.sql.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -64,7 +66,15 @@ public class MiningApi {
             LOGGER.error(result.error().get());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
         } else {
-            return ResponseEntity.ok(result.data().get());
+            Mining mining = new Mining(
+                    result.jobId(),
+                    result.node(),
+                    result.function(),
+                    result.shape(),
+                    Date.from(result.timestamp().toInstant()),
+                    result.data().get()
+            );
+            return ResponseEntity.ok(mining.jsonify());
         }
     }
 

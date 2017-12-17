@@ -43,7 +43,7 @@ public class ExperimentActor extends UntypedActor {
                 return;
             }
             experiment.setResult(queryResult.data().get());
-            experiment.setFinished(new Date());
+            experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
             experimentRepository.save(experiment);
             LOGGER.info("Experiment "+ uuid +" updated (finished)");
             getContext().stop(getSelf());
