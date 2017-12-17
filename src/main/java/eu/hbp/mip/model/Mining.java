@@ -1,9 +1,6 @@
 package eu.hbp.mip.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.util.Date;
 
@@ -57,7 +54,7 @@ public class Mining {
 
         if (this.data != null) {
             exp.remove("data");
-            JsonArray jsonResult = parser.parse(this.data).getAsJsonArray();
+            JsonElement jsonResult = parser.parse(this.data);
             exp.add("data", jsonResult);
         }
 
