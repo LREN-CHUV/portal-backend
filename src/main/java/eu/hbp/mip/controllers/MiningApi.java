@@ -4,6 +4,7 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import com.google.gson.Gson;
 import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.woken.messages.external.QueryResult;
 import io.swagger.annotations.Api;
@@ -35,6 +36,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class MiningApi {
 
     private static final Logger LOGGER = Logger.getLogger(MiningApi.class);
+    private static final Gson gson = new Gson();
 
     @Autowired
     public ActorSystem actorSystem;
@@ -74,7 +76,7 @@ public class MiningApi {
                     Date.from(result.timestamp().toInstant()),
                     result.data().get()
             );
-            return ResponseEntity.ok(mining.jsonify());
+            return ResponseEntity.ok(gson.toJson(mining.jsonify()));
         }
     }
 
