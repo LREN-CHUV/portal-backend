@@ -6,12 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import eu.hbp.mip.woken.messages.external.Algorithm;
 import eu.hbp.mip.woken.messages.external.ExperimentQuery;
 import eu.hbp.mip.woken.messages.external.*;
 import eu.hbp.mip.utils.TypesConvert;
 import org.hibernate.annotations.Cascade;
-import scala.collection.JavaConverters;
+import scala.collection.JavaConversions;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
@@ -91,32 +90,28 @@ public class Experiment {
         if (model == null || model.getQuery() == null)
             return new ExperimentQuery(null, null, null, null, null, null);
 
-        List<Algorithm> algorithms = new LinkedList<>();
+        List<AlgorithmSpec> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
         List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
-        for (eu.hbp.mip.model.Algorithm a: algos
-             ) {
-            algorithms.add(new Algorithm(a.getCode(), a.getName(), TypesConvert.algoParamsToHashMap(a.getParameters())));
+        for (eu.hbp.mip.model.Algorithm a: algos) {
+            algorithms.add(new AlgorithmSpec(a.getCode(), TypesConvert.algoParamsToScala(a.getParameters())));
         }
 
-        List<Validation> validations = new LinkedList<>();
+        List<ValidationSpec> validations = new LinkedList<>();
         Type validList = new TypeToken<LinkedList<eu.hbp.mip.model.ExperimentValidator>>(){}.getType();
         List<eu.hbp.mip.model.ExperimentValidator> valids = new Gson().fromJson(this.validations, validList);
-        for (ExperimentValidator v: valids
-                ) {
-            validations.add(new Validation(v.getCode(), v.getName(), TypesConvert.algoParamsToHashMap(v.getParameters())));
+        for (ExperimentValidator v: valids) {
+            validations.add(new ValidationSpec(v.getCode(), TypesConvert.algoParamsToScala(v.getParameters())));
         }
 
-        scala.collection.immutable.List<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getVariables()).iterator()).asScala().toList();
-        scala.collection.immutable.List<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getCovariables()).iterator()).asScala().toList();
-        scala.collection.immutable.List<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(model.getQuery().getGrouping()).iterator()).asScala().toList();
-        scala.collection.immutable.List<Algorithm> algorithmsSeq = JavaConverters.asScalaIteratorConverter(
-                algorithms.iterator()).asScala().toSeq().toList();
-        scala.collection.immutable.List<Validation> validationsSeq = JavaConverters.asScalaIteratorConverter(
-                validations.iterator()).asScala().toSeq().toList();
+        scala.collection.immutable.List<VariableId> variablesSeq =
+                TypesConvert.variablesToVariableIds(model.getQuery().getVariables());
+        scala.collection.immutable.List<VariableId> covariablesSeq =
+                TypesConvert.variablesToVariableIds(model.getQuery().getCovariables());
+        scala.collection.immutable.List<VariableId> groupingSeq =
+                TypesConvert.variablesToVariableIds(model.getQuery().getGrouping());
+        scala.collection.immutable.List<AlgorithmSpec> algorithmsSeq = JavaConversions.asScalaBuffer(algorithms).toList();
+        scala.collection.immutable.List<ValidationSpec> validationsSeq = JavaConversions.asScalaBuffer(validations).toList();
 
         String filters = model.getQuery().getFilters();
 

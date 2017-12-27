@@ -6,7 +6,7 @@ import akka.actor.Extension;
 import akka.actor.Props;
 import org.springframework.context.ApplicationContext;
 
-/**
+/*
  * Created by mirco on 24.10.16.
  */
 

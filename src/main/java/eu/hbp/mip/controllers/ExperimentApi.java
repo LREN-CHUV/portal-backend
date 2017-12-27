@@ -12,8 +12,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.SpringExtension;
 import eu.hbp.mip.configuration.SecurityConfiguration;
-import eu.hbp.mip.woken.messages.external.Methods;
-import eu.hbp.mip.woken.messages.external.MethodsQuery;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
@@ -21,6 +19,8 @@ import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
+import eu.hbp.mip.woken.messages.external.MethodsQuery$;
+import eu.hbp.mip.woken.messages.external.MethodsResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * Created by habfast on 21/04/16.
  */
@@ -222,10 +223,10 @@ public class ExperimentApi {
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
 
         Timeout timeout = new Timeout(Duration.create(5, "seconds"));
-        Future<Object> future = Patterns.ask(wokenActor, new MethodsQuery(), timeout);
-        Methods result;
+        Future<Object> future = Patterns.ask(wokenActor, MethodsQuery$.MODULE$, timeout);
+        MethodsResponse result;
         try {
-            result = (Methods) Await.result(future, timeout.duration());
+            result = (MethodsResponse) Await.result(future, timeout.duration());
         } catch (Exception e) {
             LOGGER.error("Cannot receive methods list from woken !");
             LOGGER.trace(e.getMessage());

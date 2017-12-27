@@ -3,8 +3,6 @@ package eu.hbp.mip.model;
 import com.google.gson.Gson;
 import eu.hbp.mip.woken.messages.external.VariableId;
 import eu.hbp.mip.utils.TypesConvert;
-import scala.collection.JavaConverters;
-import scala.collection.Seq;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -75,15 +73,12 @@ public class MiningQuery {
 
     public eu.hbp.mip.woken.messages.external.MiningQuery prepareQuery() {
 
-        eu.hbp.mip.woken.messages.external.Algorithm scalaAlgorithm = new eu.hbp.mip.woken.messages.external.Algorithm(
-                algorithm.getCode(), algorithm.getName(), TypesConvert.algoParamsToHashMap(algorithm.getParameters()));
+        eu.hbp.mip.woken.messages.external.AlgorithmSpec scalaAlgorithm = new eu.hbp.mip.woken.messages.external.AlgorithmSpec(
+                algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()));
 
-        scala.collection.immutable.List<VariableId> variablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(variables).iterator()).asScala().toList();
-        scala.collection.immutable.List<VariableId> covariablesSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(covariables).iterator()).asScala().toList();
-        scala.collection.immutable.List<VariableId> groupingSeq = JavaConverters.asScalaIteratorConverter(
-                TypesConvert.variablesToVariableIds(grouping).iterator()).asScala().toList();
+        scala.collection.immutable.List<VariableId> variablesSeq = TypesConvert.variablesToVariableIds(variables);
+        scala.collection.immutable.List<VariableId> covariablesSeq = TypesConvert.variablesToVariableIds(covariables);
+        scala.collection.immutable.List<VariableId> groupingSeq = TypesConvert.variablesToVariableIds(grouping);
 
         return new eu.hbp.mip.woken.messages.external.MiningQuery(
                 variablesSeq, covariablesSeq, groupingSeq, filters, scalaAlgorithm);

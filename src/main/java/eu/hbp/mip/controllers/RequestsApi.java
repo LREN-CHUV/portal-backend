@@ -1,4 +1,4 @@
-/**
+/*
  * Created by mirco on 18.01.16.
  */
 
@@ -62,7 +62,7 @@ public class RequestsApi {
         List<String> variables = extractVarCodes(q, "variables");
         List<String> groupings = extractVarCodes(q, "grouping");
         List<String> covariables = extractVarCodes(q, "covariables");
-        String filters = extractFilters(q, "filters");
+        String filters = extractFilters(q);
 
         List<String> allVars = new LinkedList<>();
         allVars.addAll(variables);
@@ -89,8 +89,8 @@ public class RequestsApi {
         return codes;
     }
 
-    private String extractFilters(JsonObject q, String field) {
-        return q.getAsJsonPrimitive(field).getAsString();
+    private String extractFilters(JsonObject q) {
+        return q.getAsJsonPrimitive("filters").getAsString();
     }
 
     private String generateDSCode(Query query) {

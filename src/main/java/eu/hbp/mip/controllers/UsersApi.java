@@ -1,4 +1,4 @@
-/**
+/*
  * Created by mirco on 14.01.16.
  */
 
