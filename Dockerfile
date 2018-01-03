@@ -8,20 +8,12 @@ COPY src/ /project/src/
 RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
     && mvn clean package
 
-FROM openjdk:8u131-jre-alpine
+FROM hbpmip/java-base:8u151-0
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
-
-ENV DOCKERIZE_VERSION=v0.5.0
-
-RUN apk add --no-cache --update ca-certificates wget \
-    && update-ca-certificates \
-    && wget -O /tmp/dockerize.tar.gz "https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz" \
-    && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
-    && rm -rf /var/cache/apk/* /tmp/*
 
 COPY docker/config/application.tmpl /config/application.tmpl
 COPY docker/README.md docker/run.sh /
