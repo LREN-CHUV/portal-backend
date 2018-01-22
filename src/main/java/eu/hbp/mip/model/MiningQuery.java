@@ -1,6 +1,7 @@
 package eu.hbp.mip.model;
 
 import com.google.gson.Gson;
+import eu.hbp.mip.woken.messages.external.UserId;
 import eu.hbp.mip.woken.messages.external.VariableId;
 import eu.hbp.mip.utils.TypesConvert;
 
@@ -12,17 +13,23 @@ import java.util.List;
  */
 public class MiningQuery {
 
+    private String user;
     private List<Variable> variables;
     private List<Variable> covariables;
     private List<Variable> grouping;
     private String filters;
     private Algorithm algorithm;
 
-    public MiningQuery() {
+    public MiningQuery(String user) {
+        this.user = user;
         this.variables = new LinkedList<>();
         this.covariables = new LinkedList<>();
         this.grouping = new LinkedList<>();
         this.filters = "";
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public List<Variable> getVariables() {
@@ -79,8 +86,9 @@ public class MiningQuery {
         scala.collection.immutable.List<VariableId> variablesSeq = TypesConvert.variablesToVariableIds(variables);
         scala.collection.immutable.List<VariableId> covariablesSeq = TypesConvert.variablesToVariableIds(covariables);
         scala.collection.immutable.List<VariableId> groupingSeq = TypesConvert.variablesToVariableIds(grouping);
+        UserId userId = new UserId(user);
 
-        return new eu.hbp.mip.woken.messages.external.MiningQuery(
+        return new eu.hbp.mip.woken.messages.external.MiningQuery(userId,
                 variablesSeq, covariablesSeq, groupingSeq, filters, scalaAlgorithm);
     }
 

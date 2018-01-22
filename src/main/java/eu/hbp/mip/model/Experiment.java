@@ -86,9 +86,9 @@ public class Experiment {
         */
     }
 
-    public ExperimentQuery prepareQuery() {
+    public ExperimentQuery prepareQuery(String user) {
         if (model == null || model.getQuery() == null)
-            return new ExperimentQuery(null, null, null, null, null, null);
+            return new ExperimentQuery(null, null, null, null, null, null, null, null, null, null, null);
 
         List<AlgorithmSpec> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
@@ -114,8 +114,9 @@ public class Experiment {
         scala.collection.immutable.List<ValidationSpec> validationsSeq = JavaConversions.asScalaBuffer(validations).toList();
 
         String filters = model.getQuery().getFilters();
+        UserId userId = new UserId(user);
 
-        return new ExperimentQuery(variablesSeq, covariablesSeq, groupingSeq, filters, algorithmsSeq, validationsSeq);
+        return new ExperimentQuery(user, variablesSeq, covariablesSeq, groupingSeq, filters, algorithmsSeq, validationsSeq);
     }
 
 

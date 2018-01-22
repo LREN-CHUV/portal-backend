@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Algorithm;
 import eu.hbp.mip.model.MiningQuery;
 import eu.hbp.mip.model.Variable;
@@ -47,6 +48,8 @@ public class VariablesApi {
     @Value("#{'${spring.featuresDatasource.main-table:features}'}")
     private String featuresMainTable;
 
+    @Autowired
+    private SecurityConfiguration securityConfiguration;
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
     @Cacheable("variables")

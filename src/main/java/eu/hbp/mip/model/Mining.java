@@ -8,12 +8,12 @@ public class Mining {
 
     private static final Gson gson = new Gson();
 
-    private String jobId;
-    private String node;
-    private String function;
-    private String shape;
-    private Date timestamp;
-    private String data;
+    private final String jobId;
+    private final String node;
+    private final String function;
+    private final String shape;
+    private final Date timestamp;
+    private final String data;
 
     public Mining(String jobId, String node, String function, String shape, Date timestamp, String data) {
         this.jobId = jobId;

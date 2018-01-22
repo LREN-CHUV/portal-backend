@@ -46,7 +46,7 @@ public class ExperimentActor extends AbstractActor {
                 experiment.setHasServerError(true);
                 experiment.setResult(queryResult.error().get());
             } else {
-                experiment.setResult(queryResult.data().get());
+                experiment.setResult(queryResult.data().get().compactPrint());
             }
             experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
             experimentRepository.save(experiment);

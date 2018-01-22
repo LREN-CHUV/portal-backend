@@ -71,10 +71,10 @@ public class MiningApi {
             Mining mining = new Mining(
                     result.jobId(),
                     result.node(),
-                    result.function(),
+                    result.algorithm(),
                     result.shape(),
                     Date.from(result.timestamp().toInstant()),
-                    result.data().get()
+                    result.data().get().compactPrint()
             );
             return ResponseEntity.ok(gson.toJson(mining.jsonify()));
         }
