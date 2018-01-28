@@ -6,7 +6,7 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import com.google.gson.Gson;
 import eu.hbp.mip.model.Mining;
-import eu.hbp.mip.woken.messages.external.QueryResult;
+import eu.hbp.mip.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;

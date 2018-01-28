@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Algorithm;
 import eu.hbp.mip.model.MiningQuery;
+import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
 import io.swagger.annotations.*;
 import org.apache.log4j.Logger;
@@ -151,13 +152,15 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get query for histograms");
 
+        User user = securityConfiguration.getUser();
+
         String sqlQuery = String.format(
                 "SELECT histogram_groupings FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String histogramGroupings = data.getString("histogram_groupings");
 
-        MiningQuery query = new MiningQuery();
+        MiningQuery query = new MiningQuery(user.getUsername());
         query.addVariable(new Variable(code));
         List<String> newGroups = Arrays.asList(histogramGroupings.split(","));
         List<Variable> groupings = query.getGrouping();

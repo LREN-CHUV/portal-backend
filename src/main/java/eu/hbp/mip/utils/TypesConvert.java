@@ -1,7 +1,8 @@
 package eu.hbp.mip.utils;
 
-import eu.hbp.mip.woken.messages.external.CodeValue;
-import eu.hbp.mip.woken.messages.external.VariableId;
+import eu.hbp.mip.woken.messages.query.CodeValue;
+import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
+import eu.hbp.mip.woken.messages.variables.VariableId;
 import eu.hbp.mip.model.AlgorithmParam;
 import eu.hbp.mip.model.Variable;
 import scala.collection.JavaConversions;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
  */
 public class TypesConvert {
 
-    public static scala.collection.immutable.List<VariableId> variablesToVariableIds(List<Variable> vars) {
-        List<VariableId> varIds = new LinkedList<>();
+    public static scala.collection.immutable.List<FeatureIdentifier> variablesToIdentifiers(List<Variable> vars) {
+        List<FeatureIdentifier> varIds = new LinkedList<>();
         for (Variable v: vars) {
             varIds.add(new VariableId(v.getCode()));
         }

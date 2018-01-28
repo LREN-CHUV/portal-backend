@@ -1,15 +1,21 @@
 package eu.hbp.mip.model;
 
+import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import eu.hbp.mip.woken.messages.external.ExperimentQuery;
-import eu.hbp.mip.woken.messages.external.*;
+import eu.hbp.mip.woken.messages.datasets.DatasetId;
+import eu.hbp.mip.woken.messages.query.ExperimentQuery;
+import eu.hbp.mip.woken.messages.query.*;
 import eu.hbp.mip.utils.TypesConvert;
+import eu.hbp.mip.woken.messages.query.filters.FilterRule;
+import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
 import org.hibernate.annotations.Cascade;
+import scala.None$;
+import scala.Option;
 import scala.collection.JavaConversions;
 
 import javax.persistence.*;
@@ -104,19 +110,28 @@ public class Experiment {
             validations.add(new ValidationSpec(v.getCode(), TypesConvert.algoParamsToScala(v.getParameters())));
         }
 
-        scala.collection.immutable.List<VariableId> variablesSeq =
-                TypesConvert.variablesToVariableIds(model.getQuery().getVariables());
-        scala.collection.immutable.List<VariableId> covariablesSeq =
-                TypesConvert.variablesToVariableIds(model.getQuery().getCovariables());
-        scala.collection.immutable.List<VariableId> groupingSeq =
-                TypesConvert.variablesToVariableIds(model.getQuery().getGrouping());
+        scala.collection.immutable.List<FeatureIdentifier> variablesSeq =
+                TypesConvert.variablesToIdentifiers(model.getQuery().getVariables());
+        scala.collection.immutable.List<FeatureIdentifier> covariablesSeq =
+                TypesConvert.variablesToIdentifiers(model.getQuery().getCovariables());
+        scala.collection.immutable.List<FeatureIdentifier> groupingSeq =
+                TypesConvert.variablesToIdentifiers(model.getQuery().getGrouping());
         scala.collection.immutable.List<AlgorithmSpec> algorithmsSeq = JavaConversions.asScalaBuffer(algorithms).toList();
         scala.collection.immutable.List<ValidationSpec> validationsSeq = JavaConversions.asScalaBuffer(validations).toList();
 
-        String filters = model.getQuery().getFilters();
+        // TODO - set values
+        WokenConversions conv = new WokenConversions();
+        scala.collection.immutable.Set<DatasetId> trainingDatasets = conv.toDatasets("");
+        scala.collection.immutable.Set<DatasetId> testingDatasets = conv.toDatasets("");
+        scala.collection.immutable.Set<DatasetId> validationDatasets = conv.toDatasets("");
+
+        String filtersJson = model.getQuery().getFilters();
+        Option<FilterRule> filters = conv.toFilterRule(filtersJson);
         UserId userId = new UserId(user);
 
-        return new ExperimentQuery(user, variablesSeq, covariablesSeq, groupingSeq, filters, algorithmsSeq, validationsSeq);
+        return new ExperimentQuery(userId, variablesSeq, covariablesSeq, groupingSeq, filters,
+                trainingDatasets, testingDatasets, algorithmsSeq, validationDatasets,
+                validationsSeq, None$.empty());
     }
 
 

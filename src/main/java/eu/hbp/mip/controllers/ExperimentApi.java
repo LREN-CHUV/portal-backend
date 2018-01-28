@@ -19,8 +19,8 @@ import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
-import eu.hbp.mip.woken.messages.external.MethodsQuery$;
-import eu.hbp.mip.woken.messages.external.MethodsResponse;
+import eu.hbp.mip.woken.messages.query.MethodsQuery$;
+import eu.hbp.mip.woken.messages.query.MethodsResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -82,10 +82,10 @@ public class ExperimentApi {
     private ExperimentRepository experimentRepository;
 
     @Autowired
-    public ActorSystem actorSystem;
+    private ActorSystem actorSystem;
 
     @Autowired
-    public String wokenRefPath;
+    private String wokenRefPath;
 
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
@@ -303,8 +303,10 @@ public class ExperimentApi {
     }
 
     private void sendExperiment(Experiment experiment) throws MalformedURLException {
+        User user = securityConfiguration.getUser();
+
         // this runs in the background. For future optimization: use a thread pool
-        final eu.hbp.mip.woken.messages.external.ExperimentQuery experimentQuery = experiment.prepareQuery();
+        final eu.hbp.mip.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());
 
         LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
         ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
