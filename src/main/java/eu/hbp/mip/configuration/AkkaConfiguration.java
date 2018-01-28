@@ -32,14 +32,15 @@ class AkkaConfiguration {
 
     @Bean
     public ActorSystem actorSystem() {
-        ActorSystem system = ActorSystem.create("AkkaActorSystem");
+        ActorSystem system = ActorSystem.create("PortalBackend");
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }
 
     @Bean
-    public String wokenRefPath() {
-        return "akka.tcp://woken@"+wokenHost+":"+wokenPort+wokenPath;
+    public String wokenReceptionistPath() {
+        return "akka.tcp://woken@" + wokenHost + ":" + wokenPort + "/system/receptionist";
     }
+
 
 }

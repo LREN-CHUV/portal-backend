@@ -1,16 +1,12 @@
 package eu.hbp.mip.controllers;
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
-import akka.actor.ActorSystem;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.hbp.mip.akka.SpringExtension;
+import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
@@ -31,15 +27,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/experiments", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/experiments", description = "the experiments API")
-public class ExperimentApi {
+public class ExperimentApi extends WokenClientController {
 
     private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
 
@@ -81,12 +73,6 @@ public class ExperimentApi {
     @Autowired
     private ExperimentRepository experimentRepository;
 
-    @Autowired
-    private ActorSystem actorSystem;
-
-    @Autowired
-    private String wokenRefPath;
-
 
     @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
     @RequestMapping(method = RequestMethod.POST)
@@ -106,17 +92,13 @@ public class ExperimentApi {
 
         LOGGER.info("Experiment saved");
 
-        try {
-            if(isExaremeAlgo(expQuery))
-            {
-                String algoCode = expQuery.getAlgorithms().get(0).getCode();
-                sendExaremeExperiment(experiment, algoCode);
-            }
-            else
-            {
-                sendExperiment(experiment);
-            }
-        } catch (MalformedURLException mue) { LOGGER.trace(mue.getMessage()); } // ignore
+        if (isExaremeAlgo(expQuery)) {
+            String algoCode = expQuery.getAlgorithms().get(0).getCode();
+            sendExaremeExperiment(experiment, algoCode);
+        }
+        else {
+            sendExperiment(experiment);
+        }
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
@@ -219,30 +201,20 @@ public class ExperimentApi {
     public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
         LOGGER.info("List available methods and validations");
 
-        LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
-        ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
+        return askWoken(MethodsQuery$.MODULE$, 5, r -> {
+            MethodsResponse result = (MethodsResponse) r;
 
-        Timeout timeout = new Timeout(Duration.create(5, "seconds"));
-        Future<Object> future = Patterns.ask(wokenActor, MethodsQuery$.MODULE$, timeout);
-        MethodsResponse result;
-        try {
-            result = (MethodsResponse) Await.result(future, timeout.duration());
-        } catch (Exception e) {
-            LOGGER.error("Cannot receive methods list from woken !");
-            LOGGER.trace(e.getMessage());
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }
+            // >> Temporary : should return result.methods() in the future
+            JsonObject catalog = new JsonParser().parse(result.methods()).getAsJsonObject();
+            InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+            catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+            // << Temporary
 
-        // >> Temporary : should return result.methods() in the future
-        JsonObject catalog = new JsonParser().parse(result.methods()).getAsJsonObject();
-        InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-        catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-        // << Temporary
-
-        return ResponseEntity.ok(gson.toJson(catalog));
+            return ResponseEntity.ok(gson.toJson(catalog));
+        });
     }
 
     private ResponseEntity<String> doListExperiments(
@@ -302,17 +274,14 @@ public class ExperimentApi {
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
-    private void sendExperiment(Experiment experiment) throws MalformedURLException {
+    private void sendExperiment(Experiment experiment) {
         User user = securityConfiguration.getUser();
 
         // this runs in the background. For future optimization: use a thread pool
         final eu.hbp.mip.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());
 
-        LOGGER.info("Akka is trying to reach remote " + wokenRefPath);
-        ActorSelection wokenActor = actorSystem.actorSelection(wokenRefPath);
-        ActorRef experimentsManager = actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
-                .props("experimentActor"), experiment.getUuid().toString());
-        wokenActor.tell(experimentQuery, experimentsManager);
+        ActorRef experimentsManager = createActor("experimentActor", experiment.getUuid().toString());
+        sendWokenQuery(experimentQuery, experimentsManager);
     }
 
     private void sendExaremeExperiment(Experiment experiment, String algoCode) {

@@ -2,6 +2,10 @@
 FROM hbpmip/java-base-build:3.5.0-jdk-8-9 as java-build-env
 
 COPY pom.xml /project/
+
+RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
+    && mvn clean package
+
 COPY src/ /project/src/
 
 # Repeating the file copy works better. I dunno why.
