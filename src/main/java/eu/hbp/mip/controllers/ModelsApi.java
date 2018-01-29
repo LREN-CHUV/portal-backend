@@ -14,7 +14,8 @@ import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.*;
 import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/models", description = "the models API")
 public class ModelsApi {
 
-    private static final Logger LOGGER = Logger.getLogger(ModelsApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelsApi.class);
 
     @Autowired
     private SecurityConfiguration securityConfiguration;
@@ -170,7 +171,7 @@ public class ModelsApi {
             slug = new Slugify().slugify(title);
         } catch (IOException e) {
             slug = "";  // Should never happen
-            LOGGER.trace(e);
+            LOGGER.trace("Cannot slugify title", e);
         }
         return slug;
     }

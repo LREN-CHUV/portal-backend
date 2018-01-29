@@ -7,12 +7,13 @@ package eu.hbp.mip.controllers;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.repositories.AppRepository;
 import io.swagger.annotations.*;
-import org.apache.log4j.Logger;
 import eu.hbp.mip.model.App;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Vote;
 import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.repositories.VoteRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/apps", description = "the apps API")
 public class AppsApi {
 
-    private static final Logger LOGGER = Logger.getLogger(AppsApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppsApi.class);
 
     @Autowired
     private SecurityConfiguration securityConfiguration;

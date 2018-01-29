@@ -9,7 +9,8 @@ import eu.hbp.mip.utils.CORSFilter;
 import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
 import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -70,7 +71,7 @@ import java.security.Principal;
 @RestController
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(SecurityConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
@@ -248,7 +249,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             cookie.setPath("/");
             response.addCookie(cookie);
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
-            LOGGER.trace(e);
+            LOGGER.trace("Cannot read user json", e);
         }
 
         if(!authentication)
@@ -312,7 +313,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 }
             } catch (IOException e) {
                 LOGGER.warn("Cannot notify logout to OIDC server !");
-                LOGGER.trace(e);
+                LOGGER.trace("Cannot notify logout", e);
             }
 
         }

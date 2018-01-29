@@ -4,7 +4,8 @@ import akka.actor.AbstractActor;
 import eu.hbp.mip.woken.messages.query.QueryResult;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.repositories.ExperimentRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -24,7 +25,7 @@ public class ExperimentActor extends AbstractActor {
     @Autowired
     private ExperimentRepository experimentRepository;
 
-    private static final Logger LOGGER = Logger.getLogger(ExperimentActor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentActor.class);
 
     public Receive createReceive() {
         return receiveBuilder()

@@ -1,6 +1,7 @@
 package eu.hbp.mip.configuration;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -10,7 +11,8 @@ import java.util.Map;
 
 @Component
 public class PortalErrorAttributes extends DefaultErrorAttributes {
-    private static final Logger LOGGER = Logger.getLogger(PortalErrorAttributes.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalErrorAttributes.class);
 
     @Override
     public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes, boolean includeStackTrace) {

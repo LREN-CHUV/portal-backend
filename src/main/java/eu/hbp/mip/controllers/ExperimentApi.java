@@ -21,7 +21,8 @@ import eu.hbp.mip.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -50,7 +51,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/experiments", description = "the experiments API")
 public class ExperimentApi extends WokenClientController {
 
-    private static final Logger LOGGER = Logger.getLogger(ExperimentApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentApi.class);
 
     private static final Gson gson = new Gson();
 
@@ -115,7 +116,7 @@ public class ExperimentApi extends WokenClientController {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
-            LOGGER.trace(iae);
+            LOGGER.trace("Invalid UUID", iae);
             LOGGER.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
@@ -140,7 +141,7 @@ public class ExperimentApi extends WokenClientController {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
-            LOGGER.trace(iae);
+            LOGGER.trace("Invalid UUID", iae);
             LOGGER.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
@@ -258,7 +259,7 @@ public class ExperimentApi extends WokenClientController {
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
-            LOGGER.trace(iae);
+            LOGGER.trace("Invalid UUID", iae);
             LOGGER.warn("An invalid Experiment UUID was received !");
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
@@ -322,7 +323,7 @@ public class ExperimentApi extends WokenClientController {
                 experiment.setHasError(code >= 400);
                 experiment.setHasServerError(code >= 500);
             } catch (IOException e) {
-                LOGGER.trace(e);
+                LOGGER.trace("Invalid UUID", e);
                 LOGGER.warn("Exareme experiment failed to run properly !");
                 experiment.setHasError(true);
                 experiment.setHasServerError(true);

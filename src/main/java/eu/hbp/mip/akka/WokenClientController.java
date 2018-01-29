@@ -10,7 +10,8 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import eu.hbp.mip.woken.messages.query.Query;
 import eu.hbp.mip.woken.messages.query.QueryResult;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ import java.util.function.Function;
  */
 public abstract class WokenClientController {
 
-    private final Logger LOGGER = Logger.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ActorSystem actorSystem;

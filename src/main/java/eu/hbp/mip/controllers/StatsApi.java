@@ -10,7 +10,8 @@ import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/stats", description = "the stats API")
 public class StatsApi {
 
-    private static final Logger LOGGER = Logger.getLogger(StatsApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatsApi.class);
 
     @Autowired
     private UserRepository userRepository;

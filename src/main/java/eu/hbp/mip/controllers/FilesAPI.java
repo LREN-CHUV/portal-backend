@@ -4,7 +4,8 @@ import eu.hbp.mip.configuration.SecurityConfiguration;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 @Api(value = "/protected", description = "the protected files API")
 public class FilesAPI {
 
-    private static final Logger LOGGER = Logger.getLogger(FilesAPI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilesAPI.class);
 
     @Autowired
     private SecurityConfiguration securityConfiguration;

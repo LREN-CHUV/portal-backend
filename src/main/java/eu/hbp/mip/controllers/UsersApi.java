@@ -7,7 +7,8 @@ package eu.hbp.mip.controllers;
 import io.swagger.annotations.*;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.UserRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/users", description = "the users API")
 public class UsersApi {
 
-    private static final Logger LOGGER = Logger.getLogger(UsersApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsersApi.class);
 
     @Autowired
     private UserRepository userRepository;

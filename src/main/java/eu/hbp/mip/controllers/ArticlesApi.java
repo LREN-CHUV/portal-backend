@@ -11,7 +11,8 @@ import eu.hbp.mip.model.Article;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.repositories.ArticleRepository;
 import io.swagger.annotations.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/articles", description = "the articles API")
 public class ArticlesApi {
 
-    private static final Logger LOGGER = Logger.getLogger(ArticlesApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArticlesApi.class);
 
     @Autowired
     private SecurityConfiguration securityConfiguration;
@@ -110,7 +111,7 @@ public class ArticlesApi {
             slug = new Slugify().slugify(article.getTitle());
         } catch (IOException e) {
             slug = "";
-            LOGGER.trace(e);
+            LOGGER.trace("Cannot slugify title", e);
         }
 
         boolean alreadyExists = true;

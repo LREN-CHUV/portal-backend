@@ -5,7 +5,8 @@ import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.model.Mining;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "/mining", description = "the mining API")
 public class MiningApi extends WokenClientController {
 
-    private static final Logger LOGGER = Logger.getLogger(MiningApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MiningApi.class);
     private static final Gson gson = new Gson();
 
     @ApiOperation(value = "Run an algorithm", response = String.class)
