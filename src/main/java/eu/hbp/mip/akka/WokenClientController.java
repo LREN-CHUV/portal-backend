@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import scala.concurrent.Await;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
@@ -92,16 +93,20 @@ public abstract class WokenClientController {
         return handleResponse.apply(result);
     }
 
-    protected <A extends Query> void sendWokenQuery(A query, ActorRef responseReceiver) {
+    protected <A extends Query> Future<Object> sendWokenQuery(A query, int timeout) {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
         ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, query, true);
 
-        wokenClient.tell(queryMessage, responseReceiver);
+        return Patterns.ask(wokenClient, queryMessage, timeout);
     }
 
     protected ActorRef createActor(String actorBeanName, String actorName) {
         return actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
                 .props(actorBeanName), actorName);
+    }
+
+    protected ExecutionContext getExecutor() {
+        return actorSystem.dispatcher();
     }
 }
