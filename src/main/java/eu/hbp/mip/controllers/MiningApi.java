@@ -3,8 +3,10 @@ package eu.hbp.mip.controllers;
 import com.google.gson.Gson;
 import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.ExaremeQuery;
 import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.model.User;
+import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.sql.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -43,6 +46,39 @@ public class MiningApi extends WokenClientController {
         LOGGER.info("Run an algorithm");
         User user = securityConfiguration.getUser();
 
+        if (isExaremeAlgo(query)) {
+            LOGGER.info("isExaremeAlgo");
+
+            String algorithm = query.getAlgorithm().getCode();
+            String exaremeQuery = ExaremeQuery.query(query);
+            String url = ExaremeQuery.queryUrl + "/" + algorithm;
+
+            // TODO: Threaded call
+            try {
+                StringBuilder results = new StringBuilder();
+                int code = HTTPUtil.sendPost(url, exaremeQuery, results);
+                LOGGER.info("Results " + results);
+
+                if (code >= 500) {
+                    LOGGER.error("Cannot receive algorithm result from exareme");
+                    return ResponseEntity.status(code).build();
+                }
+
+                Mining mining = new Mining(
+                        "exaremeJobId",
+                        "federation",
+                        algorithm,
+                        "application/json",
+                        new java.util.Date(),
+                        results.toString());
+
+                return ResponseEntity.ok(gson.toJson(mining.jsonify()));
+            } catch (IOException e) {
+                LOGGER.error("Cannot receive algorithm result from exareme" + e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+            }
+        }
+
         return askWokenQuery(query.prepareQuery(user.getUsername()), 120,
                 result -> {
                     if (result.error().nonEmpty()) {
@@ -60,6 +96,11 @@ public class MiningApi extends WokenClientController {
                         return ResponseEntity.ok(gson.toJson(mining.jsonify()));
                     }
                 });
+    }
+
+    private static boolean isExaremeAlgo(eu.hbp.mip.model.MiningQuery query) {
+        return query.getAlgorithm().getCode().length() > 0 && "WP_".equals(
+                query.getAlgorithm().getCode().substring(0, 3));
     }
 
 }

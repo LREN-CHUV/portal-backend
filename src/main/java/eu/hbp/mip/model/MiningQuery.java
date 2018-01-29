@@ -21,6 +21,7 @@ public class MiningQuery {
     private List<Variable> variables;
     private List<Variable> covariables;
     private List<Variable> grouping;
+    private List<Variable> datasets;
     private String filters;
     private Algorithm algorithm;
 
@@ -58,6 +59,14 @@ public class MiningQuery {
     public void setGrouping(List<Variable> grouping) {
         this.grouping = grouping;
     }
+
+    public List<Variable> getDatasets() { return datasets; }
+
+    public void setDataset(List<Variable> datasets) {
+        this.datasets = datasets;
+    }
+
+    public  void addDataset(Variable variable) { this.datasets.add(variable); }
 
     public  void addGrouping(Variable variable) { this.grouping.add(variable); }
 
