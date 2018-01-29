@@ -119,11 +119,10 @@ public class Experiment {
         scala.collection.immutable.List<AlgorithmSpec> algorithmsSeq = JavaConversions.asScalaBuffer(algorithms).toList();
         scala.collection.immutable.List<ValidationSpec> validationsSeq = JavaConversions.asScalaBuffer(validations).toList();
 
-        // TODO - set values
         WokenConversions conv = new WokenConversions();
-        scala.collection.immutable.Set<DatasetId> trainingDatasets = conv.toDatasets("");
-        scala.collection.immutable.Set<DatasetId> testingDatasets = conv.toDatasets("");
-        scala.collection.immutable.Set<DatasetId> validationDatasets = conv.toDatasets("");
+        scala.collection.immutable.Set<DatasetId> trainingDatasets = conv.toDatasets(model.getQuery().getTrainingDatasets());
+        scala.collection.immutable.Set<DatasetId> testingDatasets = conv.toDatasets(model.getQuery().getTestingDatasets());
+        scala.collection.immutable.Set<DatasetId> validationDatasets = conv.toDatasets(model.getQuery().getValidationDatasets());
 
         String filtersJson = model.getQuery().getFilters();
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);

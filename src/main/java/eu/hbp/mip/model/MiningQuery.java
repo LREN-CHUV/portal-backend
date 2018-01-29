@@ -29,6 +29,7 @@ public class MiningQuery {
         this.variables = new LinkedList<>();
         this.covariables = new LinkedList<>();
         this.grouping = new LinkedList<>();
+        this.datasets = new LinkedList<>();
         this.filters = "";
     }
 
@@ -99,9 +100,8 @@ public class MiningQuery {
                 TypesConvert.variablesToIdentifiers(getGrouping());
         UserId userId = new UserId(user);
 
-        // TODO - set values
         WokenConversions conv = new WokenConversions();
-        scala.collection.immutable.Set<DatasetId> datasets = conv.toDatasets("");
+        scala.collection.immutable.Set<DatasetId> datasets = conv.toDatasets(getDatasets());
         String filtersJson = getFilters();
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
 

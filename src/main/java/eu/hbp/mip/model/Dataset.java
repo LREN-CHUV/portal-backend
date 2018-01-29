@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+// TODO: deprecate
+
 @Entity
 @Table(name = "`dataset`")
 @ApiModel
@@ -24,6 +26,7 @@ public class Dataset {
 
     private Date date = null;
 
+    // Aka covariables
     @ElementCollection
     @CollectionTable(name = "dataset_header", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> header = new LinkedList<>();
@@ -36,6 +39,7 @@ public class Dataset {
     @CollectionTable(name = "dataset_variable", joinColumns = @JoinColumn(name = "dataset_code"))
     private List<String> variable = new LinkedList<>();
 
+    // TODO:
     @Transient
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Object data = null;

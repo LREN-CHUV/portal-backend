@@ -77,25 +77,26 @@ public class MiningApi extends WokenClientController {
                 LOGGER.error("Cannot receive algorithm result from exareme" + e.getMessage(), e);
                 return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
             }
-        }
+        } else {
 
-        return askWokenQuery(query.prepareQuery(user.getUsername()), 120,
-                result -> {
-                    if (result.error().nonEmpty()) {
-                        LOGGER.error(result.error().get());
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
-                    } else {
-                        Mining mining = new Mining(
-                                result.jobId(),
-                                result.node(),
-                                result.algorithm(),
-                                result.shape(),
-                                Date.from(result.timestamp().toInstant()),
-                                result.data().get().compactPrint()
-                        );
-                        return ResponseEntity.ok(gson.toJson(mining.jsonify()));
-                    }
-                });
+            return askWokenQuery(query.prepareQuery(user.getUsername()), 120,
+                    result -> {
+                        if (result.error().nonEmpty()) {
+                            LOGGER.error(result.error().get());
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
+                        } else {
+                            Mining mining = new Mining(
+                                    result.jobId(),
+                                    result.node(),
+                                    result.algorithm(),
+                                    result.shape(),
+                                    Date.from(result.timestamp().toInstant()),
+                                    result.data().get().compactPrint()
+                            );
+                            return ResponseEntity.ok(gson.toJson(mining.jsonify()));
+                        }
+                    });
+        }
     }
 
     private static boolean isExaremeAlgo(eu.hbp.mip.model.MiningQuery query) {

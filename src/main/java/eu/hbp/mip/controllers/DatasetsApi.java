@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+// TODO: deprecate this
+
 @RestController
 @RequestMapping(value = "/datasets", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/datasets", description = "the datasets API")
