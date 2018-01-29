@@ -296,6 +296,7 @@ public class ExperimentApi extends WokenClientController {
                     if (queryResult.error().nonEmpty()) {
                         experiment.setHasServerError(true);
                         experiment.setResult(queryResult.error().get());
+                        LOGGER.error("Experiment failed with message: " + queryResult.error().get());
                     } else {
                         experiment.setResult(queryResult.data().get().compactPrint());
                     }

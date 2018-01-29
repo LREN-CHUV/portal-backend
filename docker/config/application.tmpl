@@ -59,6 +59,7 @@ logging:
   level:
     logging.level.org.springframework.web = {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}
     logging.level.org.hibernate = {{ default .Env.LOGGING_LEVEL_HIBERNATE "WARN" }}
+    logging.level.eu.hbp = {{ default .Env.LOGGING_LEVEL_MIP "INFO" }}
 
 # EMBEDDED SERVER CONFIGURATION
 server:
