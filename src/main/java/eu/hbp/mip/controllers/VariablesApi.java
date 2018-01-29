@@ -9,10 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Algorithm;
 import eu.hbp.mip.model.MiningQuery;
-import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Variable;
 import io.swagger.annotations.*;
 import org.postgresql.util.PGobject;
@@ -49,9 +47,6 @@ public class VariablesApi {
 
     @Value("#{'${spring.featuresDatasource.main-table:features}'}")
     private String featuresMainTable;
-
-    @Autowired
-    private SecurityConfiguration securityConfiguration;
 
     @ApiOperation(value = "Get variables", response = List.class, responseContainer = "List")
     @Cacheable("variables")
@@ -153,15 +148,13 @@ public class VariablesApi {
     )  {
         LOGGER.info("Get query for histograms");
 
-        User user = securityConfiguration.getUser();
-
         String sqlQuery = String.format(
                 "SELECT histogram_groupings FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);
         data.next();
         String histogramGroupings = data.getString("histogram_groupings");
 
-        MiningQuery query = new MiningQuery(user.getUsername());
+        MiningQuery query = new MiningQuery();
         query.addVariable(new Variable(code));
         List<String> newGroups = Arrays.asList(histogramGroupings.split(","));
         List<Variable> groupings = query.getGrouping();

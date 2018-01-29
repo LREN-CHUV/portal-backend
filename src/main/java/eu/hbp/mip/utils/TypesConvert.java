@@ -19,7 +19,9 @@ public class TypesConvert {
     public static scala.collection.immutable.List<FeatureIdentifier> variablesToIdentifiers(List<Variable> vars) {
         List<FeatureIdentifier> varIds = new LinkedList<>();
         for (Variable v: vars) {
-            varIds.add(new VariableId(v.getCode()));
+            if (!v.getCode().isEmpty()) {
+                varIds.add(new VariableId(v.getCode()));
+            }
         }
         return JavaConversions.asScalaBuffer(varIds).toList();
     }

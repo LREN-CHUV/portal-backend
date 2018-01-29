@@ -82,14 +82,11 @@ endpoints:
     sentitive: false
 
 services:
-  woken:
-    experimentUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/experiment
-    listMethodsUrl: {{ default .Env.WOKEN_URL "http://172.22.0.1:8087" }}/list-methods
   exareme:
     miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
 
 akka:
   woken:
-    host: {{ default .Env.WOKEN_HOST "woken" }}
-    port: {{ default .Env.WOKEN_AKKA_PORT "8088" }}
+    host: {{ default .Env.WOKEN_PORT_8088_TCP_ADDR "woken" }}
+    port: {{ default .Env.WOKEN_PORT_8088_TCP_PORT "8088" }}
     path: {{ default .Env.WOKEN_AKKA_PATH "/user/entrypoint" }}

@@ -9,7 +9,10 @@ import spray.json._
 @Component
 class WokenConversions {
 
-  def toFilterRule(json: String): Option[FilterRule] = Some(json).map(_.parseJson.convertTo[FilterRule])
+  def toFilterRule(json: String): Option[FilterRule] = json match {
+    case "" => None
+    case _ => Some(json).map(_.parseJson.convertTo[FilterRule])
+  }
 
   def toDatasets(commaSeparatedSets: String): Set[DatasetId] = commaSeparatedSets match {
     case "" => Set()

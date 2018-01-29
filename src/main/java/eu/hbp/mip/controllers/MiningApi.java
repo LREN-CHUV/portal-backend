@@ -2,11 +2,14 @@ package eu.hbp.mip.controllers;
 
 import com.google.gson.Gson;
 import eu.hbp.mip.akka.WokenClientController;
+import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Mining;
+import eu.hbp.mip.model.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.sql.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -31,13 +33,17 @@ public class MiningApi extends WokenClientController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiningApi.class);
     private static final Gson gson = new Gson();
 
-    @ApiOperation(value = "Run an algorithm", response = String.class)
-    @Cacheable(value = "mining", condition = "#query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) throws IOException {
-        LOGGER.info("Run an algorithm");
+    @Autowired
+    private SecurityConfiguration securityConfiguration;
 
-        return askWokenQuery(query.prepareQuery(), 120,
+    @ApiOperation(value = "Run an algorithm", response = String.class)
+    @Cacheable(value = "mining", condition = "#query != null and #query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) {
+        LOGGER.info("Run an algorithm");
+        User user = securityConfiguration.getUser();
+
+        return askWokenQuery(query.prepareQuery(user.getUsername()), 120,
                 result -> {
                     if (result.error().nonEmpty()) {
                         LOGGER.error(result.error().get());

@@ -201,10 +201,10 @@ public class ExperimentApi extends WokenClientController {
     @ApiOperation(value = "List available methods and validations", response = String.class)
     @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity listAvailableMethodsAndValidations() throws IOException {
+    public ResponseEntity listAvailableMethodsAndValidations() {
         LOGGER.info("List available methods and validations");
 
-        return askWoken(MethodsQuery$.MODULE$, 5, r -> {
+        return askWoken(MethodsQuery$.MODULE$, 10, r -> {
             MethodsResponse result = (MethodsResponse) r;
 
             // >> Temporary : should return result.methods() in the future

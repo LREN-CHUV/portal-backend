@@ -4,6 +4,7 @@ import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.gson.Gson;
 import eu.hbp.mip.utils.TypesConvert;
 import eu.hbp.mip.woken.messages.datasets.DatasetId;
+import eu.hbp.mip.woken.messages.query.ExecutionPlan;
 import eu.hbp.mip.woken.messages.query.UserId;
 import eu.hbp.mip.woken.messages.query.filters.FilterRule;
 import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
@@ -17,23 +18,17 @@ import java.util.List;
  */
 public class MiningQuery {
 
-    private String user;
     private List<Variable> variables;
     private List<Variable> covariables;
     private List<Variable> grouping;
     private String filters;
     private Algorithm algorithm;
 
-    public MiningQuery(String user) {
-        this.user = user;
+    public MiningQuery() {
         this.variables = new LinkedList<>();
         this.covariables = new LinkedList<>();
         this.grouping = new LinkedList<>();
         this.filters = "";
-    }
-
-    public String getUser() {
-        return user;
     }
 
     public List<Variable> getVariables() {
@@ -82,7 +77,7 @@ public class MiningQuery {
         this.algorithm = algorithm;
     }
 
-    public eu.hbp.mip.woken.messages.query.MiningQuery prepareQuery() {
+    public eu.hbp.mip.woken.messages.query.MiningQuery prepareQuery(String user) {
 
         eu.hbp.mip.woken.messages.query.AlgorithmSpec scalaAlgorithm = new eu.hbp.mip.woken.messages.query.AlgorithmSpec(
                 algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()));
@@ -102,7 +97,7 @@ public class MiningQuery {
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
 
         return new eu.hbp.mip.woken.messages.query.MiningQuery(userId,
-                variablesSeq, covariablesSeq, groupingSeq, filters, datasets, scalaAlgorithm);
+                variablesSeq, covariablesSeq, groupingSeq, filters, datasets, scalaAlgorithm, Option.<ExecutionPlan>empty());
     }
 
     @Override

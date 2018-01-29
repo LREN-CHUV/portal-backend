@@ -52,9 +52,8 @@ To use this image, you need a running instance of PostgreSQL and to configure th
 
 ### ENDPOINTS
 
-* WOKEN_URL: URL to woken machine learning server, default value is "http://172.22.0.1:8087".
-* WOKEN_HOST: default value is "woken".
-* WOKEN_AKKA_PORT default value is "8088".
+* WOKEN_PORT_8088_TCP_ADDR: default value is "woken".
+* WOKEN_PORT_8088_TCP_PORT default value is "8088".
 * WOKEN_AKKA_PATH default value is "/user/entrypoint".
 
 * EXAREME_URL: URL to Exareme server, default value is "http://hbps2.chuv.ch:9090".
