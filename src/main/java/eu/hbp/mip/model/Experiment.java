@@ -14,6 +14,8 @@ import eu.hbp.mip.utils.TypesConvert;
 import eu.hbp.mip.woken.messages.query.filters.FilterRule;
 import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
 import org.hibernate.annotations.Cascade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.None$;
 import scala.Option;
 import scala.collection.JavaConversions;
@@ -32,6 +34,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "`experiment`")
 public class Experiment {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Experiment.class);
 
     private static final Gson gson = new Gson();
 
@@ -194,7 +198,7 @@ public class Experiment {
             exp.add("validations", jsonValidations);
         }
 
-        if (this.result != null)
+        if (this.result != null && !this.hasServerError)
         {
             exp.remove("result");
             JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
