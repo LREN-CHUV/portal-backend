@@ -168,7 +168,7 @@ public class ExperimentApi extends WokenClientController {
     ) {
         LOGGER.info("List experiments");
 
-        return doListExperiments(true, null);
+        return doListExperiments(false, null);
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
@@ -185,6 +185,17 @@ public class ExperimentApi extends WokenClientController {
 
         return doListExperiments(false, modelSlug);
     }
+
+    @ApiOperation(value = "list my experiments", response = Experiment.class, responseContainer = "List")
+    @RequestMapping(method = RequestMethod.GET, params = {"mine"})
+    public ResponseEntity<String> listMyExperiments(
+            @ApiParam(value = "mine") @RequestParam boolean mine
+    ) {
+        LOGGER.info("List my experiments");
+
+        return doListExperiments(true, null);
+    }
+
 
     private ResponseEntity<String> doListExperiments(
             boolean mine,
