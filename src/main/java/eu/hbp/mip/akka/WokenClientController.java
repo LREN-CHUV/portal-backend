@@ -46,6 +46,7 @@ public abstract class WokenClientController {
 
     @PostConstruct
     public void initClusterClient() {
+        LOGGER.info("Start Woken client " + wokenReceptionistPath);
         wokenClient = actorSystem.actorOf(ClusterClient.props(
                 ClusterClientSettings.create(actorSystem).withInitialContacts(initialContacts())),
                 "client-" + getClass().getSimpleName());

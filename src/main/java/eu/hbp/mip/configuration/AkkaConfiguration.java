@@ -1,6 +1,8 @@
 package eu.hbp.mip.configuration;
 
 import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -32,7 +34,8 @@ class AkkaConfiguration {
 
     @Bean
     public ActorSystem actorSystem() {
-        ActorSystem system = ActorSystem.create("PortalBackend");
+        Config config = ConfigFactory.load("application.conf");
+        ActorSystem system = ActorSystem.create("PortalBackend", config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }
