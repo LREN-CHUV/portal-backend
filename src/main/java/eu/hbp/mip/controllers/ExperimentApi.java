@@ -189,7 +189,7 @@ public class ExperimentApi extends WokenClientController {
     @ApiOperation(value = "list my experiments", response = Experiment.class, responseContainer = "List")
     @RequestMapping(method = RequestMethod.GET, params = {"mine"})
     public ResponseEntity<String> listMyExperiments(
-            @ApiParam(value = "mine") @RequestParam boolean mine
+            @ApiParam(value = "mine") @RequestParam("mine") boolean mine
     ) {
         LOGGER.info("List my experiments");
 
