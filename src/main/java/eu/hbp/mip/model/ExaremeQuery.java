@@ -9,9 +9,6 @@ import java.util.List;
 
 public class ExaremeQuery {
 
-    @Value("#{'${services.query.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
-    public static String queryUrl;
-
     private static final Gson gson = new Gson();
 
     public static String query(MiningQuery query) {

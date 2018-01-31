@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,9 @@ public class MiningApi extends WokenClientController {
     @Autowired
     private SecurityConfiguration securityConfiguration;
 
+    @Value("#{'${services.query.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    public String queryUrl;
+
     @ApiOperation(value = "Run an algorithm", response = String.class)
     @Cacheable(value = "mining", condition = "#query != null and #query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(method = RequestMethod.POST)
@@ -51,7 +55,7 @@ public class MiningApi extends WokenClientController {
 
             String algorithm = query.getAlgorithm().getCode();
             String exaremeQuery = ExaremeQuery.query(query);
-            String url = ExaremeQuery.queryUrl + "/" + algorithm;
+            String url = queryUrl + "/" + algorithm;
 
             // TODO: Threaded call
             try {

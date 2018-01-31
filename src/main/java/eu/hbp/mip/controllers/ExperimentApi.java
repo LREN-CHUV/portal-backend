@@ -4,8 +4,6 @@ import akka.dispatch.OnSuccess;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Experiment;
@@ -15,8 +13,6 @@ import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
-import eu.hbp.mip.woken.messages.query.MethodsQuery$;
-import eu.hbp.mip.woken.messages.query.MethodsResponse;
 import eu.hbp.mip.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,17 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -60,10 +52,6 @@ public class ExperimentApi extends WokenClientController {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .excludeFieldsWithoutExposeAnnotation()
             .create();
-
-    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
-
-    private static final String EXAREME_LR_ALGO = "WP_LINEAR_REGRESSION";
 
     @Value("#{'${services.exareme.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
     private String miningExaremeQueryUrl;
@@ -174,7 +162,7 @@ public class ExperimentApi extends WokenClientController {
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, params = {"maxResultCount"})
+    @RequestMapping(method = RequestMethod.GET, params = {"maxResultCount"})
     public ResponseEntity<String> listExperiments(
             @ApiParam(value = "maxResultCount") @RequestParam int maxResultCount
     ) {
@@ -196,28 +184,6 @@ public class ExperimentApi extends WokenClientController {
         }
 
         return doListExperiments(false, modelSlug);
-    }
-
-    @ApiOperation(value = "List available methods and validations", response = String.class)
-    @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
-    @RequestMapping(path = "/methods", method = RequestMethod.GET)
-    public ResponseEntity listAvailableMethodsAndValidations() {
-        LOGGER.info("List available methods and validations");
-
-        return askWoken(MethodsQuery$.MODULE$, 10, r -> {
-            MethodsResponse result = (MethodsResponse) r;
-
-            // >> Temporary : should return result.methods() in the future
-            JsonObject catalog = new JsonParser().parse(result.methods()).getAsJsonObject();
-            InputStream is = ExperimentApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
-            catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
-            // << Temporary
-
-            return ResponseEntity.ok(gson.toJson(catalog));
-        });
     }
 
     private ResponseEntity<String> doListExperiments(
@@ -333,12 +299,12 @@ public class ExperimentApi extends WokenClientController {
             {
                 experiment.setResult("Unsupported variables !");
             }
-            finishExperimient(experiment);
+            finishExperiment(experiment);
         }).start();
         // << Temporary
     }
 
-    private void finishExperimient(Experiment experiment)
+    private void finishExperiment(Experiment experiment)
     {
         experiment.setFinished(new Date());
         experimentRepository.save(experiment);
