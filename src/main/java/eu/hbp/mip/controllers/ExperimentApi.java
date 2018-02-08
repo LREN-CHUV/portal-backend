@@ -105,7 +105,7 @@ public class ExperimentApi extends WokenClientController {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
             LOGGER.trace("Invalid UUID", iae);
-            LOGGER.warn("An invalid Experiment UUID was received !");
+            LOGGER.warn("An invalid Experiment UUID was received ! " + uuid);
             return ResponseEntity.badRequest().body("Invalid Experiment UUID");
         }
 
