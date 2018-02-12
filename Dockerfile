@@ -1,5 +1,5 @@
 # Build stage for Java classes
-FROM hbpmip/java-base-build:3.5.0-jdk-8-9 as java-build-env
+FROM hbpmip/java-base-build:3.5.2-jdk-8-0 as java-build-env
 
 COPY pom.xml /project/
 
@@ -12,7 +12,7 @@ COPY src/ /project/src/
 RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
     && mvn clean package
 
-FROM hbpmip/java-base:8u151-0
+FROM hbpmip/java-base:8u151-1
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
 ARG BUILD_DATE
