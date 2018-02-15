@@ -43,7 +43,7 @@ public class DatasetsApi {
 
         JsonObject o = new JsonObject();
         o.addProperty("code",  "chuv");
-        o.addProperty("label",  "ĈHUV");
+        o.addProperty("label",  "CHUV");
         datasets.add(o);
 
         JsonObject p = new JsonObject();
