@@ -6,18 +6,22 @@ package eu.hbp.mip.controllers;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Dataset;
+import eu.hbp.mip.model.Variable;
+import eu.hbp.mip.repositories.VariableRepository;
 import io.swagger.annotations.*;
 import eu.hbp.mip.repositories.DatasetRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.PostConstruct;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -33,25 +37,30 @@ public class DatasetsApi {
     @Autowired
     private DatasetRepository datasetRepository;
 
+    @Autowired
+    private VariableRepository variableRepository;
+
+    @Value("#{'${spring.featuresDatasource.datasets:adni,ppmi,edsd}'}")
+    private String datasets;
+
+    @PostConstruct
+    public void init() {
+        for (String dataset: datasets.split(",")) {
+            Variable v = variableRepository.findOne(dataset);
+            if (v == null) {
+                v = new Variable(dataset);
+                variableRepository.save(v);
+            }
+        }
+    }
+
     @ApiOperation(value = "Get dataset list", response = Dataset.class, responseContainer = "List")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getDatasets(
     )  {
         LOGGER.info("Get dataset list");
 
-        JsonArray datasets = new JsonArray();
-
-        JsonObject o = new JsonObject();
-        o.addProperty("code",  "chuv");
-        o.addProperty("label",  "CHUV");
-        datasets.add(o);
-
-        JsonObject p = new JsonObject();
-        p.addProperty("code",  "brescia");
-        p.addProperty("label",  "Brescia");
-        datasets.add(p);
-
-        return ResponseEntity.ok(gson.toJson(datasets));
+        return ResponseEntity.ok(datasets.split(","));
     }
 
 }
