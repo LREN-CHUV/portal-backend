@@ -10,11 +10,9 @@ import eu.hbp.mip.model.Dataset;
 import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.VariableRepository;
 import io.swagger.annotations.*;
-import eu.hbp.mip.repositories.DatasetRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,9 +31,6 @@ public class DatasetsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetsApi.class);
     private static final Gson gson = new Gson();
-
-    @Autowired
-    private DatasetRepository datasetRepository;
 
     @Autowired
     private VariableRepository variableRepository;
