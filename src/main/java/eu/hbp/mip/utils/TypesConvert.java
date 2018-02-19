@@ -1,8 +1,8 @@
 package eu.hbp.mip.utils;
 
-import eu.hbp.mip.woken.messages.query.CodeValue;
-import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
-import eu.hbp.mip.woken.messages.variables.VariableId;
+import ch.chuv.lren.woken.messages.query.CodeValue;
+import ch.chuv.lren.woken.messages.variables.FeatureIdentifier;
+import ch.chuv.lren.woken.messages.variables.VariableId;
 import eu.hbp.mip.model.AlgorithmParam;
 import eu.hbp.mip.model.Variable;
 import scala.collection.JavaConversions;

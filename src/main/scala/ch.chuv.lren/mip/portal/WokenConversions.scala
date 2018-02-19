@@ -1,9 +1,9 @@
 package ch.chuv.lren.mip.portal
 
 import eu.hbp.mip.model.Variable
-import eu.hbp.mip.woken.messages.datasets.DatasetId
-import eu.hbp.mip.woken.messages.query.filters.FilterRule
-import eu.hbp.mip.woken.messages.query.filters.queryFiltersProtocol._
+import ch.chuv.lren.woken.messages.datasets.DatasetId
+import ch.chuv.lren.woken.messages.query.filters.FilterRule
+import ch.chuv.lren.woken.messages.query.filters.queryFiltersProtocol._
 import org.springframework.stereotype.Component
 import spray.json._
 

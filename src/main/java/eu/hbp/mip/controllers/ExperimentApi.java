@@ -13,7 +13,7 @@ import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
 import eu.hbp.mip.utils.JSONUtil;
-import eu.hbp.mip.woken.messages.query.QueryResult;
+import ch.chuv.lren.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -258,7 +258,7 @@ public class ExperimentApi extends WokenClientController {
         User user = securityConfiguration.getUser();
 
         // this runs in the background. For future optimization: use a thread pool
-        final eu.hbp.mip.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());
+        final ch.chuv.lren.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());
         final ExecutionContext ec = getExecutor();
 
         Future<Object> response = sendWokenQuery(experimentQuery, 24*3600);

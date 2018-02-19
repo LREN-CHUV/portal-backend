@@ -3,11 +3,11 @@ package eu.hbp.mip.model;
 import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.gson.Gson;
 import eu.hbp.mip.utils.TypesConvert;
-import eu.hbp.mip.woken.messages.datasets.DatasetId;
-import eu.hbp.mip.woken.messages.query.ExecutionPlan;
-import eu.hbp.mip.woken.messages.query.UserId;
-import eu.hbp.mip.woken.messages.query.filters.FilterRule;
-import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
+import ch.chuv.lren.woken.messages.datasets.DatasetId;
+import ch.chuv.lren.woken.messages.query.ExecutionPlan;
+import ch.chuv.lren.woken.messages.query.UserId;
+import ch.chuv.lren.woken.messages.query.filters.FilterRule;
+import ch.chuv.lren.woken.messages.variables.FeatureIdentifier;
 import scala.Option;
 
 import java.util.LinkedList;
@@ -87,9 +87,9 @@ public class MiningQuery {
         this.algorithm = algorithm;
     }
 
-    public eu.hbp.mip.woken.messages.query.MiningQuery prepareQuery(String user) {
+    public ch.chuv.lren.woken.messages.query.MiningQuery prepareQuery(String user) {
 
-        eu.hbp.mip.woken.messages.query.AlgorithmSpec scalaAlgorithm = new eu.hbp.mip.woken.messages.query.AlgorithmSpec(
+        ch.chuv.lren.woken.messages.query.AlgorithmSpec scalaAlgorithm = new ch.chuv.lren.woken.messages.query.AlgorithmSpec(
                 algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()));
 
         scala.collection.immutable.List<FeatureIdentifier> variablesSeq =
@@ -105,8 +105,8 @@ public class MiningQuery {
         String filtersJson = getFilters();
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
 
-        return new eu.hbp.mip.woken.messages.query.MiningQuery(userId,
-                variablesSeq, covariablesSeq, groupingSeq, filters, datasets, scalaAlgorithm, Option.<ExecutionPlan>empty());
+        return new ch.chuv.lren.woken.messages.query.MiningQuery(userId,
+                variablesSeq, covariablesSeq, groupingSeq, filters, Option.empty(), datasets, scalaAlgorithm, Option.empty());
     }
 
     @Override

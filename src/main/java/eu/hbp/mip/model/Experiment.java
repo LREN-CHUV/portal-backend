@@ -7,16 +7,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
-import eu.hbp.mip.woken.messages.datasets.DatasetId;
-import eu.hbp.mip.woken.messages.query.ExperimentQuery;
-import eu.hbp.mip.woken.messages.query.*;
+import ch.chuv.lren.woken.messages.datasets.DatasetId;
+import ch.chuv.lren.woken.messages.query.ExperimentQuery;
+import ch.chuv.lren.woken.messages.query.*;
 import eu.hbp.mip.utils.TypesConvert;
-import eu.hbp.mip.woken.messages.query.filters.FilterRule;
-import eu.hbp.mip.woken.messages.variables.FeatureIdentifier;
+import ch.chuv.lren.woken.messages.query.filters.FilterRule;
+import ch.chuv.lren.woken.messages.variables.FeatureIdentifier;
 import org.hibernate.annotations.Cascade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.None$;
 import scala.Option;
 import scala.collection.JavaConversions;
 
@@ -98,7 +97,7 @@ public class Experiment {
 
     public ExperimentQuery prepareQuery(String user) {
         if (model == null || model.getQuery() == null)
-            return new ExperimentQuery(null, null, null, null, null, null, null, null, null, null, null);
+            return new ExperimentQuery(null, null, null, null, null, Option.empty(), null, null, null, null, null, null);
 
         List<AlgorithmSpec> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
@@ -132,9 +131,9 @@ public class Experiment {
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
         UserId userId = new UserId(user);
 
-        return new ExperimentQuery(userId, variablesSeq, covariablesSeq, groupingSeq, filters,
+        return new ExperimentQuery(userId, variablesSeq, covariablesSeq, groupingSeq, filters, Option.empty(),
                 trainingDatasets, testingDatasets, algorithmsSeq, validationDatasets,
-                validationsSeq, None$.empty());
+                validationsSeq, Option.empty());
     }
 
 
