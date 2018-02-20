@@ -5,7 +5,7 @@
 
     <groupId>eu.hbp.mip</groupId>
     <artifactId>portal-backend</artifactId>
-    <version>2.5.11</version><!-- BUMP_VERSION -->
+    <version>2.6.0</version><!-- BUMP_VERSION -->
     <packaging>jar</packaging>
 
     <name>portal-backend</name>
