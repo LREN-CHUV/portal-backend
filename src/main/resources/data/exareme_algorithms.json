@@ -1,7 +1,9 @@
-{
+[{
   "code": "glm_exareme",
   "label": "GLM (exareme)",
-  "type": ["statistics"],
+  "type": [
+    "statistics"
+  ],
   "environment": "Exareme",
   "description": "Linear Regression using Exareme services",
   "constraints": {
@@ -11,4 +13,40 @@
       "polynominal": false
     }
   }
-}
+},
+  {
+    "code": "K_MEANS",
+    "label": "K_MEANS (exareme)",
+    "type": ["statistics"],
+    "environment": "Exareme",
+    "description": "K_MEANS",
+    "parameters": [{
+      "code": "k",
+      "label": "k",
+      "default_value": 5,
+      "type": "int",
+      "constraints": {
+        "min": 1,
+        "max": null
+      },
+      "description": "The number of clusters. Typical values range from 2 to 10."
+    }],
+    "constraints": {
+      "variable": {
+        "real": true,
+        "integer": true,
+        "binominal": true,
+        "polynominal": true
+      },
+      "groupings": {
+        "min_count": 0,
+        "max_count": 0
+      },
+      "covariables": {
+        "min_count": "1",
+        "max_count": null
+      },
+      "mixed": false
+    }
+  }
+]
