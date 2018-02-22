@@ -324,8 +324,11 @@ public class ExperimentApi extends WokenClientController {
     }
 
     private static boolean isExaremeAlgo(ExperimentQuery expQuery) {
-        return expQuery.getAlgorithms().size() > 0 && "WP_".equals(
-                expQuery.getAlgorithms().get(0).getCode().substring(0, 3));
+        String code = expQuery.getAlgorithms().get(0).getCode();
+        return expQuery.getAlgorithms().size() > 0
+                && ("WP_".equals(code.substring(0, 3))
+                || "glm_exareme".equals(code)
+                || "K_MEANS".equals(code));
     }
 
 }

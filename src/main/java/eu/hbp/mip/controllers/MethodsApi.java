@@ -1,8 +1,6 @@
 package eu.hbp.mip.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import eu.hbp.mip.akka.WokenClientController;
 import ch.chuv.lren.woken.messages.query.MethodsQuery$;
 import ch.chuv.lren.woken.messages.query.MethodsResponse;
@@ -45,7 +43,10 @@ public class MethodsApi extends WokenClientController {
             InputStream is = MethodsApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
-            JsonObject exaremeAlgo = new JsonParser().parse(br).getAsJsonObject();
+            JsonElement element = new JsonParser().parse(br);
+            LOGGER.info("element" + element.toString());
+            JsonArray exaremeAlgo = element.getAsJsonArray();
+            LOGGER.info("exaremeAlgo" + exaremeAlgo.toString());
             catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
             // << Temporary
 
