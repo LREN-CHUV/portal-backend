@@ -44,10 +44,8 @@ public class MethodsApi extends WokenClientController {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             JsonElement element = new JsonParser().parse(br);
-            LOGGER.info("element" + element.toString());
             JsonArray exaremeAlgo = element.getAsJsonArray();
-            LOGGER.info("exaremeAlgo" + exaremeAlgo.toString());
-            catalog.get("algorithms").getAsJsonArray().add(exaremeAlgo);
+            catalog.get("algorithms").getAsJsonArray().addAll(exaremeAlgo);
             // << Temporary
 
             return ResponseEntity.ok(gson.toJson(catalog));
