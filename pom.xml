@@ -54,7 +54,7 @@
         <protobuf-java.version>3.1.0</protobuf-java.version>
 
         <scala.epoch.version>2.11</scala.epoch.version>
-        <scala.release.version>2.11.11</scala.release.version>
+        <scala.release.version>2.11.12</scala.release.version>
 
         <scala.zinc.version>1.1.0</scala.zinc.version>
         <scala.plugin.macro.version>2.1.1</scala.plugin.macro.version>
