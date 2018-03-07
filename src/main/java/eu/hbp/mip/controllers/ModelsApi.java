@@ -4,6 +4,8 @@
 
 package eu.hbp.mip.controllers;
 
+import ch.chuv.lren.mip.portal.WokenConversions;
+import ch.chuv.lren.woken.messages.query.filters.FilterRule;
 import com.github.slugify.Slugify;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import scala.Option;
 
 import java.io.IOException;
 import java.util.*;
@@ -282,12 +285,15 @@ public class ModelsApi {
         allVars.addAll(model.getDataset().getHeader());
         allVars.addAll(model.getDataset().getGrouping());
 
-        String filters = model.getQuery().getFilters();
+        WokenConversions conv = new WokenConversions();
+        String filtersJson = model.getQuery().getFilters();
+        Option<FilterRule> filters = conv.toFilterRule(filtersJson);
+        String filtersSQL = conv.toSqlWhere(filters);
 
         Gson gson = new Gson();
         JsonObject jsonModel = gson.fromJson(gson.toJson(model, Model.class), JsonObject.class);
         jsonModel.get("dataset").getAsJsonObject()
-                .add("data", dataUtil.getDataFromVariables(allVars, filters));
+                .add("data", dataUtil.getDataFromVariables(allVars, filtersSQL));
 
         return gson.fromJson(jsonModel, Model.class);
     }
