@@ -53,7 +53,7 @@ public class ExperimentApi extends WokenClientController {
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    @Value("#{'${services.exareme.miningExaremeUrl:http://prozac.madgik.di.uoa.gr:9090/mining/query}'}")
+    @Value("#{'${services.exareme.miningExaremeUrl:http://localhost:9090/mining/query}'}")
     public String miningExaremeQueryUrl;
 
     @Autowired

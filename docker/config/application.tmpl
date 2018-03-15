@@ -84,7 +84,7 @@ endpoints:
 
 services:
   exareme:
-    miningExaremeUrl: {{ default .Env.EXAREME_URL "http://hbps2.chuv.ch:9090" }}/mining/query
+    miningExaremeUrl: {{ default .Env.EXAREME_URL "http://localhost:9090" }}/mining/query
 
 akka:
   woken:

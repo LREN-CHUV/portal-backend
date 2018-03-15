@@ -40,7 +40,7 @@ public class MiningApi extends WokenClientController {
     @Autowired
     private SecurityConfiguration securityConfiguration;
 
-    @Value("#{'${services.query.miningExaremeUrl:http://hbps2.chuv.ch:9090/mining/query}'}")
+    @Value("#{'${services.query.miningExaremeUrl:http://localhost:9090/mining/query}'}")
     public String queryUrl;
 
     @ApiOperation(value = "Run an algorithm", response = String.class)
