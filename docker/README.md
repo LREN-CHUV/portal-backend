@@ -24,7 +24,6 @@ To use this image, you need a running instance of PostgreSQL and to configure th
 * FEATURES_DB_USER: User to use when connecting to the science database, default value is "postgres".
 * FEATURES_DB_PASSWORD: Password to use when connecting to the science database.
 * FEATURES_DB_MAIN_TABLE: Table that contains the scientific data to use, default value is "features".
-* DATASETS (temporary hack): list of datasets available in the features table
 
 
 ### OAUTH2 LOGIN
