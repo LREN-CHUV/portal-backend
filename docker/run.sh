@@ -10,4 +10,4 @@ fi
 if [ ! -z "$FEATURES_DB_SERVER" ]; then
   OPTS="$OPTS -wait tcp://$FEATURES_DB_SERVER -timeout 60s"
 fi
-dockerize $OPTS java ${JAVA_OPTS} -jar /usr/share/jars/portal-backend.jar
+dockerize $OPTS java ${JAVA_OPTIONS} -jar /usr/share/jars/portal-backend.jar
