@@ -44,7 +44,10 @@ public class MiningApi extends WokenClientController {
     public String queryUrl;
 
     @ApiOperation(value = "Run an algorithm", response = String.class)
-    @Cacheable(value = "mining", condition = "#query != null and #query.getAlgorithm().getCode() == 'histograms'", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
+    @Cacheable(value = "mining",
+            condition = "#query != null and (#query.getAlgorithm().getCode() == 'histograms' or #query.getAlgorithm().getCode() == 'histograms')",
+            key = "#query.toString()",
+            unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) {
         LOGGER.info("Run an algorithm");
