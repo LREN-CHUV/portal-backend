@@ -166,7 +166,7 @@ public class VariablesApi {
     }
 
 
-    private List<String> loadVariables() {
+    public List<String> loadVariables() {
         String sqlQuery = String.format(
                 "SELECT * FROM meta_variables where upper(target_table)='%s'", featuresMainTable.toUpperCase());
         SqlRowSet data = metaJdbcTemplate.queryForRowSet(sqlQuery);

@@ -31,7 +31,7 @@ import java.util.function.Function;
  */
 public abstract class WokenClientController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ActorSystem actorSystem;
@@ -44,6 +44,7 @@ public abstract class WokenClientController {
 
     private ActorRef wokenClient;
 
+    @SuppressWarnings("unused")
     @PostConstruct
     public void initClusterClient() {
         LOGGER.info("Start Woken client " + wokenReceptionistPath);
@@ -56,7 +57,8 @@ public abstract class WokenClientController {
         return Collections.singleton(ActorPaths.fromString(wokenReceptionistPath));
     }
 
-    protected <A, B> ResponseEntity askWoken(A message, int waitInSeconds, Function<B, ResponseEntity> handleResponse) {
+    @SuppressWarnings("unchecked")
+    protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
         ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, message, true);
@@ -64,35 +66,29 @@ public abstract class WokenClientController {
 
         Future<Object> future = Patterns.ask(wokenClient, queryMessage, timeout);
 
-        B result;
-        try {
-            result = (B) Await.result(future, timeout.duration());
-        } catch (Exception e) {
-            LOGGER.error("Cannot receive algorithm result from woken: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }
-
-        return handleResponse.apply(result);
+        return (B) Await.result(future, timeout.duration());
     }
 
+    protected <A, B> ResponseEntity requestWoken(A message, int waitInSeconds, Function<B, ResponseEntity> handleResponse) {
+        try {
+            B result = askWoken(message, waitInSeconds);
+            return handleResponse.apply(result);
+        } catch (Exception e) {
+            final String msg = "Cannot receive result from woken: " + e.getMessage();
+            LOGGER.error(msg, e);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(msg);
+        }
+    }
 
     protected <A extends Query> ResponseEntity askWokenQuery(A query, int waitInSeconds, Function<QueryResult, ResponseEntity> handleResponse) {
-        LOGGER.info("Akka is trying to reach remote " + wokenPath);
-
-        ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, query, true);
-        Timeout timeout = new Timeout(Duration.create(waitInSeconds, "seconds"));
-
-        Future<Object> future = Patterns.ask(wokenClient, queryMessage, timeout);
-
-        QueryResult result;
         try {
-            result = (QueryResult) Await.result(future, timeout.duration());
+            QueryResult result = askWoken(query, waitInSeconds);
+            return handleResponse.apply(result);
         } catch (Exception e) {
-            LOGGER.error("Cannot receive algorithm result from woken: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+            final String msg = "Cannot receive algorithm result from woken: " + e.getMessage();
+            LOGGER.error(msg, e);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(msg);
         }
-
-        return handleResponse.apply(result);
     }
 
     protected <A extends Query> Future<Object> sendWokenQuery(A query, int timeout) {
@@ -101,11 +97,6 @@ public abstract class WokenClientController {
         ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, query, true);
 
         return Patterns.ask(wokenClient, queryMessage, timeout);
-    }
-
-    protected ActorRef createActor(String actorBeanName, String actorName) {
-        return actorSystem.actorOf(SpringExtension.SPRING_EXTENSION_PROVIDER.get(actorSystem)
-                .props(actorBeanName), actorName);
     }
 
     protected ExecutionContext getExecutor() {

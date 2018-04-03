@@ -35,11 +35,11 @@ public class MethodsApi extends WokenClientController {
     public ResponseEntity listAvailableMethodsAndValidations() {
         LOGGER.info("List available methods and validations");
 
-        return askWoken(MethodsQuery$.MODULE$, 10, r -> {
+        return requestWoken(MethodsQuery$.MODULE$, 10, r -> {
             MethodsResponse result = (MethodsResponse) r;
 
             // >> Temporary : should return result.methods() in the future
-            JsonObject catalog = new JsonParser().parse(result.methods()).getAsJsonObject();
+            JsonObject catalog = new JsonParser().parse(result.methods().compactPrint()).getAsJsonObject();
             InputStream is = MethodsApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
