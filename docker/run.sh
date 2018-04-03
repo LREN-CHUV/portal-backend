@@ -10,4 +10,16 @@ fi
 if [ ! -z "$FEATURES_DB_SERVER" ]; then
   OPTS="$OPTS -wait tcp://$FEATURES_DB_SERVER -timeout 60s"
 fi
+if [ ! -z "$HTTP_PROXY_HOST" ]; then
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dhttp.proxyHost=$HTTP_PROXY_HOST"
+fi
+if [ ! -z "$HTTP_PROXY_PORT" ]; then
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dhttp.proxyPort=$HTTP_PROXY_PORT"
+fi
+if [ ! -z "$HTTPS_PROXY_HOST" ]; then
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dhttps.proxyHost=$HTTPS_PROXY_HOST"
+fi
+if [ ! -z "$HTTPS_PROXY_PORT" ]; then
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dhttps.proxyPort=$HTTPS_PROXY_PORT"
+fi
 dockerize $OPTS java ${JAVA_OPTIONS} -jar /usr/share/jars/portal-backend.jar

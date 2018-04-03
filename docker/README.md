@@ -63,3 +63,10 @@ To use this image, you need a running instance of PostgreSQL and to configure th
 
 * CONTEXT_PATH:  context path appended to all services running in this container. Default to "/services".
 * SESSION_TIMEOUT: Timeout in milliseconds for session expiration. Default to 2592000.
+
+### PROXY
+
+* HTTP_PROXY_HOST: HTTP proxy host
+* HTTP_PROXY_PORT: HTTP proxy port
+* HTTPS_PROXY_HOST: HTTPS proxy host
+* HTTPS_PROXY_PORT: HTTPS proxy port
