@@ -5,7 +5,7 @@
 
     <groupId>eu.hbp.mip</groupId>
     <artifactId>portal-backend</artifactId>
-    <version>2.6.8</version><!-- BUMP_VERSION -->
+    <version>2.6.9</version><!-- BUMP_VERSION -->
     <packaging>jar</packaging>
 
     <name>portal-backend</name>
@@ -47,9 +47,9 @@
         <spring-data-jpa.version>1.10.11.RELEASE</spring-data-jpa.version>
         <spring-boot-starter-actuator.version>1.4.7.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <woken-messages.version>2.6.3</woken-messages.version>
+        <woken-messages.version>2.6.5</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
-        <akka.version>2.5.9</akka.version>
+        <akka.version>2.5.11</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
         <protobuf-java.version>3.1.0</protobuf-java.version>
 
