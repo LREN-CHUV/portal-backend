@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.AlgorithmParam;
 import eu.hbp.mip.model.Experiment;
 import eu.hbp.mip.model.ExperimentQuery;
 import eu.hbp.mip.model.User;
@@ -83,12 +84,12 @@ public class ExperimentApi extends WokenClientController {
 
         LOGGER.info("Experiment saved");
 
-        if (isExaremeAlgo(expQuery)) {
-            String algoCode = expQuery.getAlgorithms().get(0).getCode();
-            sendExaremeExperiment(experiment, algoCode);
-        }
-        else {
+        if (!experiment.isExaremeAlgorithm()) {
             sendExperiment(experiment);
+        } else {
+            String algoCode = expQuery.getAlgorithms().get(0).getCode();
+            List<AlgorithmParam> params =  expQuery.getAlgorithms().get(0).getParameters();
+            sendExaremeExperiment(experiment, algoCode, params);
         }
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
@@ -286,11 +287,11 @@ public class ExperimentApi extends WokenClientController {
         }, ec);
     }
 
-    private void sendExaremeExperiment(Experiment experiment, String algoCode) {
+    private void sendExaremeExperiment(Experiment experiment, String algoCode, List <AlgorithmParam> params) {
         // >> Temporary: we should integrate exareme in a proper way in the future
         // this runs in the background. For future optimization: use a thread pool
         new Thread(() -> {
-            String query = experiment.computeExaremeQuery();
+            String query = experiment.computeExaremeQuery(params);
             String url = miningExaremeQueryUrl + "/" + algoCode;
             // Results are stored in the experiment object
             try {
@@ -322,13 +323,4 @@ public class ExperimentApi extends WokenClientController {
 
         LOGGER.info("Experiment updated (finished)");
     }
-
-    private static boolean isExaremeAlgo(ExperimentQuery expQuery) {
-        String code = expQuery.getAlgorithms().get(0).getCode();
-        return expQuery.getAlgorithms().size() > 0
-                && ("WP_".equals(code.substring(0, 3))
-                || "glm_exareme".equals(code)
-                || "K_MEANS".equals(code));
-    }
-
 }

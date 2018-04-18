@@ -1,10 +1,7 @@
 package eu.hbp.mip.model;
 
 import ch.chuv.lren.mip.portal.WokenConversions;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import ch.chuv.lren.woken.messages.datasets.DatasetId;
@@ -21,10 +18,7 @@ import scala.collection.JavaConversions;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -137,44 +131,60 @@ public class Experiment {
     }
 
 
-    public String computeExaremeQuery() {
+    public String computeExaremeQuery(List<AlgorithmParam> params) {
         List<ExaremeQueryElement> queryElements = new LinkedList<>();
-        for (Variable var : model.getQuery().getVariables())
+
+        // columns
+        List<String> columns = new ArrayList<>();
+        for (Variable var : model.getQuery().getVariables()) { columns.add(var.getCode()); }
+        for (Variable var : model.getQuery().getCovariables()) { columns.add(var.getCode()); }
+        for (Variable var : model.getQuery().getGrouping()) { columns.add(var.getCode()); }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (String s : columns)
         {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("variable");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
+            i++;
+            sb.append(s);
+            if (i < columns.size()) {
+                sb.append(",");
+            }
         }
-        for (Variable var : model.getQuery().getCovariables())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("covariables");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
-        }
-        for (Variable var : model.getQuery().getGrouping())
-        {
-            ExaremeQueryElement el = new ExaremeQueryElement();
-            el.setName("groupings");
-            el.setDesc("");
-            el.setValue(var.getCode());
-            queryElements.add(el);
+        ExaremeQueryElement columnsEl = new ExaremeQueryElement();
+        columnsEl.setName("columns");
+        columnsEl.setDesc("");
+        columnsEl.setValue(sb.toString());
+        queryElements.add(columnsEl);
+
+        // parameters
+        if (params != null) {
+            for (AlgorithmParam p : params)
+            {
+                ExaremeQueryElement paramEl = new ExaremeQueryElement();
+                paramEl.setName(p.getCode());
+                paramEl.setDesc("");
+                paramEl.setValue(p.getValue());
+                queryElements.add(paramEl);
+            }
         }
 
-        ExaremeQueryElement tableEl = new ExaremeQueryElement();
-        tableEl.setName("showtable");
-        tableEl.setDesc("");
-        tableEl.setValue("TotalResults");
-        queryElements.add(tableEl);
+        // datasets
+        StringBuilder datasets = new StringBuilder();
+        List<Variable> trainingDatasets = model.getQuery().getTrainingDatasets();
+        int j = 0;
+        for (Variable var : trainingDatasets)
+        {
+            j++;
+            datasets.append(var.getCode());
+            if (j < trainingDatasets.size() ) {
+                datasets.append(",");
+            }
+        }
 
-        ExaremeQueryElement formatEl = new ExaremeQueryElement();
-        formatEl.setName("format");
-        formatEl.setDesc("");
-        formatEl.setValue("True");
-        queryElements.add(formatEl);
+        ExaremeQueryElement datasetsEl = new ExaremeQueryElement();
+        datasetsEl.setName("dataset");
+        datasetsEl.setDesc("");
+        datasetsEl.setValue(datasets.toString());
+        queryElements.add(datasetsEl);
 
         return gson.toJson(queryElements);
     }
@@ -197,11 +207,30 @@ public class Experiment {
             exp.add("validations", jsonValidations);
         }
 
-        if (this.result != null && !this.hasServerError)
-        {
+        if (this.result != null && !this.hasServerError) {
             exp.remove("result");
-            JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
-            exp.add("result", jsonResult);
+
+            if (!this.isExaremeAlgorithm()) {
+                JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
+                exp.add("result", jsonResult);
+            } else {
+                JsonArray jsonArrayResult = new JsonArray();
+                JsonObject jsonObjectResult = new JsonObject();
+                exp.remove("result");
+
+                JsonObject jsonData = parser.parse(this.result).getAsJsonArray().get(0).getAsJsonObject();
+                jsonObjectResult.add("data", jsonData);
+
+                JsonObject algoObject = parser.parse(this.algorithms).getAsJsonArray().get(0).getAsJsonObject();
+                jsonObjectResult.add("algorithm", algoObject.get("name"));
+                jsonObjectResult.add("code", algoObject.get("code"));
+
+                jsonObjectResult.add("type", new JsonPrimitive("application/vnd.highcharts+json"));
+
+                jsonArrayResult.add(jsonObjectResult);
+
+                exp.add("result", jsonArrayResult);
+            }
         }
 
         return exp;
@@ -309,5 +338,13 @@ public class Experiment {
 
     public void setShared(boolean shared) {
         this.shared = shared;
+    }
+
+    public boolean isExaremeAlgorithm() {
+        String algorithms = this.algorithms;
+        Boolean isExareme =  algorithms.contains("WP_")
+                || algorithms.contains("K_MEANS");
+
+        return isExareme;
     }
 }
