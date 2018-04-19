@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import scala.Option;
+import scala.Some;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -93,10 +95,10 @@ public class MiningApi extends WokenClientController {
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
                         } else {
                             Mining mining = new Mining(
-                                    result.jobId(),
+                                    unwrap(result.jobId()),
                                     result.node(),
-                                    result.algorithm(),
-                                    result.shape(),
+                                    unwrap(result.algorithm()),
+                                    result.type().mime(),
                                     Date.from(result.timestamp().toInstant()),
                                     result.data().get().compactPrint()
                             );
@@ -104,6 +106,13 @@ public class MiningApi extends WokenClientController {
                         }
                     });
         }
+    }
+
+    private static String unwrap(Option<String> option) {
+        if (option.isDefined())
+            return option.get();
+        else
+            return "";
     }
 
     private static boolean isExaremeAlgo(eu.hbp.mip.model.MiningQuery query) {
