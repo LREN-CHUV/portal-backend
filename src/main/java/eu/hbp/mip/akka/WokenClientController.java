@@ -1,11 +1,9 @@
 package eu.hbp.mip.akka;
 
-import akka.actor.ActorPath;
-import akka.actor.ActorPaths;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.cluster.client.ClusterClient;
-import akka.cluster.client.ClusterClientSettings;
+import akka.cluster.pubsub.DistributedPubSub;
+import akka.cluster.pubsub.DistributedPubSubMediator;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ch.chuv.lren.woken.messages.query.Query;
@@ -22,8 +20,6 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -42,29 +38,23 @@ public abstract class WokenClientController {
     @Value("#{'${akka.woken.path:/user/entrypoint}'}")
     private String wokenPath;
 
-    private ActorRef wokenClient;
+    private ActorRef wokenMediator;
 
     @SuppressWarnings("unused")
     @PostConstruct
     public void initClusterClient() {
         LOGGER.info("Start Woken client " + wokenReceptionistPath);
-        wokenClient = actorSystem.actorOf(ClusterClient.props(
-                ClusterClientSettings.create(actorSystem).withInitialContacts(initialContacts())),
-                "client-" + getClass().getSimpleName());
-    }
-
-    private Set<ActorPath> initialContacts () {
-        return Collections.singleton(ActorPaths.fromString(wokenReceptionistPath));
+        wokenMediator = DistributedPubSub.get(actorSystem).mediator();
     }
 
     @SuppressWarnings("unchecked")
     protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
-        ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, message, true);
+        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, message, true);
         Timeout timeout = new Timeout(Duration.create(waitInSeconds, "seconds"));
 
-        Future<Object> future = Patterns.ask(wokenClient, queryMessage, timeout);
+        Future<Object> future = Patterns.ask(wokenMediator, queryMessage, timeout);
 
         return (B) Await.result(future, timeout.duration());
     }
@@ -94,9 +84,9 @@ public abstract class WokenClientController {
     protected <A extends Query> Future<Object> sendWokenQuery(A query, int timeout) {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
-        ClusterClient.Send queryMessage = new ClusterClient.Send(wokenPath, query, true);
+        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, query, true);
 
-        return Patterns.ask(wokenClient, queryMessage, timeout);
+        return Patterns.ask(wokenMediator, queryMessage, timeout);
     }
 
     protected ExecutionContext getExecutor() {
