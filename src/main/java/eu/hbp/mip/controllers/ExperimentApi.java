@@ -84,7 +84,7 @@ public class ExperimentApi extends WokenClientController {
 
         LOGGER.info("Experiment saved");
 
-        if (!experiment.isExaremeAlgorithm()) {
+        if (!experiment.isExaremeAlgorithm()._1) {
             sendExperiment(experiment);
         } else {
             String algoCode = expQuery.getAlgorithms().get(0).getCode();

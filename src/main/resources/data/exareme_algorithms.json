@@ -1,36 +1,52 @@
-[{
-  "code": "glm_exareme",
-  "label": "GLM (exareme)",
-  "type": [
-    "statistics"
-  ],
-  "environment": "Exareme",
-  "description": "Linear Regression using Exareme services",
-  "constraints": {
-    "variable": {
-      "real": true,
-      "binominal": false,
-      "polynominal": false
-    }
-  }
-},
+[
   {
-    "code": "K_MEANS",
-    "label": "K_MEANS (exareme)",
+    "code": "WP_LINEAR_REGRESSION",
+    "label": "Linear regression (Exareme)",
     "type": ["statistics"],
     "environment": "Exareme",
-    "description": "K_MEANS",
-    "parameters": [{
-      "code": "k",
-      "label": "k",
-      "default_value": 5,
-      "type": "int",
-      "constraints": {
-        "min": 1,
-        "max": null
+    "description": "Linear Regression using Exareme services",
+    "parameters": [
+      {
+        "code": "x",
+        "label": "x",
+        "type": "string",
+        "description": "The expression for x-axis"
       },
-      "description": "The number of clusters. Typical values range from 2 to 10."
-    }],
+      {
+        "code": "y",
+        "label": "y",
+        "type": "string",
+        "description": "The expression for y-axis"
+      }
+    ],
+    "constraints": {
+      "variable": {
+        "real": true,
+        "binominal": true,
+        "polynominal": true
+      }
+    }
+  },
+  {
+    "code": "K_MEANS",
+    "label": "K_MEANS (Exareme)",
+    "type": ["statistics"],
+    "environment": "Exareme",
+    "description": "k-Means using Exareme services",
+    "parameters": [
+      {
+        "code": "k",
+        "label": "k",
+        "default_value": 5,
+        "type": "int",
+        "constraints": {
+          "min": 1,
+          "max": null
+        },
+        "description":
+        "The number of clusters. Typical values range from 2 to 10."
+      }
+    ],
     "constraints": {
       "variable": {
         "real": true,

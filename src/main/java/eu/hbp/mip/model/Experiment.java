@@ -19,7 +19,7 @@ import scala.collection.JavaConversions;
 import javax.persistence.*;
 import java.lang.reflect.Type;
 import java.util.*;
-
+import scala.Tuple2;
 
 /**
  * Created by habfast on 21/04/16.
@@ -27,6 +27,10 @@ import java.util.*;
 @Entity
 @Table(name = "`experiment`")
 public class Experiment {
+
+    public static final String WP_K_MEANS = "K_MEANS";
+
+    public static final String WP_LINEAR_REGRESSION = "WP_LINEAR_REGRESSION";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Experiment.class);
 
@@ -134,26 +138,29 @@ public class Experiment {
     public String computeExaremeQuery(List<AlgorithmParam> params) {
         List<ExaremeQueryElement> queryElements = new LinkedList<>();
 
-        // columns
-        List<String> columns = new ArrayList<>();
-        for (Variable var : model.getQuery().getVariables()) { columns.add(var.getCode()); }
-        for (Variable var : model.getQuery().getCovariables()) { columns.add(var.getCode()); }
-        for (Variable var : model.getQuery().getGrouping()) { columns.add(var.getCode()); }
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        for (String s : columns)
-        {
-            i++;
-            sb.append(s);
-            if (i < columns.size()) {
-                sb.append(",");
+        // Set algorithm specific queries
+        if (this.isExaremeAlgorithm()._2.equals(WP_K_MEANS)) {
+            // columns
+            List<String> columns = new ArrayList<>();
+            for (Variable var : model.getQuery().getVariables()) { columns.add(var.getCode()); }
+            for (Variable var : model.getQuery().getCovariables()) { columns.add(var.getCode()); }
+            for (Variable var : model.getQuery().getGrouping()) { columns.add(var.getCode()); }
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (String s : columns)
+            {
+                i++;
+                sb.append(s);
+                if (i < columns.size()) {
+                    sb.append(",");
+                }
             }
+            ExaremeQueryElement columnsEl = new ExaremeQueryElement();
+            columnsEl.setName("columns");
+            columnsEl.setDesc("");
+            columnsEl.setValue(sb.toString());
+            queryElements.add(columnsEl);
         }
-        ExaremeQueryElement columnsEl = new ExaremeQueryElement();
-        columnsEl.setName("columns");
-        columnsEl.setDesc("");
-        columnsEl.setValue(sb.toString());
-        queryElements.add(columnsEl);
 
         // parameters
         if (params != null) {
@@ -183,7 +190,8 @@ public class Experiment {
         ExaremeQueryElement datasetsEl = new ExaremeQueryElement();
         datasetsEl.setName("dataset");
         datasetsEl.setDesc("");
-        datasetsEl.setValue(datasets.toString());
+        datasetsEl.setValue("adni,ppmi,edsd");
+//        datasetsEl.setValue(datasets.toString());
         queryElements.add(datasetsEl);
 
         return gson.toJson(queryElements);
@@ -192,6 +200,7 @@ public class Experiment {
     public JsonObject jsonify() {
         JsonObject exp = gson.toJsonTree(this).getAsJsonObject();
         JsonParser parser = new JsonParser();
+        Tuple2<Boolean, String> isExaremeAlgorithm = this.isExaremeAlgorithm();
 
         if (this.algorithms != null)
         {
@@ -210,7 +219,7 @@ public class Experiment {
         if (this.result != null && !this.hasServerError) {
             exp.remove("result");
 
-            if (!this.isExaremeAlgorithm()) {
+            if (!isExaremeAlgorithm._1) {
                 JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
                 exp.add("result", jsonResult);
             } else {
@@ -225,7 +234,14 @@ public class Experiment {
                 jsonObjectResult.add("algorithm", algoObject.get("name"));
                 jsonObjectResult.add("code", algoObject.get("code"));
 
-                jsonObjectResult.add("type", new JsonPrimitive("application/vnd.highcharts+json"));
+                // add mime-type
+                if (jsonData.get("Error") != null){
+                    jsonObjectResult.add("type", new JsonPrimitive("text/plain+error"));
+                } else if (isExaremeAlgorithm._2 == WP_K_MEANS){
+                    jsonObjectResult.add("type", new JsonPrimitive("application/vnd.highcharts+json"));
+                } else if (isExaremeAlgorithm._2 == WP_LINEAR_REGRESSION){
+                    jsonObjectResult.add("type", new JsonPrimitive("application/vnd.dataresource+json"));
+                }
 
                 jsonArrayResult.add(jsonObjectResult);
 
@@ -340,11 +356,19 @@ public class Experiment {
         this.shared = shared;
     }
 
-    public boolean isExaremeAlgorithm() {
-        String algorithms = this.algorithms;
-        Boolean isExareme =  algorithms.contains("WP_")
-                || algorithms.contains("K_MEANS");
+    public Tuple2<Boolean, String> isExaremeAlgorithm() {
+        Boolean isExareme = false;
+        String algorithm = "";
 
-        return isExareme;
+        String algorithms = this.algorithms;
+        if (algorithms.contains(WP_K_MEANS)) {
+            isExareme = true;
+            algorithm = WP_K_MEANS;
+        } else if (algorithms.contains(WP_LINEAR_REGRESSION)) {
+            isExareme = true;
+            algorithm = WP_LINEAR_REGRESSION;
+        }
+
+        return new Tuple2(isExareme, algorithm);
     }
 }
