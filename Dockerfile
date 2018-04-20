@@ -24,7 +24,9 @@ COPY docker/README.md docker/run.sh /
 
 COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
-EXPOSE 8080
+# 8080: Web service API, health checks on http://host:8087/health
+# 4089: Akka cluster
+EXPOSE 4089 8080
 
 ENTRYPOINT ["/run.sh"]
 

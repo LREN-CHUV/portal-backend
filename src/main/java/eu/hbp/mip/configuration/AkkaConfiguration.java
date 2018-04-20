@@ -35,7 +35,7 @@ class AkkaConfiguration {
     @Bean
     public ActorSystem actorSystem() {
         Config config = ConfigFactory.load("application.conf");
-        ActorSystem system = ActorSystem.create("PortalBackend", config);
+        ActorSystem system = ActorSystem.create("woken", config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }

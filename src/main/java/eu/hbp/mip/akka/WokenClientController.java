@@ -51,7 +51,7 @@ public abstract class WokenClientController {
     protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
-        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, message, true);
+        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, message, false);
         Timeout timeout = new Timeout(Duration.create(waitInSeconds, "seconds"));
 
         Future<Object> future = Patterns.ask(wokenMediator, queryMessage, timeout);
@@ -81,12 +81,12 @@ public abstract class WokenClientController {
         }
     }
 
-    protected <A extends Query> Future<Object> sendWokenQuery(A query, int timeout) {
+    protected <A extends Query> Future<Object> sendWokenQuery(A query, int waitInSeconds) {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
 
-        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, query, true);
+        DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, query, false);
 
-        return Patterns.ask(wokenMediator, queryMessage, timeout);
+        return Patterns.ask(wokenMediator, queryMessage, waitInSeconds);
     }
 
     protected ExecutionContext getExecutor() {
