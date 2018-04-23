@@ -7,23 +7,23 @@
     "description": "Linear Regression using Exareme services",
     "parameters": [
       {
-        "code": "x",
-        "label": "x",
-        "type": "string",
-        "description": "The expression for x-axis"
-      },
-      {
-        "code": "y",
-        "label": "y",
-        "type": "string",
-        "description": "The expression for y-axis"
+        "code": "design",
+        "default_value": "factorial",
+        "description": "The type of multi-factors design. Choose 'factorial' to enable interactions analysis or 'additive' for a model without no interaction at all.",
+        "label": "design",
+        "type": "enumeration",
+        "values": [
+          "factorial",
+          "additive"
+        ]
       }
     ],
     "constraints": {
       "variable": {
-        "real": true,
-        "binominal": true,
-        "polynominal": true
+        "binominal": false,
+        "integer": true,
+        "polynominal": false,
+        "real": true
       }
     }
   },

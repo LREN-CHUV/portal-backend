@@ -293,6 +293,7 @@ public class ExperimentApi extends WokenClientController {
         new Thread(() -> {
             String query = experiment.computeExaremeQuery(params);
             String url = miningExaremeQueryUrl + "/" + algoCode;
+
             // Results are stored in the experiment object
             try {
                 StringBuilder results = new StringBuilder();

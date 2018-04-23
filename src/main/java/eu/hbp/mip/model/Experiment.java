@@ -138,13 +138,39 @@ public class Experiment {
     public String computeExaremeQuery(List<AlgorithmParam> params) {
         List<ExaremeQueryElement> queryElements = new LinkedList<>();
 
+        // parameters
+        String design = "";
+        if (params != null) {
+            for (AlgorithmParam p : params)
+            {
+                ExaremeQueryElement paramEl = new ExaremeQueryElement();
+                paramEl.setName(p.getCode());
+                paramEl.setDesc("");
+                paramEl.setValue(p.getValue());
+                queryElements.add(paramEl);
+
+                if (p.getCode().equals("design")) {
+                    design = p.getValue();
+                }
+            }
+        }
+
+        List<String> variables = new ArrayList<>();
+        List<String> covariables = new ArrayList<>();
+        List<String> groupings = new ArrayList<>();
+
+        for (Variable var : model.getQuery().getVariables()) { variables.add(var.getCode()); }
+        for (Variable var : model.getQuery().getCovariables()) { covariables.add(var.getCode()); }
+        for (Variable var : model.getQuery().getGrouping()) { groupings.add(var.getCode()); }
+
         // Set algorithm specific queries
-        if (this.isExaremeAlgorithm()._2.equals(WP_K_MEANS)) {
+        String algoName = this.isExaremeAlgorithm()._2;
+        if (algoName.equals(WP_K_MEANS)) {
             // columns
             List<String> columns = new ArrayList<>();
-            for (Variable var : model.getQuery().getVariables()) { columns.add(var.getCode()); }
-            for (Variable var : model.getQuery().getCovariables()) { columns.add(var.getCode()); }
-            for (Variable var : model.getQuery().getGrouping()) { columns.add(var.getCode()); }
+            columns.addAll(variables);
+            columns.addAll(covariables);
+            columns.addAll(groupings);
             StringBuilder sb = new StringBuilder();
             int i = 0;
             for (String s : columns)
@@ -160,18 +186,38 @@ public class Experiment {
             columnsEl.setDesc("");
             columnsEl.setValue(sb.toString());
             queryElements.add(columnsEl);
-        }
+        } else if (algoName.equals(WP_LINEAR_REGRESSION)) {
+            List<String> vars = new ArrayList<>();
+            vars.addAll(variables);
+            vars.addAll(covariables);
 
-        // parameters
-        if (params != null) {
-            for (AlgorithmParam p : params)
+            String operator = design.equals("factorial") ? "*" : "+";
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (String s : vars)
             {
-                ExaremeQueryElement paramEl = new ExaremeQueryElement();
-                paramEl.setName(p.getCode());
-                paramEl.setDesc("");
-                paramEl.setValue(p.getValue());
-                queryElements.add(paramEl);
+                i++;
+                sb.append(s);
+                if (i < vars.size()) {
+                    sb.append(operator);
+                }
             }
+            ExaremeQueryElement xEl = new ExaremeQueryElement();
+            xEl.setName("x");
+            xEl.setDesc("");
+            xEl.setValue(sb.toString());
+            queryElements.add(xEl);
+
+            StringBuilder sby = new StringBuilder();
+            for (String s : variables)
+            {
+                sby.append(s);
+            }
+            ExaremeQueryElement yEl = new ExaremeQueryElement();
+            yEl.setName("y");
+            yEl.setDesc("");
+            yEl.setValue(sby.toString());
+            queryElements.add(yEl);
         }
 
         // datasets
@@ -190,8 +236,7 @@ public class Experiment {
         ExaremeQueryElement datasetsEl = new ExaremeQueryElement();
         datasetsEl.setName("dataset");
         datasetsEl.setDesc("");
-        datasetsEl.setValue("adni,ppmi,edsd");
-//        datasetsEl.setValue(datasets.toString());
+        datasetsEl.setValue(datasets.toString());
         queryElements.add(datasetsEl);
 
         return gson.toJson(queryElements);
