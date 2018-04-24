@@ -49,7 +49,7 @@ class AkkaConfiguration {
     }
 
     @Bean
-    public Cluster cluster() {
+    public Cluster wokenCluster() {
         return new Cluster(actorSystem());
     }
 
