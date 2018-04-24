@@ -40,17 +40,22 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
     public void onApplicationEvent(ApplicationReadyEvent event) {
         // Pre-fill the local variable repository with the list of datasets, interpreted here as variables
         // (a bit like a categorical variable can be split into a set of variables (a.k.a one hot encoding in Data science) )
-        try {
-            for (Dataset dataset: datasetsApi.fetchDatasets()) {
-                final String code = dataset.dataset().code();
-                Variable v = variableRepository.findOne(code);
-                if (v == null) {
-                    v = new Variable(code);
-                    variableRepository.save(v);
+        // Try 5 times, to be more robust in the face of cluster failures / slow startup
+        for (int i = 0; i < 5; i++) {
+            try {
+                for (Dataset dataset : datasetsApi.fetchDatasets()) {
+                    final String code = dataset.dataset().code();
+                    Variable v = variableRepository.findOne(code);
+                    if (v == null) {
+                        v = new Variable(code);
+                        variableRepository.save(v);
+                    }
                 }
+                LOGGER.info("Datasets fetched from Woken");
+                break;
+            } catch (Exception e) {
+                LOGGER.error("Cannot initialise the variable repository. Is the connection to Woken working?", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("Cannot initialise the variable repository. Is the connection to Woken working?", e);
         }
 
         /*
