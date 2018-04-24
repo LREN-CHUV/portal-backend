@@ -50,7 +50,7 @@ class AkkaConfiguration {
 
     @Bean
     public Cluster wokenCluster() {
-        return new Cluster(actorSystem());
+        return Cluster.get(actorSystem());
     }
 
     @Bean
