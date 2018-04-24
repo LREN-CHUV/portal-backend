@@ -10,11 +10,12 @@ import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
@@ -31,18 +32,10 @@ class AkkaConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Value("#{'${akka.woken.host:woken}'}")
-    private String wokenHost;
-
-    @Value("#{'${akka.woken.port:8088}'}")
-    private String wokenPort;
-
-    @Value("#{'${akka.woken.path:/user/entrypoint}'}")
-    private String wokenPath;
+    private final Config config = ConfigFactory.load("application.conf");
 
     @Bean
     public ExtendedActorSystem actorSystem() {
-        Config config = ConfigFactory.load("application.conf");
         ExtendedActorSystem system = (ExtendedActorSystem) ActorSystem.create("woken", config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
@@ -54,13 +47,13 @@ class AkkaConfiguration {
     }
 
     @Bean
-    public String wokenReceptionistPath() {
-        return "akka.tcp://woken@" + wokenHost + ":" + wokenPort + "/system/receptionist";
+    public List<String> wokenPath() {
+        return config.getStringList("akka.cluster.seed-nodes");
     }
 
     @Bean
     public ActorRef wokenMediator() {
-        LOGGER.info("Start Woken client " + wokenReceptionistPath());
+        LOGGER.info("Connect to Woken cluster at " + String.join(",", wokenPath()));
         return DistributedPubSub.get(actorSystem()).mediator();
     }
 

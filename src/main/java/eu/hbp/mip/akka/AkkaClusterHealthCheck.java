@@ -1,6 +1,5 @@
 package eu.hbp.mip.akka;
 
-import akka.actor.ActorRef;
 import akka.cluster.Cluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -10,9 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AkkaClusterHealthCheck implements HealthIndicator {
-
-    @Autowired
-    private ActorRef wokenMediator;
 
     @Autowired
     private Cluster wokenCluster;

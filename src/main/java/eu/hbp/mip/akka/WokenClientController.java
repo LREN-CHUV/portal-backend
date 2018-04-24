@@ -30,9 +30,6 @@ public abstract class WokenClientController {
     @Autowired
     private ActorSystem actorSystem;
 
-    @Autowired
-    private String wokenReceptionistPath;
-
     @Value("#{'${akka.woken.path:/user/entrypoint}'}")
     private String wokenPath;
 
