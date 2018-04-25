@@ -14,7 +14,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
@@ -36,14 +38,26 @@ class AkkaConfiguration {
 
     @Bean
     public ExtendedActorSystem actorSystem() {
+        LOGGER.info("Create actor system at " + wokenClusterHost() + ":" + wokenClusterPort());
         ExtendedActorSystem system = (ExtendedActorSystem) ActorSystem.create("woken", config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }
 
     @Bean
+    @Lazy
     public Cluster wokenCluster() {
         return Cluster.get(actorSystem());
+    }
+
+    @Bean
+    public String wokenClusterHost() {
+        return config.getString("clustering.ip");
+    }
+
+    @Bean
+    public Integer wokenClusterPort() {
+        return config.getInt("clustering.port");
     }
 
     @Bean
@@ -52,8 +66,9 @@ class AkkaConfiguration {
     }
 
     @Bean
+    @Lazy
     public ActorRef wokenMediator() {
-        LOGGER.info("Connect to Woken cluster at " + String.join(",", wokenPath()));
+        LOGGER.info("Connect to Woken cluster nodes at " + String.join(",", wokenPath()));
         return DistributedPubSub.get(actorSystem()).mediator();
     }
 
