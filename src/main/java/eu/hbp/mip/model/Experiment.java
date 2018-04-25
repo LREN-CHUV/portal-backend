@@ -29,8 +29,10 @@ import scala.Tuple2;
 public class Experiment {
 
     public static final String WP_K_MEANS = "K_MEANS";
-
     public static final String WP_LINEAR_REGRESSION = "WP_LINEAR_REGRESSION";
+    public static final String WP_VARIABLES_HISTOGRAM = "WP_VARIABLES_HISTOGRAM";
+    public static final String WP_REGRESSION_TREE = "PIPELINE_ISOUP_REGRESSION_TREE_SERIALIZER";
+    public static final String WP_MODEL_TREE = "PIPELINE_ISOUP_MODEL_TREE_SERIALIZER";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Experiment.class);
 
@@ -134,12 +136,27 @@ public class Experiment {
                 validationsSeq, Option.empty());
     }
 
+    private String chainsParams(List<String> params, String operator) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (String s : params)
+        {
+            i++;
+            sb.append(s);
+            if (i < params.size()) {
+                sb.append(operator);
+            }
+        }
+        return sb.toString();
+    }
 
     public String computeExaremeQuery(List<AlgorithmParam> params) {
         List<ExaremeQueryElement> queryElements = new LinkedList<>();
 
         // parameters
-        String design = "";
+        String design = ""; // TODO: don't assign to a global
+        String nobuckets = "";
+
         if (params != null) {
             for (AlgorithmParam p : params)
             {
@@ -151,6 +168,10 @@ public class Experiment {
 
                 if (p.getCode().equals("design")) {
                     design = p.getValue();
+                }
+
+                if (p.getCode().equals("nobuckets")) {
+                    nobuckets = p.getValue();
                 }
             }
         }
@@ -167,56 +188,69 @@ public class Experiment {
         String algoName = this.isExaremeAlgorithm()._2;
         if (algoName.equals(WP_K_MEANS)) {
             // columns
-            List<String> columns = new ArrayList<>();
-            columns.addAll(variables);
+            List<String> columns = new ArrayList<>(variables);
             columns.addAll(covariables);
             columns.addAll(groupings);
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (String s : columns)
-            {
-                i++;
-                sb.append(s);
-                if (i < columns.size()) {
-                    sb.append(",");
-                }
-            }
+
             ExaremeQueryElement columnsEl = new ExaremeQueryElement();
             columnsEl.setName("columns");
             columnsEl.setDesc("");
-            columnsEl.setValue(sb.toString());
+            columnsEl.setValue(chainsParams(columns, ";"));
             queryElements.add(columnsEl);
         } else if (algoName.equals(WP_LINEAR_REGRESSION)) {
-            List<String> vars = new ArrayList<>();
-            vars.addAll(variables);
-            vars.addAll(covariables);
+            List<String> nominals = new ArrayList<>(covariables);
+            nominals.addAll(groupings);
 
             String operator = design.equals("factorial") ? "*" : "+";
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (String s : vars)
-            {
-                i++;
-                sb.append(s);
-                if (i < vars.size()) {
-                    sb.append(operator);
-                }
-            }
+
             ExaremeQueryElement xEl = new ExaremeQueryElement();
             xEl.setName("x");
             xEl.setDesc("");
-            xEl.setValue(sb.toString());
+            xEl.setValue(chainsParams(nominals, operator));
             queryElements.add(xEl);
 
-            StringBuilder sby = new StringBuilder();
-            for (String s : variables)
-            {
-                sby.append(s);
-            }
             ExaremeQueryElement yEl = new ExaremeQueryElement();
             yEl.setName("y");
             yEl.setDesc("");
-            yEl.setValue(sby.toString());
+            yEl.setValue(chainsParams(variables, ";"));
+            queryElements.add(yEl);
+        } else if (algoName.equals(WP_VARIABLES_HISTOGRAM)) {
+            List<String> column1 = new ArrayList<>(variables);
+            ExaremeQueryElement columnsEl = new ExaremeQueryElement();
+            columnsEl.setName("column1");
+            columnsEl.setDesc("");
+            columnsEl.setValue(chainsParams(column1, ","));
+            queryElements.add(columnsEl);
+
+            List<String> column2 = new ArrayList<>(covariables);
+            ExaremeQueryElement columnsEl2 = new ExaremeQueryElement();
+            columnsEl2.setName("column2");
+            columnsEl2.setDesc("");
+            columnsEl2.setValue(chainsParams(column2, ","));
+            queryElements.add(columnsEl2);
+
+            if (!nobuckets.isEmpty()) {
+                ExaremeQueryElement columnsEl3 = new ExaremeQueryElement();
+                columnsEl3.setName("nobuckets");
+                columnsEl3.setDesc("");
+                columnsEl3.setValue(nobuckets);
+                queryElements.add(columnsEl3);
+            }
+        } else if (algoName.equals(WP_REGRESSION_TREE) || algoName.equals(WP_MODEL_TREE)) {
+            List<String> target = new ArrayList<>(variables);
+            List<String> descriptive = new ArrayList<>(covariables);
+            descriptive.addAll(groupings);
+
+            ExaremeQueryElement xEl = new ExaremeQueryElement();
+            xEl.setName("target_attributes");
+            xEl.setDesc("");
+            xEl.setValue(chainsParams(target, ","));
+            queryElements.add(xEl);
+
+            ExaremeQueryElement yEl = new ExaremeQueryElement();
+            yEl.setName("descriptive_attributes");
+            yEl.setDesc("");
+            yEl.setValue(chainsParams(descriptive, ","));
             queryElements.add(yEl);
         }
 
@@ -280,12 +314,15 @@ public class Experiment {
                 jsonObjectResult.add("code", algoObject.get("code"));
 
                 // add mime-type
-                if (jsonData.get("Error") != null){
+                String algo = isExaremeAlgorithm._2;
+                if (jsonData.get("Error") != null) {
                     jsonObjectResult.add("type", new JsonPrimitive("text/plain+error"));
-                } else if (isExaremeAlgorithm._2 == WP_K_MEANS){
+                } else if (algo.equals( WP_K_MEANS) || algo.equals( WP_VARIABLES_HISTOGRAM)) {
                     jsonObjectResult.add("type", new JsonPrimitive("application/vnd.highcharts+json"));
-                } else if (isExaremeAlgorithm._2 == WP_LINEAR_REGRESSION){
+                } else if (algo.equals(WP_LINEAR_REGRESSION)) {
                     jsonObjectResult.add("type", new JsonPrimitive("application/vnd.dataresource+json"));
+                } else if (algo.equals(WP_REGRESSION_TREE) || algo.equals(WP_MODEL_TREE)) {
+                    jsonObjectResult.add("type", new JsonPrimitive("application/vnd.visjs+javascript"));
                 }
 
                 jsonArrayResult.add(jsonObjectResult);
@@ -406,12 +443,22 @@ public class Experiment {
         String algorithm = "";
 
         String algorithms = this.algorithms;
+
         if (algorithms.contains(WP_K_MEANS)) {
             isExareme = true;
             algorithm = WP_K_MEANS;
         } else if (algorithms.contains(WP_LINEAR_REGRESSION)) {
             isExareme = true;
             algorithm = WP_LINEAR_REGRESSION;
+        } else if (algorithms.contains(WP_VARIABLES_HISTOGRAM)) {
+            isExareme = true;
+            algorithm = WP_VARIABLES_HISTOGRAM;
+        } else if (algorithms.contains(WP_REGRESSION_TREE)) {
+            isExareme = true;
+            algorithm = WP_REGRESSION_TREE;
+        } else if (algorithms.contains(WP_MODEL_TREE)) {
+            isExareme = true;
+            algorithm = WP_MODEL_TREE;
         }
 
         return new Tuple2(isExareme, algorithm);

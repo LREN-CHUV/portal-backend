@@ -1,7 +1,66 @@
 [
   {
+    "code": "WP_VARIABLES_HISTOGRAM",
+    "label": " Histogram",
+    "type": ["statistics"],
+    "environment": "Exareme",
+    "description": "Histograms",
+    "parameters": [{
+      "code": "nobuckets",
+      "label": "nobuckets",
+      "default_value": 4,
+      "type": "int",
+      "constraints": {
+        "min": 1,
+        "max": null
+      },
+      "description":
+      "The number of clusters. Typical values range from 2 to 10."
+    }],
+    "constraints": {
+      "variable": {
+        "binominal": true,
+        "integer": true,
+        "polynominal": true,
+        "real": true
+      }
+    }
+  },
+  {
+    "code": "PIPELINE_ISOUP_REGRESSION_TREE_SERIALIZER",
+    "label": " Regression Tree",
+    "type": ["statistics"],
+    "environment": "Exareme",
+    "description": "Regression Tree Serializer",
+    "parameters": [],
+    "constraints": {
+      "variable": {
+        "binominal": true,
+        "integer": true,
+        "polynominal": true,
+        "real": true
+      }
+    }
+  },
+  {
+    "code": "PIPELINE_ISOUP_MODEL_TREE_SERIALIZER",
+    "label": "Model Tree",
+    "type": ["statistics"],
+    "environment": "Exareme",
+    "description": "Model Tree Serializer",
+    "parameters": [],
+    "constraints": {
+      "variable": {
+        "binominal": true,
+        "integer": true,
+        "polynominal": true,
+        "real": true
+      }
+    }
+  },
+  {
     "code": "WP_LINEAR_REGRESSION",
-    "label": "Linear regression (Exareme)",
+    "label": "Linear regression",
     "type": ["statistics"],
     "environment": "Exareme",
     "description": "Linear Regression using Exareme services",
@@ -9,13 +68,11 @@
       {
         "code": "design",
         "default_value": "factorial",
-        "description": "The type of multi-factors design. Choose 'factorial' to enable interactions analysis or 'additive' for a model without no interaction at all.",
+        "description":
+        "The type of multi-factors design. Choose 'factorial' to enable interactions analysis or 'additive' for a model without no interaction at all.",
         "label": "design",
         "type": "enumeration",
-        "values": [
-          "factorial",
-          "additive"
-        ]
+        "values": ["factorial", "additive"]
       }
     ],
     "constraints": {
@@ -29,7 +86,7 @@
   },
   {
     "code": "K_MEANS",
-    "label": "K_MEANS (Exareme)",
+    "label": "K_MEANS",
     "type": ["statistics"],
     "environment": "Exareme",
     "description": "k-Means using Exareme services",
