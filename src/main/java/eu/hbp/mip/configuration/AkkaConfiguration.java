@@ -31,8 +31,22 @@ class AkkaConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
-    private final Config config = ConfigFactory.load("application.conf");
+    private final Config config;
 
+    {
+        Config remotingConfig = ConfigFactory.parseResourcesAnySyntax("akka-remoting.conf").resolve();
+        String remotingImpl = remotingConfig.getString("remoting.implementation");
+        config = ConfigFactory
+                .parseString("akka {\n" +
+                        "  actor.provider = cluster\n" +
+                        "  extensions += \"akka.cluster.pubsub.DistributedPubSub\"\n" +
+                        "}")
+                .withFallback(ConfigFactory.parseResourcesAnySyntax("akka.conf"))
+                .withFallback(ConfigFactory.parseResourcesAnySyntax("akka-" + remotingImpl + "-remoting.conf"))
+                .withFallback(ConfigFactory.parseResourcesAnySyntax("kamon.conf"))
+                .withFallback(ConfigFactory.load())
+                .resolve();
+    }
 
     @Bean
     public ExtendedActorSystem actorSystem() {
