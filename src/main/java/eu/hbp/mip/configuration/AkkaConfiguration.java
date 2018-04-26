@@ -11,13 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
@@ -36,8 +33,10 @@ class AkkaConfiguration {
 
     private final Config config = ConfigFactory.load("application.conf");
 
+
     @Bean
     public ExtendedActorSystem actorSystem() {
+        LOGGER.info("Step 1/3: Starting actor system...");
         LOGGER.info("Create actor system at " + wokenClusterHost() + ":" + wokenClusterPort());
         ExtendedActorSystem system = (ExtendedActorSystem) ActorSystem.create("woken", config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
@@ -45,9 +44,36 @@ class AkkaConfiguration {
     }
 
     @Bean
-    @Lazy
     public Cluster wokenCluster() {
-        return Cluster.get(actorSystem());
+        Cluster cluster = Cluster.get(actorSystem());
+        LOGGER.info("Connect to Woken cluster nodes at " + String.join(",", wokenPath()));
+        Semaphore semaphore = new Semaphore(1);
+        cluster.registerOnMemberUp( () -> {
+                    LOGGER.info("Step 2/3: Cluster up, registering the actors...");
+
+                    // Do not call wokenMediator() here to avoid recursive loops
+                    ActorRef mediator = DistributedPubSub.get(actorSystem()).mediator();
+
+                    LOGGER.info("Woken Mediator available at " + mediator.path().toStringWithoutAddress());
+
+                    semaphore.release();
+                });
+
+        try {
+            semaphore.acquire();
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            LOGGER.warn("Cannot wait for Akka cluster start", e);
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    cluster.leave(cluster.selfAddress());
+                })
+        );
+
+        LOGGER.info("Step 3/3: Cluster connected to Woken.");
+
+        return cluster;
     }
 
     @Bean
@@ -67,8 +93,8 @@ class AkkaConfiguration {
 
     @Bean
     @Lazy
+    @DependsOn("wokenCluster")
     public ActorRef wokenMediator() {
-        LOGGER.info("Connect to Woken cluster nodes at " + String.join(",", wokenPath()));
         return DistributedPubSub.get(actorSystem()).mediator();
     }
 

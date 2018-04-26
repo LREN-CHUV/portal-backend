@@ -14,11 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.Semaphore;
 
 @Component
+@DependsOn("wokenCluster")
 public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupTasks.class);
@@ -36,15 +37,8 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
     @Autowired
     private MiningApi miningApi;
 
-    @Autowired
-    Cluster wokenCluster;
-
-    @Autowired
-    private ActorRef wokenMediator;
-
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        startAkka();
 
         // Pre-fill the local variable repository with the list of datasets, interpreted here as variables
         // (a bit like a categorical variable can be split into a set of variables (a.k.a one hot encoding in Data science) )
@@ -80,27 +74,5 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
 
         LOGGER.info("MIP Portal backend is ready!");
     }
-
-    private void startAkka() {
-        Semaphore semaphore = new Semaphore(1);
-        LOGGER.info("Step 1/3: Starting actor system...");
-        wokenCluster.registerOnMemberUp( () -> {
-            LOGGER.info("Step 2/3: Cluster up, registering the actors...");
-
-            LOGGER.info("Woken Mediator available at " + wokenMediator.path().toStringWithoutAddress());
-
-            LOGGER.info("Step 3/3: Startup complete.");
-            semaphore.release();
-        });
-
-        try {
-            semaphore.acquire();
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            LOGGER.warn("Cannot wait for Akka cluster start", e);
-        }
-
-    }
-
 
 }
