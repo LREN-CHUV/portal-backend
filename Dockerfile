@@ -19,6 +19,8 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
+ENV CONTEXT_PATH "/services"
+
 RUN apk add --update --no-cache curl
 
 COPY docker/config/application.tmpl /config/application.tmpl
@@ -28,11 +30,11 @@ COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
 ENTRYPOINT ["/run.sh"]
 
-# 8080: Web service API, health checks on http://host:8080/health
+# 8080: Web service API, health checks on http://host:8080/$CONTEXT_PATH/health
 # 4089: Akka cluster
 EXPOSE 4089 8080
 
-HEALTHCHECK --start-period=60s CMD curl -v --silent http://localhost:8080/health 2>&1 | grep UP
+HEALTHCHECK --start-period=60s CMD curl -v --silent http://localhost:8080/$CONTEXT_PATH/health 2>&1 | grep UP
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="hbpmip/portal-backend" \
