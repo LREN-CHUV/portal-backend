@@ -5,10 +5,15 @@
 package eu.hbp.mip.controllers;
 
 
+import ch.chuv.lren.mip.portal.WokenConversions;
+import ch.chuv.lren.woken.messages.variables.VariableMetaData;
+import ch.chuv.lren.woken.messages.variables.VariablesForDatasetsQuery;
+import ch.chuv.lren.woken.messages.variables.VariablesForDatasetsResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.model.Algorithm;
 import eu.hbp.mip.model.MiningQuery;
 import eu.hbp.mip.model.Variable;
@@ -20,11 +25,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
+import scala.collection.JavaConversions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +43,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/variables", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/variables", description = "the variables API")
-public class VariablesApi {
+public class VariablesApi extends WokenClientController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VariablesApi.class);
 
@@ -70,6 +78,38 @@ public class VariablesApi {
 
         return ResponseEntity.ok(variablesObjects);
     }
+
+    @ApiOperation(value = "Get variables available for a dataset", response = List.class, responseContainer = "List")
+    @Cacheable(value = "availableVariables",
+            key = "#datasets",
+            unless = "#result.getStatusCode().value()!=200")
+    @RequestMapping(value = "/availableVariables", method = RequestMethod.GET)
+    public ResponseEntity getAvailableVariables(
+            @ApiParam(value = "List of datasets : ds1,ds2,...") @RequestParam(value = "datasets") String datasets)  {
+
+        LOGGER.info("Get available variables for datasets " + datasets);
+
+        List<Variable> dsAsVariables = Arrays.stream(datasets.split(",")).map(Variable::new).collect(Collectors.toList());
+        WokenConversions conv = new WokenConversions();
+
+        VariablesForDatasetsQuery query = new VariablesForDatasetsQuery(conv.toDatasets(dsAsVariables), true);
+
+        return requestWoken(query, 30, r -> {
+            VariablesForDatasetsResponse response = (VariablesForDatasetsResponse) r;
+
+            if (response.error().isDefined()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.error().get());
+            } else {
+                List<Variable> variables = new ArrayList<>();
+                for (VariableMetaData var: JavaConversions.setAsJavaSet(response.variables())) {
+                    variables.add(new Variable(var.code()));
+                }
+                return ResponseEntity.ok(variables);
+            }
+        });
+
+    }
+
 
     @ApiOperation(value = "Get a variable", response = Object.class)
     @Cacheable("variable")

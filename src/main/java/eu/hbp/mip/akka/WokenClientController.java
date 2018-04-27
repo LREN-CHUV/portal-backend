@@ -2,7 +2,6 @@ package eu.hbp.mip.akka;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.cluster.pubsub.DistributedPubSub;
 import akka.cluster.pubsub.DistributedPubSubMediator;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
@@ -19,7 +18,6 @@ import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import javax.annotation.PostConstruct;
 import java.util.function.Function;
 
 /**
@@ -32,20 +30,11 @@ public abstract class WokenClientController {
     @Autowired
     private ActorSystem actorSystem;
 
-    @Autowired
-    private String wokenReceptionistPath;
-
     @Value("#{'${akka.woken.path:/user/entrypoint}'}")
     private String wokenPath;
 
+    @Autowired
     private ActorRef wokenMediator;
-
-    @SuppressWarnings("unused")
-    @PostConstruct
-    public void initClusterClient() {
-        LOGGER.info("Start Woken client " + wokenReceptionistPath);
-        wokenMediator = DistributedPubSub.get(actorSystem).mediator();
-    }
 
     @SuppressWarnings("unchecked")
     protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {

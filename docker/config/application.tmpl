@@ -78,15 +78,9 @@ endpoints:
   enabled: true
   health:
     enabled: true
-    endoint: /health
-    sentitive: false
+    endpoint: /health
+    sensitive: false
 
 services:
   exareme:
     miningExaremeUrl: {{ default .Env.EXAREME_URL "http://localhost:9090" }}/mining/query
-
-akka:
-  woken:
-    host: {{ default .Env.WOKEN_PORT_8088_TCP_ADDR "woken" }}
-    port: {{ default .Env.WOKEN_PORT_8088_TCP_PORT "8088" }}
-    path: {{ default .Env.WOKEN_AKKA_PATH "/user/entrypoint" }}
