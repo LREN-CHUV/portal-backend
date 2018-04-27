@@ -308,10 +308,6 @@ public class ExperimentApi extends WokenClientController {
                 experiment.setHasServerError(true);
                 experiment.setResult(e.getMessage());
             }
-            if(!JSONUtil.isJSONValid(experiment.getResult()))
-            {
-                experiment.setResult("Unsupported variables !");
-            }
             finishExperiment(experiment);
         }).start();
         // << Temporary

@@ -270,6 +270,7 @@ public class Experiment {
         ExaremeQueryElement datasetsEl = new ExaremeQueryElement();
         datasetsEl.setName("dataset");
         datasetsEl.setDesc("");
+        //datasetsEl.setValue("adni,ppmi,edsd,fbf,clm");
         datasetsEl.setValue(datasets.toString());
         queryElements.add(datasetsEl);
 
@@ -304,14 +305,22 @@ public class Experiment {
             } else {
                 JsonArray jsonArrayResult = new JsonArray();
                 JsonObject jsonObjectResult = new JsonObject();
-                exp.remove("result");
-
-                JsonObject jsonData = parser.parse(this.result).getAsJsonArray().get(0).getAsJsonObject();
-                jsonObjectResult.add("data", jsonData);
 
                 JsonObject algoObject = parser.parse(this.algorithms).getAsJsonArray().get(0).getAsJsonObject();
                 jsonObjectResult.add("algorithm", algoObject.get("name"));
                 jsonObjectResult.add("code", algoObject.get("code"));
+
+                exp.remove("result");
+                JsonObject tryJson;
+                try {
+                    tryJson = parser.parse(this.result).getAsJsonArray().get(0).getAsJsonObject();
+                } catch(JsonParseException e) {
+                    tryJson = new JsonObject();
+                    tryJson.add("result", new JsonPrimitive(this.result));
+                }
+
+                JsonObject jsonData = tryJson;
+                jsonObjectResult.add("data", jsonData);
 
                 // add mime-type
                 String algo = isExaremeAlgorithm._2;
@@ -461,6 +470,6 @@ public class Experiment {
             algorithm = WP_MODEL_TREE;
         }
 
-        return new Tuple2(isExareme, algorithm);
+        return new Tuple2<Boolean, String>(isExareme, algorithm);
     }
 }
