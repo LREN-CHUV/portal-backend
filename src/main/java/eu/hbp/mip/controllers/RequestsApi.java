@@ -39,6 +39,8 @@ public class RequestsApi {
 
     private static final Gson gson = new Gson();
 
+    private static final Pattern variableExpression = Pattern.compile("\\w+");
+
     @Autowired
     @Qualifier("dataUtil")
     private DataUtil dataUtil;
@@ -63,6 +65,7 @@ public class RequestsApi {
         List<String> variables = extractVarCodes(q, "variables");
         List<String> groupings = extractVarCodes(q, "grouping");
         List<String> covariables = extractVarCodes(q, "covariables");
+
         String filters = extractFilters(q);
 
         List<String> allVars = new LinkedList<>();
@@ -80,16 +83,19 @@ public class RequestsApi {
         return ResponseEntity.ok(gson.fromJson(dataset, Object.class));
     }
 
-    private List<String> extractVarCodes(JsonObject q, String field) {
+    private List<String> extractVarCodes(JsonObject q, String field) throws IllegalArgumentException {
         List<String> codes = new LinkedList<>();
         JsonArray elements = q.getAsJsonArray(field) != null ? q.getAsJsonArray(field) : new JsonArray();
-        Pattern p = Pattern.compile("\\w+");
+
         for (JsonElement var : elements) {
             String varCode = var.getAsJsonObject().get("code").getAsString();
-            Boolean isValidString = p.matcher(varCode).matches();
-            if (isValidString) {
-                codes.add(varCode);
+
+            Boolean isValidString = variableExpression.matcher(varCode).matches();
+            if (!isValidString) {
+                throw new IllegalArgumentException("You must provide valid variables");
             }
+
+            codes.add(varCode);
         }
         return codes;
     }
