@@ -83,9 +83,13 @@ public class RequestsApi {
     private List<String> extractVarCodes(JsonObject q, String field) {
         List<String> codes = new LinkedList<>();
         JsonArray elements = q.getAsJsonArray(field) != null ? q.getAsJsonArray(field) : new JsonArray();
+        Pattern p = Pattern.compile("\\w+");
         for (JsonElement var : elements) {
             String varCode = var.getAsJsonObject().get("code").getAsString();
-            codes.add(varCode);
+            Boolean isValidString = p.matcher(varCode).matches();
+            if (isValidString) {
+                codes.add(varCode);
+            }
         }
         return codes;
     }
