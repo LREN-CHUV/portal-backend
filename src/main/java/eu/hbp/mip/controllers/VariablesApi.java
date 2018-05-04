@@ -81,7 +81,6 @@ public class VariablesApi extends WokenClientController {
 
     @ApiOperation(value = "Get variables available for a dataset", response = List.class, responseContainer = "List")
     @Cacheable(value = "availableVariables",
-            key = "#datasets",
             unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(value = "/availableVariables", method = RequestMethod.GET)
     public ResponseEntity getAvailableVariables(
