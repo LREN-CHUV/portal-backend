@@ -52,7 +52,7 @@ class AkkaConfiguration {
     public ExtendedActorSystem actorSystem() {
         LOGGER.info("Step 1/3: Starting actor system...");
         LOGGER.info("Create actor system at " + wokenClusterHost() + ":" + wokenClusterPort());
-        ExtendedActorSystem system = (ExtendedActorSystem) ActorSystem.create("woken", config);
+        ExtendedActorSystem system = (ExtendedActorSystem) ActorSystem.create(wokenClusterName(), config);
         SPRING_EXTENSION_PROVIDER.get(system).initialize(applicationContext);
         return system;
     }
@@ -93,6 +93,11 @@ class AkkaConfiguration {
     @Bean
     public String wokenClusterHost() {
         return config.getString("clustering.ip");
+    }
+
+    @Bean
+    public String wokenClusterName() {
+        return config.getString("clustering.cluster.name");
     }
 
     @Bean
