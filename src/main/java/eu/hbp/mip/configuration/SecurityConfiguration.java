@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.utils.CORSFilter;
 import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
@@ -25,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -33,7 +33,6 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -78,6 +77,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserInfo userInfo;
 
     /**
      * Enable HBP collab authentication (1) or disable it (0). Default is 1
@@ -137,7 +139,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             http.antMatcher("/**")
                     .authorizeRequests()
                     .antMatchers("/**").permitAll().and().csrf().disable();
-            User user = getUser();
+            User user = userInfo.getUser();
             userRepository.save(user);
         }
     }
@@ -198,52 +200,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return repository;
     }
 
-    private String getUserInfos() {
-        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
-        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
-        return userAuthentication.getDetails().toString();
-    }
-
-    /**
-     * returns the user for the current session.
-     * <p>
-     * the "synchronized" keyword is there to avoid a bug that the transaction is supposed to protect me from.
-     * To test if your solution to removing it works, do the following:
-     * - clean DB from scratch
-     * - restart DB and backend (no session or anything like that)
-     * - log in using the front end
-     * - check you have no 500 error in the network logs.
-     *
-     * @return the user for the current session
-     */
-    public synchronized User getUser() {
-        User user;
-
-        if (!authentication)
-        {
-            user = new User();
-            user.setUsername("anonymous");
-            user.setFullname("anonymous");
-            user.setPicture("images/users/default_user.png");
-        }
-        else
-        {
-            user = new User(getUserInfos());
-        }
-        User foundUser = userRepository.findOne(user.getUsername());
-        if (foundUser != null) {
-            user.setAgreeNDA(foundUser.getAgreeNDA());
-        }
-        userRepository.save(user);
-        return user;
-    }
-
     @RequestMapping(path = "/user", method = RequestMethod.GET)
     public Object user(Principal principal, HttpServletResponse response) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            String userJSON = mapper.writeValueAsString(getUser());
+            String userJSON = mapper.writeValueAsString(userInfo.getUser());
             Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -268,7 +230,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA") Boolean agreeNDA) {
-        User user = getUser();
+        User user = userInfo.getUser();
         if (user != null) {
             user.setAgreeNDA(agreeNDA);
             userRepository.save(user);

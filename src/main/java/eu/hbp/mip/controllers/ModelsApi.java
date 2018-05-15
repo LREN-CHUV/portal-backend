@@ -9,9 +9,9 @@ import ch.chuv.lren.woken.messages.query.filters.FilterRule;
 import com.github.slugify.Slugify;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Model;
 import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.*;
 import eu.hbp.mip.utils.DataUtil;
@@ -38,7 +38,7 @@ public class ModelsApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelsApi.class);
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private UserInfo userInfo;
 
     @Autowired
     private DatasetRepository datasetRepository;
@@ -68,7 +68,7 @@ public class ModelsApi {
     )  {
         LOGGER.info("Get models");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         Iterable<Model> models;
         if(own != null && own)
@@ -112,7 +112,7 @@ public class ModelsApi {
 
         LOGGER.info("Create a model");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         model.setTitle(model.getConfig().getTitle().get("text"));
         model.setCreatedBy(user);
@@ -203,7 +203,7 @@ public class ModelsApi {
     )  {
         LOGGER.info("Get a model");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         Model model = modelRepository.findOne(slug);
 
@@ -235,7 +235,7 @@ public class ModelsApi {
     )  {
         LOGGER.info("Update a model");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
         Model oldModel = modelRepository.findOne(slug);
 
         if(!user.getUsername().equals(oldModel.getCreatedBy().getUsername()))

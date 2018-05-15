@@ -1,6 +1,6 @@
 package eu.hbp.mip.controllers;
 
-import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.UserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -29,7 +29,7 @@ public class FilesAPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(FilesAPI.class);
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private UserInfo userInfo;
 
     @ApiOperation(value = "Get protected files")
     @RequestMapping(value = "/{filename:.+}" , method = RequestMethod.GET)
@@ -39,7 +39,7 @@ public class FilesAPI {
         LOGGER.info("Get protected file");
 
         String filepath = "/protected/" + filename;
-        String user = securityConfiguration.getUser().getUsername();
+        String user = userInfo.getUser().getUsername();
         String time = LocalDateTime.now().toString();
         LOGGER.info("User " + user + " downloaded " + filepath + " at "+ time);
 
