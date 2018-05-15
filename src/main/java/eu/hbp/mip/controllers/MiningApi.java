@@ -2,10 +2,10 @@ package eu.hbp.mip.controllers;
 
 import com.google.gson.Gson;
 import eu.hbp.mip.akka.WokenClientController;
-import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.ExaremeQuery;
 import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scala.Option;
-import scala.Some;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -40,7 +39,7 @@ public class MiningApi extends WokenClientController {
     private static final Gson gson = new Gson();
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private UserInfo userInfo;
 
     @Value("#{'${services.query.miningExaremeUrl:http://localhost:9090/mining/query}'}")
     public String queryUrl;
@@ -53,7 +52,7 @@ public class MiningApi extends WokenClientController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) {
         LOGGER.info("Run an algorithm");
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         if (isExaremeAlgo(query)) {
             LOGGER.info("isExaremeAlgo");

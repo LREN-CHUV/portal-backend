@@ -5,15 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.hbp.mip.akka.WokenClientController;
-import eu.hbp.mip.configuration.SecurityConfiguration;
-import eu.hbp.mip.model.AlgorithmParam;
-import eu.hbp.mip.model.Experiment;
-import eu.hbp.mip.model.ExperimentQuery;
-import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.*;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
-import eu.hbp.mip.utils.JSONUtil;
 import ch.chuv.lren.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,7 +53,7 @@ public class ExperimentApi extends WokenClientController {
     public String miningExaremeQueryUrl;
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private UserInfo userInfo;
 
     @Autowired
     private ModelRepository modelRepository;
@@ -73,7 +68,7 @@ public class ExperimentApi extends WokenClientController {
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
         experiment.setValidations(gson.toJson(expQuery.getValidations()));
@@ -126,7 +121,7 @@ public class ExperimentApi extends WokenClientController {
 
         Experiment experiment;
         UUID experimentUuid;
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
@@ -202,7 +197,7 @@ public class ExperimentApi extends WokenClientController {
             boolean mine,
             String modelSlug
     ) {
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
         List<Experiment> expList = Lists.newLinkedList(myExperiments);
@@ -233,7 +228,7 @@ public class ExperimentApi extends WokenClientController {
     private ResponseEntity<String> doMarkExperimentAsShared(String uuid, boolean shared) {
         Experiment experiment;
         UUID experimentUuid;
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
         try {
             experimentUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException iae) {
@@ -256,7 +251,7 @@ public class ExperimentApi extends WokenClientController {
     }
 
     private void sendExperiment(final Experiment experiment) {
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         // this runs in the background. For future optimization: use a thread pool
         final ch.chuv.lren.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());

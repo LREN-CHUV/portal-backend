@@ -5,12 +5,12 @@
 package eu.hbp.mip.controllers;
 
 import eu.hbp.mip.configuration.SecurityConfiguration;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.repositories.AppRepository;
 import io.swagger.annotations.*;
 import eu.hbp.mip.model.App;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.Vote;
-import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.repositories.VoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class AppsApi {
     private VoteRepository voteRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserInfo userInfo;
 
     @ApiOperation(value = "Get apps", response = App.class, responseContainer = "List")
     @RequestMapping(method = RequestMethod.GET)
@@ -62,7 +62,7 @@ public class AppsApi {
     ) {
         LOGGER.info("Post a vote");
 
-        User user = userRepository.findOne(securityConfiguration.getUser().getUsername());
+        User user = userInfo.getUser();
         App app = appRepository.findOne(id);
         Vote vote;
 

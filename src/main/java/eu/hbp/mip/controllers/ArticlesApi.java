@@ -6,9 +6,9 @@ package eu.hbp.mip.controllers;
 
 
 import com.github.slugify.Slugify;
-import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Article;
 import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.repositories.ArticleRepository;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class ArticlesApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticlesApi.class);
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private UserInfo userInfo;
 
     @Autowired
     private ArticleRepository articleRepository;
@@ -46,7 +46,7 @@ public class ArticlesApi {
     ) {
         LOGGER.info("Get articles");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
         Iterable<Article> articles;
 
         if(own != null && own)
@@ -82,7 +82,7 @@ public class ArticlesApi {
     ) {
         LOGGER.info("Create an article");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         article.setCreatedAt(new Date());
         if ("published".equals(article.getStatus())) {
@@ -143,7 +143,7 @@ public class ArticlesApi {
     ) {
         LOGGER.info("Get an article");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
         Article article;
         article = articleRepository.findOne(slug);
 
@@ -171,7 +171,7 @@ public class ArticlesApi {
     ) {
         LOGGER.info("Update an article");
 
-        User user = securityConfiguration.getUser();
+        User user = userInfo.getUser();
 
         String author = articleRepository.findOne(slug).getCreatedBy().getUsername();
 
