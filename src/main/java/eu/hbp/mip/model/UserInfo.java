@@ -4,13 +4,17 @@ import eu.hbp.mip.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
+
 @Component
-@Scope("session")
+@Scope(value = "session", proxyMode=ScopedProxyMode.TARGET_CLASS)
+@Named("userInfo")
 public class UserInfo {
 
     @Autowired
@@ -23,6 +27,11 @@ public class UserInfo {
     private boolean authentication;
 
     private User user;
+
+    /**
+     * Set to true if using no-auth mode and user has clicked on the login button
+     */
+    private boolean fakeAuth = false;
 
     /**
      * returns the user for the current session.
@@ -55,6 +64,14 @@ public class UserInfo {
         }
 
         return user;
+    }
+
+    public boolean isFakeAuth() {
+        return fakeAuth;
+    }
+
+    public void setFakeAuth(boolean fakeAuth) {
+        this.fakeAuth = fakeAuth;
     }
 
     private String getUserInfos() {

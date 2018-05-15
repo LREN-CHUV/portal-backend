@@ -1,28 +1,19 @@
 package eu.hbp.mip.configuration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
-import eu.hbp.mip.repositories.UserRepository;
 import eu.hbp.mip.utils.CORSFilter;
 import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
 import eu.hbp.mip.utils.HTTPUtil;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -41,10 +32,6 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -55,9 +42,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.Principal;
 
 // See https://spring.io/guides/tutorials/spring-boot-oauth2/ for reference about configuring OAuth2 login
 // also http://cscarioni.blogspot.ch/2013/04/pro-spring-security-and-oauth-2.html
@@ -67,19 +51,12 @@ import java.security.Principal;
  */
 @Configuration
 @EnableOAuth2Client
-@RestController
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Autowired
     private OAuth2ClientContext oauth2ClientContext;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserInfo userInfo;
 
     /**
      * Enable HBP collab authentication (1) or disable it (0). Default is 1
@@ -111,11 +88,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("#{'${hbp.resource.revokeTokenUri:https://services.humanbrainproject.eu/oidc/revoke}'}")
     private String revokeTokenURI;
 
-    /**
-     * Set to true if using no-auth mode and user has clicked on the login button
-     */
-    private boolean fakeAuth = false;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
@@ -139,8 +111,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             http.antMatcher("/**")
                     .authorizeRequests()
                     .antMatchers("/**").permitAll().and().csrf().disable();
-            User user = userInfo.getUser();
-            userRepository.save(user);
         }
     }
 
@@ -174,6 +144,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new ResourceServerProperties();
     }
 
+    public boolean isAuthentication() {
+        return authentication;
+    }
+
+    public String getFrontendRedirectAfterLogin() {
+        return frontendRedirectAfterLogin;
+    }
+
     private Filter csrfHeaderFilter() {
         return new OncePerRequestFilter() {
             @Override
@@ -200,56 +178,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return repository;
     }
 
-    @RequestMapping(path = "/user", method = RequestMethod.GET)
-    public Object user(Principal principal, HttpServletResponse response) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            String userJSON = mapper.writeValueAsString(userInfo.getUser());
-            Cookie cookie = new Cookie("user", URLEncoder.encode(userJSON, "UTF-8"));
-            cookie.setSecure(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-        } catch (JsonProcessingException | UnsupportedEncodingException e) {
-            LOGGER.trace("Cannot read user json", e);
-        }
-
-        if(!authentication)
-        {
-            if(!fakeAuth)
-            {
-                response.setStatus(401);
-            }
-            String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {" +
-                    "\"details\": {\"preferred_username\": \"anonymous\"}}}";
-            return new Gson().fromJson(principalJson, Object.class);
-        }
-
-        return principal;
-    }
-
-    @RequestMapping(path = "/user", method = RequestMethod.POST)
-    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA") Boolean agreeNDA) {
-        User user = userInfo.getUser();
-        if (user != null) {
-            user.setAgreeNDA(agreeNDA);
-            userRepository.save(user);
-        }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @RequestMapping(path = "/login/hbp", method = RequestMethod.GET)
-    @ConditionalOnExpression("${hbp.authentication.enabled:0}")
-    public void noLogin(HttpServletResponse httpServletResponse) throws IOException {
-        fakeAuth = true;
-        httpServletResponse.sendRedirect(frontendRedirectAfterLogin);
-    }
-
     private class CustomLogoutHandler implements LogoutHandler {
         @Override
         public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) {
 
-            fakeAuth = false;
+            // Hackish way of accessing to this information...
+            final UserInfo userInfo = (UserInfo) httpServletRequest.getSession().getAttribute("userInfo");
+            if (userInfo != null) {
+                userInfo.setFakeAuth(false);
+            }
 
             if (oauth2ClientContext == null || oauth2ClientContext.getAccessToken() == null)
             {
