@@ -103,7 +103,7 @@ public class Experiment {
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
         List<eu.hbp.mip.model.Algorithm> algos = new Gson().fromJson(this.algorithms, algoList);
         for (eu.hbp.mip.model.Algorithm a: algos) {
-            algorithms.add(new AlgorithmSpec(a.getCode(), TypesConvert.algoParamsToScala(a.getParameters())));
+            algorithms.add(new AlgorithmSpec(a.getCode(), TypesConvert.algoParamsToScala(a.getParameters()), Option.empty()));
         }
 
         List<ValidationSpec> validations = new LinkedList<>();
