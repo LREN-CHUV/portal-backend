@@ -249,6 +249,12 @@
             <version>${scala.release.version}</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.bugsnag</groupId>
+            <version>[3.0,4.0)</version>
+            <artifactId>bugsnag</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

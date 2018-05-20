@@ -4,9 +4,11 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.ExtendedActorSystem;
 import akka.cluster.Cluster;
+import akka.cluster.Member;
 import akka.cluster.pubsub.DistributedPubSub;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
@@ -73,11 +76,18 @@ class AkkaConfiguration {
                     semaphore.release();
                 });
 
-        try {
-            semaphore.acquire();
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            LOGGER.warn("Cannot wait for Akka cluster start", e);
+        for (Member member: cluster.state().getMembers()) {
+            LOGGER.info("Member " + StringUtils.join(member.getRoles(), ",") + " at " + member.address().toString() + " is in the cluster");
+        }
+
+        if (cluster.state().members().size() < 2) {
+            LOGGER.info("Waiting for Woken cluster connection...");
+            try {
+                semaphore.tryAcquire(5, TimeUnit.MINUTES);
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                LOGGER.warn("Cannot wait for Akka cluster start", e);
+            }
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
