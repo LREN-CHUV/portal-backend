@@ -135,7 +135,9 @@ public class ModelsApi {
 
         configRepository.save(model.getConfig());
         queryRepository.save(model.getQuery());
-        datasetRepository.save(model.getDataset());
+        if (model.getDataset() != null) {
+            datasetRepository.save(model.getDataset());
+        }
         modelRepository.save(model);
 
         LOGGER.info("Model saved (also saved model.config and model.query)");
