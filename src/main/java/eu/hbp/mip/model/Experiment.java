@@ -195,7 +195,7 @@ public class Experiment {
             ExaremeQueryElement columnsEl = new ExaremeQueryElement();
             columnsEl.setName("columns");
             columnsEl.setDesc("");
-            columnsEl.setValue(chainsParams(columns, ";"));
+            columnsEl.setValue(chainsParams(columns, ","));
             queryElements.add(columnsEl);
         } else if (algoName.equals(WP_LINEAR_REGRESSION)) {
             List<String> nominals = new ArrayList<>(covariables);
@@ -212,7 +212,7 @@ public class Experiment {
             ExaremeQueryElement yEl = new ExaremeQueryElement();
             yEl.setName("y");
             yEl.setDesc("");
-            yEl.setValue(chainsParams(variables, ";"));
+            yEl.setValue(chainsParams(variables, ","));
             queryElements.add(yEl);
         } else if (algoName.equals(WP_VARIABLES_HISTOGRAM)) {
             List<String> column1 = new ArrayList<>(variables);
@@ -270,7 +270,7 @@ public class Experiment {
         ExaremeQueryElement datasetsEl = new ExaremeQueryElement();
         datasetsEl.setName("dataset");
         datasetsEl.setDesc("");
-        //datasetsEl.setValue("adni,ppmi,edsd,fbf,clm");
+        // datasetsEl.setValue("adni,ppmi,edsd,fbf,clm");
         datasetsEl.setValue(datasets.toString());
         queryElements.add(datasetsEl);
 
