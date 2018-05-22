@@ -90,7 +90,7 @@ public class MiningQuery {
     public ch.chuv.lren.woken.messages.query.MiningQuery prepareQuery(String user) {
 
         ch.chuv.lren.woken.messages.query.AlgorithmSpec scalaAlgorithm = new ch.chuv.lren.woken.messages.query.AlgorithmSpec(
-                algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()));
+                algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()), Option.empty());
 
         scala.collection.immutable.List<FeatureIdentifier> variablesSeq =
                 TypesConvert.variablesToIdentifiers(getVariables());
