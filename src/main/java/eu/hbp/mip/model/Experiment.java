@@ -188,7 +188,7 @@ public class Experiment {
         String algoName = this.isExaremeAlgorithm()._2;
         if (algoName.equals(WP_K_MEANS)) {
             // columns
-            List<String> columns = new ArrayList<>(variables);
+            List<String> columns = variables;
             columns.addAll(covariables);
             columns.addAll(groupings);
 
@@ -198,7 +198,7 @@ public class Experiment {
             columnsEl.setValue(chainsParams(columns, ","));
             queryElements.add(columnsEl);
         } else if (algoName.equals(WP_LINEAR_REGRESSION)) {
-            List<String> nominals = new ArrayList<>(covariables);
+            List<String> nominals = covariables.isEmpty() ? groupings : covariables;
             nominals.addAll(groupings);
 
             String operator = design.equals("factorial") ? "*" : "+";
@@ -215,14 +215,14 @@ public class Experiment {
             yEl.setValue(chainsParams(variables, ","));
             queryElements.add(yEl);
         } else if (algoName.equals(WP_VARIABLES_HISTOGRAM)) {
-            List<String> column1 = new ArrayList<>(variables);
+            List<String> column1 = variables;
             ExaremeQueryElement columnsEl = new ExaremeQueryElement();
             columnsEl.setName("column1");
             columnsEl.setDesc("");
             columnsEl.setValue(chainsParams(column1, ","));
             queryElements.add(columnsEl);
 
-            List<String> column2 = new ArrayList<>(covariables);
+            List<String> column2 = covariables.isEmpty() ? groupings : covariables;
             ExaremeQueryElement columnsEl2 = new ExaremeQueryElement();
             columnsEl2.setName("column2");
             columnsEl2.setDesc("");
@@ -237,8 +237,8 @@ public class Experiment {
                 queryElements.add(columnsEl3);
             }
         } else if (algoName.equals(WP_REGRESSION_TREE) || algoName.equals(WP_MODEL_TREE)) {
-            List<String> target = new ArrayList<>(variables);
-            List<String> descriptive = new ArrayList<>(covariables);
+            List<String> target = variables;
+            List<String> descriptive = covariables.isEmpty() ? groupings : covariables;
             descriptive.addAll(groupings);
 
             ExaremeQueryElement xEl = new ExaremeQueryElement();
