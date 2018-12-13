@@ -27,7 +27,7 @@
         <asciidoctor.maven.plugin.version>1.5.5</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.15</asciidoctorj.pdf.version>
         <asciidoctorj.version>1.5.5</asciidoctorj.version>
-        <spring-data-commons.version>1.12.3.RELEASE</spring-data-commons.version>
+        <spring-data-commons.version>1.13.17.RELEASE</spring-data-commons.version>
         <angularjs.version>1.5.7</angularjs.version>
         <jquery.version>3.0.0</jquery.version>
         <bootstrap.version>3.3.7</bootstrap.version>
@@ -49,7 +49,7 @@
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <woken-messages.version>2.8.1</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
-        <akka.version>2.5.12</akka.version>
+        <akka.version>2.5.18</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
         <protobuf-java.version>3.1.0</protobuf-java.version>
 
