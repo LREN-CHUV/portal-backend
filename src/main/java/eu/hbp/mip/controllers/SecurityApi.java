@@ -55,9 +55,9 @@ public class SecurityApi {
         }
 
         if (!securityConfiguration.isAuthentication()) {
-            // if (!userInfo.isFakeAuth()) {
-            //     response.setStatus(401);
-            // }
+            if (!userInfo.isFakeAuth()) {
+                response.setStatus(401);
+            }
             String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {" +
                     "\"details\": {\"preferred_username\": \"anonymous\"}}}";
             return new Gson().fromJson(principalJson, Object.class);

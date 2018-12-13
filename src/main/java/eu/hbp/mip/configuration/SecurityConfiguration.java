@@ -106,7 +106,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and().csrf().ignoringAntMatchers("/logout").csrfTokenRepository(csrfTokenRepository())
                     .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
                     .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
-        
+        }
         else {
             http.antMatcher("/**")
                     .authorizeRequests()
