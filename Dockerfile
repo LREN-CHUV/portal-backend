@@ -12,7 +12,7 @@ COPY src/ /project/src/
 RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
     && mvn clean package
 
-FROM hbpmip/java-base:11.0.1-0
+FROM hbpmip/java-base:11.0.1-1
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
 ARG BUILD_DATE
