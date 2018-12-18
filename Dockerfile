@@ -1,5 +1,5 @@
 # Build stage for Java classes
-FROM hbpmip/java-base-build:3.5.2-jdk-8-0 as java-build-env
+FROM hbpmip/java-base-build:3.6.0-jdk-11-0 as java-build-env
 
 COPY pom.xml /project/
 
@@ -12,7 +12,7 @@ COPY src/ /project/src/
 RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
     && mvn clean package
 
-FROM hbpmip/java-base:8u151-1
+FROM hbpmip/java-base:11.0.1-0
 MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
 
 ARG BUILD_DATE
@@ -21,7 +21,8 @@ ARG VERSION
 
 ENV CONTEXT_PATH "/services"
 
-RUN apk add --update --no-cache curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
 
 COPY docker/config/application.tmpl /config/application.tmpl
 COPY docker/README.md docker/run.sh /
