@@ -90,9 +90,17 @@ class AkkaConfiguration {
             }
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    cluster.leave(cluster.selfAddress());
-                })
+        final Runnable leaveCluster = () -> cluster.leave(cluster.selfAddress());
+        actorSystem().registerOnTermination(leaveCluster);
+
+        cluster.registerOnMemberRemoved( () -> {
+            LOGGER.info("Exiting...");
+            cluster.leave(cluster.selfAddress());
+            actorSystem().registerOnTermination(() -> System.exit(0));
+            actorSystem().terminate();
+        });
+
+        Runtime.getRuntime().addShutdownHook(new Thread(leaveCluster)
         );
 
         LOGGER.info("Step 3/3: Cluster connected to Woken.");

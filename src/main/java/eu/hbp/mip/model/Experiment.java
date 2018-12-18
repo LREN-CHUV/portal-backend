@@ -97,7 +97,7 @@ public class Experiment {
 
     public ExperimentQuery prepareQuery(String user) {
         if (model == null || model.getQuery() == null)
-            return new ExperimentQuery(null, null, null, null, null, Option.empty(), null, null, null, null, null, null);
+            return new ExperimentQuery(null, null, null, false,null, null, Option.empty(), null, null, null, null, null, null);
 
         List<AlgorithmSpec> algorithms = new LinkedList<>();
         Type algoList = new TypeToken<LinkedList<eu.hbp.mip.model.Algorithm>>(){}.getType();
@@ -131,7 +131,8 @@ public class Experiment {
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
         UserId userId = new UserId(user);
 
-        return new ExperimentQuery(userId, variablesSeq, covariablesSeq, groupingSeq, filters, Option.empty(),
+        // TODO: covariablesMustExist argument should be set from a user intention? Or maybe automatically selected based on the list of algorithms???
+        return new ExperimentQuery(userId, variablesSeq, covariablesSeq, false, groupingSeq, filters, Option.empty(),
                 trainingDatasets, testingDatasets, algorithmsSeq, validationDatasets,
                 validationsSeq, Option.empty());
     }

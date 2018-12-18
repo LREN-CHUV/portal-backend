@@ -106,7 +106,7 @@ public class MiningQuery {
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
 
         return new ch.chuv.lren.woken.messages.query.MiningQuery(userId,
-                variablesSeq, covariablesSeq, groupingSeq, filters, Option.empty(), datasets, scalaAlgorithm, Option.empty());
+                variablesSeq, covariablesSeq, true, groupingSeq, filters, Option.empty(), datasets, scalaAlgorithm, Option.empty());
     }
 
     @Override
