@@ -27,7 +27,7 @@ import static eu.hbp.mip.akka.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
 @Configuration
 @ComponentScan
-class AkkaConfiguration {
+public class AkkaConfiguration {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 

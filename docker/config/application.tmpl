@@ -21,6 +21,10 @@ spring:
       username: {{ default .Env.FEATURES_DB_USER "postgres" }}
       password: {{ .Env.FEATURES_DB_PASSWORD }}
       driver-class-name: org.postgresql.Driver
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQL9Dialect

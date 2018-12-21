@@ -7,6 +7,7 @@ package eu.hbp.mip.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import java.util.List;
 @Table(name = "`article`")
 @ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Validated
 public class Article {
 
     @Id

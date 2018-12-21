@@ -27,7 +27,7 @@
         <asciidoctor.maven.plugin.version>1.5.5</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.15</asciidoctorj.pdf.version>
         <asciidoctorj.version>1.5.5</asciidoctorj.version>
-        <spring-data-commons.version>1.13.17.RELEASE</spring-data-commons.version>
+        <spring-data-commons.version>1.12.11.RELEASE</spring-data-commons.version>
         <angularjs.version>1.5.7</angularjs.version>
         <jquery.version>3.0.0</jquery.version>
         <bootstrap.version>3.3.7</bootstrap.version>
