@@ -24,12 +24,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class WebConfiguration {
 
     @Bean
-    public UiConfiguration uiConfig() {
+    public UiConfiguration swaggerUiConfig() {
         return UiConfiguration.DEFAULT;
     }
 
     @Bean
-    public Docket documentation() {
+    public Docket swaggerDocumentation() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("eu.hbp.mip.controllers"))
@@ -46,4 +46,5 @@ public class WebConfiguration {
                 .contact(new Contact("Mirco Nasuti", "https://www.unil.ch/lren/en/home.html", "mirco.nasuti@chuv.ch"))
                 .build();
     }
+
 }

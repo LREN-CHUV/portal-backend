@@ -65,6 +65,7 @@ logging:
     org:
       springframework:
         web: {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}
+        web.servlet.handler.BeanNameUrlHandlerMapping: WARN
       hibernate: {{ default .Env.LOGGING_LEVEL_HIBERNATE "WARN" }}
     eu:
       hbp: {{ default .Env.LOGGING_LEVEL_MIP "INFO" }}

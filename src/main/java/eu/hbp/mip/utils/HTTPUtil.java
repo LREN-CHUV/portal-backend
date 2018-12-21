@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by mirco on 20.06.16.
@@ -26,7 +27,7 @@ public class HTTPUtil {
         return sendHTTP(url, query, resp, "POST");
     }
 
-    public static int sendHTTP(String url, String query, StringBuilder resp, String httpVerb) throws IOException {
+    private static int sendHTTP(String url, String query, StringBuilder resp, String httpVerb) throws IOException {
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -40,7 +41,7 @@ public class HTTPUtil {
 
                 con.setDoOutput(true);
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-                wr.write(query.getBytes("UTF8"));
+                wr.write(query.getBytes(StandardCharsets.UTF_8));
                 wr.flush();
                 wr.close();
             }
