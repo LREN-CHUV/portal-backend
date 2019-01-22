@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +26,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories("eu.hbp.mip.repositories")
 @EnableTransactionManagement
-@EntityScan(basePackages = "eu.hbp.mip.model")
+//@EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
     @Value("#{'${spring.featuresDatasource.main-table:features}'}")

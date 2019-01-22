@@ -2,6 +2,7 @@ package eu.hbp.mip.configuration;
 
 import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.utils.CORSFilter;
+import eu.hbp.mip.utils.CustomLoginUrlAuthenticationEntryPoint;
 import eu.hbp.mip.utils.HTTPUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -33,11 +32,6 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.firewall.FirewalledRequest;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.RequestRejectedException;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -95,12 +89,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String revokeTokenURI;
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-        web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
-    }
-
-    @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
@@ -112,12 +100,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/", "/login/**", "/health/**", "/info/**", "/metrics/**", "/trace/**", "/frontend/**", "/webjars/**", "/v2/api-docs", "/swagger-ui.html", "/swagger-resources/**"
                     ).permitAll()
                     .anyRequest().authenticated()
-                    .and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(loginUrl))
+                    .and().exceptionHandling().authenticationEntryPoint(new CustomLoginUrlAuthenticationEntryPoint(loginUrl))
                     .and().logout().addLogoutHandler(new CustomLogoutHandler()).logoutSuccessUrl(redirectAfterLogoutUrl)
                     .and().logout().permitAll()
                     .and().csrf().ignoringAntMatchers("/logout").csrfTokenRepository(csrfTokenRepository())
                     .and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
-                    .addFilterBefore(requestLoggingFilter(), BasicAuthenticationFilter.class)
                     .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         }
         else {
@@ -143,29 +130,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         registration.setFilter(filter);
         registration.setOrder(-100);
         return registration;
-    }
-
-    @Bean
-    public CommonsRequestLoggingFilter requestLoggingFilter() {
-        CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
-        loggingFilter.setIncludeClientInfo(true);
-        loggingFilter.setIncludeHeaders(true);
-        loggingFilter.setIncludeQueryString(true);
-        loggingFilter.setIncludePayload(true);
-        return loggingFilter;
-    }
-
-    @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-        StrictHttpFirewall firewall = new StrictHttpFirewall() {
-            @Override
-            public FirewalledRequest getFirewalledRequest(HttpServletRequest request) throws RequestRejectedException {
-                System.out.println(request.getRequestURI() + " " + request.getContextPath());
-                return super.getFirewalledRequest(request);
-            }
-        };
-        firewall.setAllowUrlEncodedSlash(true);
-        return firewall;
     }
 
     @Bean(name="hbp")

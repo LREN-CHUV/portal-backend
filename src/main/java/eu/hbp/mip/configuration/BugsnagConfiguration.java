@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Import;
 public class BugsnagConfiguration {
     @Bean
     public Bugsnag bugsnag() {
-        return new Bugsnag("dff301aa15eb795a6d8b22b600586f77");
+        return new Bugsnag(System.getenv("BUGSNAG_KEY"));
     }
 }
