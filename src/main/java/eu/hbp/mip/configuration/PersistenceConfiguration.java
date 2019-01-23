@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +27,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories("eu.hbp.mip.repositories")
 @EnableTransactionManagement
-//@EntityScan(basePackages = "eu.hbp.mip.model")
+@EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
     @Value("#{'${spring.featuresDatasource.main-table:features}'}")
@@ -70,7 +71,7 @@ public class PersistenceConfiguration {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(portalDataSource());
-        em.setPackagesToScan("eu.hbp.mip.model");
+        //em.setPackagesToScan("eu.hbp.mip.model");
         em.setPersistenceUnitName("portal");
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

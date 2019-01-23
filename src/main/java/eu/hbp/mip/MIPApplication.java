@@ -4,7 +4,6 @@
 
 package eu.hbp.mip;
 
-import eu.hbp.mip.configuration.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
