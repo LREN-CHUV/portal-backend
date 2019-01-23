@@ -6,15 +6,9 @@ package eu.hbp.mip;
 
 import eu.hbp.mip.configuration.*;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
-@Configuration
-//@EnableAutoConfiguration(exclude = { ValidationAutoConfiguration.class })
-@Import({ AkkaConfiguration.class, BugsnagConfiguration.class,
-        CacheConfiguration.class, PersistenceConfiguration.class,
-        SecurityConfiguration.class, WebConfiguration.class})
+@SpringBootApplication
 public class MIPApplication {
 
     public static void main(String[] args) {

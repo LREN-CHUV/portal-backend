@@ -19,8 +19,12 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
-ENV CONTEXT_PATH "/services" \
-    BUGSNAG_KEY "dff301aa15eb795a6d8b22b600586f77"
+ENV APP_NAME="Portal backend" \
+    APP_TYPE="Spring" \
+    VERSION=$VERSION \
+    BUILD_DATE=$BUILD_DATE \
+    CONTEXT_PATH="/services" \
+    BUGSNAG_KEY="dff301aa15eb795a6d8b22b600586f77"
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* /tmp/*
