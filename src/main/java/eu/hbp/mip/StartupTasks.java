@@ -1,7 +1,5 @@
 package eu.hbp.mip;
 
-import akka.actor.ActorRef;
-import akka.cluster.Cluster;
 import ch.chuv.lren.woken.messages.datasets.Dataset;
 import com.google.gson.Gson;
 import eu.hbp.mip.controllers.DatasetsApi;
@@ -40,6 +38,8 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
+        boolean variablesRepositoryOk = false;
+
         // Pre-fill the local variable repository with the list of datasets, interpreted here as variables
         // (a bit like a categorical variable can be split into a set of variables (a.k.a one hot encoding in Data science) )
         // Try 5 times, to be more robust in the face of cluster failures / slow startup
@@ -49,15 +49,22 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
                     final String code = dataset.dataset().code();
                     Variable v = variableRepository.findOne(code);
                     if (v == null) {
+                        LOGGER.info("Store additional variable {}", v.getCode());
                         v = new Variable(code);
                         variableRepository.save(v);
                     }
                 }
                 LOGGER.info("Datasets fetched from Woken");
+                variablesRepositoryOk = true;
                 break;
             } catch (Exception e) {
+                variablesRepositoryOk = false;
                 LOGGER.error("Cannot initialise the variable repository. Is the connection to Woken working?", e);
             }
+        }
+
+        if (!variablesRepositoryOk) {
+            System.exit(1);
         }
 
         /*
