@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+#
+# Build the release image for the project and publish it on Dockerhub, then
+# announce the new version on Slack
+#
+# Option:
+#   --no-tests: skip the test suite
+
 set -o pipefail  # trace ERR through pipes
 set -o errtrace  # trace ERR through 'time command' and other functions
 set -o errexit   ## set -e : exit the script if any statement returns a non-true return value
@@ -24,17 +31,29 @@ if pgrep -lf sshuttle > /dev/null ; then
 fi
 
 if [ $NO_SUDO ]; then
-  CAPTAIN="captain"
-elif groups $USER | grep &>/dev/null '\bdocker\b'; then
-  CAPTAIN="captain"
+  DOCKER="docker"
+elif groups "$USER" | grep &>/dev/null '\bdocker\b'; then
+  DOCKER="docker"
 else
-  CAPTAIN="sudo captain"
+  DOCKER="sudo docker"
 fi
+
+# No integration tests defined for this project yet
+tests=0
+for param in "$@"
+do
+  if [ "--no-tests" == "$param" ]; then
+    tests=0
+    echo "INFO: --no-tests option detected !"
+  fi
+done
 
 # Build
 echo "Build the project..."
 ./build.sh
-#./tests/test.sh
+if [ $tests == 1 ]; then
+  ./tests/test.sh
+fi
 echo "[ok] Done"
 
 count=$(git status --porcelain | wc -l)
@@ -65,7 +84,7 @@ select_part() {
 
 git pull --tags
 # Look for a version tag in Git. If not found, ask the user to provide one
-[ $(git tag --points-at HEAD | grep portal-backend | wc -l) == 1 ] || (
+[ $(git tag --points-at HEAD | wc -l) == 1 ] || (
   latest_version=$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",, || echo '0.0.1')
   echo
   echo "Current commit has not been tagged with a version. Latest known version is $latest_version."
@@ -91,18 +110,20 @@ updated_version=$(bumpversion --dry-run --list patch | grep current_version | se
 # Build again to update the version
 echo "Build the project for distribution..."
 ./build.sh
-#./tests/test.sh
+if [ $tests == 1 ]; then
+  ./tests/test.sh
+fi
+echo "[ok] Done"
+
+# Push on Docker Hub
+echo
+echo "Publishing..."
+IMAGE=hbpmip/portal-backend
+$DOCKER push "$IMAGE:latest"
+$DOCKER push "$IMAGE:$updated_version"
 
 git push
 git push --tags
-
-# Push on Docker Hub
-#  WARNING: Requires captain 1.1.0 to push user tags
-BUILD_DATE=$(date -Iseconds) \
-  VCS_REF=$updated_version \
-  VERSION=$updated_version \
-  WORKSPACE=$WORKSPACE \
-  $CAPTAIN push target_image --branch-tags=false --commit-tags=false --tag $updated_version
 
 # Notify on slack
 sed "s/USER/${USER^}/" $WORKSPACE/slack.json > $WORKSPACE/.slack.json

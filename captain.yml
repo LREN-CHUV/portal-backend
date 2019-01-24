@@ -1,9 +1,0 @@
-target_image:
-  build: Dockerfile
-  image: hbpmip/portal-backend
-  pre:
-    - echo "Building portal-backend image"
-  post:
-    - echo "Finished building portal-backend image"
-  test:
-    - ./tests/test.sh

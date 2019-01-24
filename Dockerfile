@@ -13,7 +13,14 @@ RUN cp /usr/share/maven/ref/settings-docker.xml /root/.m2/settings.xml \
     && mvn clean package
 
 FROM hbpmip/java-base:11.0.1-1
-MAINTAINER Mirco Nasuti <mirco.nasuti@chuv.ch>
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
+
+COPY docker/config/application.tmpl /config/application.tmpl
+COPY docker/README.md docker/run.sh /
+
+COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -25,14 +32,6 @@ ENV APP_NAME="Portal backend" \
     BUILD_DATE=$BUILD_DATE \
     CONTEXT_PATH="/services" \
     BUGSNAG_KEY="dff301aa15eb795a6d8b22b600586f77"
-
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/* /tmp/*
-
-COPY docker/config/application.tmpl /config/application.tmpl
-COPY docker/README.md docker/run.sh /
-
-COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
 ENTRYPOINT ["/run.sh"]
 
