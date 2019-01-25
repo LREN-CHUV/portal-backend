@@ -43,13 +43,14 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
         // Pre-fill the local variable repository with the list of datasets, interpreted here as variables
         // (a bit like a categorical variable can be split into a set of variables (a.k.a one hot encoding in Data science) )
         // Try 5 times, to be more robust in the face of cluster failures / slow startup
+        LOGGER.info("Prefill variable repository with datasets...");
         for (int i = 0; i < 5; i++) {
             try {
                 for (Dataset dataset : datasetsApi.fetchDatasets()) {
                     final String code = dataset.dataset().code();
                     Variable v = variableRepository.findOne(code);
                     if (v == null) {
-                        LOGGER.info("Store additional variable {}", v.getCode());
+                        LOGGER.info("Store additional variable {}", code);
                         v = new Variable(code);
                         variableRepository.save(v);
                     }

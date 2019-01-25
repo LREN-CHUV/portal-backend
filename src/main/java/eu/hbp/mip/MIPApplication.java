@@ -4,6 +4,7 @@
 
 package eu.hbp.mip;
 
+import ch.chuv.lren.mip.portal.Reporting;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MIPApplication {
 
     public static void main(String[] args) {
+        new Reporting().init();
         SpringApplication.run(MIPApplication.class, args);
     }
 
