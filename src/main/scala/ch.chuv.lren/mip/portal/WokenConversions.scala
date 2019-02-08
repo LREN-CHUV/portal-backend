@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import spray.json._
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.{SortedSet, TreeSet}
 
 @Component
 class WokenConversions {
@@ -18,8 +19,8 @@ class WokenConversions {
     case _ => Some(json).map(_.parseJson.convertTo[FilterRule])
   }
 
-  def toDatasets(datasets: java.util.List[Variable]): Set[DatasetId] =
-    datasets.asScala.map(v => DatasetId(v.getCode)).toSet
+  def toDatasets(datasets: java.util.List[Variable]): SortedSet[DatasetId] =
+    datasets.asScala.map(v => DatasetId(v.getCode)).toSet.to[TreeSet]
 
   def toSqlWhere(filter: Option[FilterRule]): String = filter.fold("")(_.toSqlWhere)
 

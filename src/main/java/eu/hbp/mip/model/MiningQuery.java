@@ -101,7 +101,7 @@ public class MiningQuery {
         UserId userId = new UserId(user);
 
         WokenConversions conv = new WokenConversions();
-        scala.collection.immutable.Set<DatasetId> datasets = conv.toDatasets(getDatasets());
+        scala.collection.immutable.SortedSet<DatasetId> datasets = conv.toDatasets(getDatasets());
         String filtersJson = getFilters();
         Option<FilterRule> filters = conv.toFilterRule(filtersJson);
 
