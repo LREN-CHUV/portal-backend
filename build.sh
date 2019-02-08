@@ -18,9 +18,9 @@ get_script_dir () {
 
 cd "$(get_script_dir)"
 
-if [[ $NO_SUDO || -n "$CIRCLECI" ]]; then
+if [[ "$NO_SUDO" || -n "$CIRCLECI" ]]; then
   DOCKER="docker"
-elif groups $USER | grep &>/dev/null '\bdocker\b'; then
+elif groups "$USER" | grep &>/dev/null '\bdocker\b'; then
   DOCKER="docker"
 else
   DOCKER="sudo docker"
@@ -36,3 +36,23 @@ docker build --build-arg BUILD_DATE=$(date -Iseconds) \
     --tag "$IMAGE:latest" \
     --tag "$IMAGE:$VERSION" \
     .
+
+BUGSNAG_KEY=""
+eval $(grep -e "^\\s*BUGSNAG_KEY" Dockerfile | tr '\\' ' ')
+
+if [[ -n "$BUGSNAG_KEY" ]]; then
+  curl https://build.bugsnag.com/ \
+    --header "Content-Type: application/json" \
+    --data "{
+      \"apiKey\": \"$BUGSNAG_KEY\",
+      \"appVersion\": \"$VERSION\",
+      \"releaseStage\": \"dev\",
+      \"builderName\": \"$USER\",
+      \"sourceControl\": {
+        \"provider\": \"github\",
+        \"repository\": \"https://github.com/LREN-CHUV/portal-backend\",
+        \"revision\": \"$VCS_REF\"
+      },
+      \"metadata\": {}
+    }"
+fi

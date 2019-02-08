@@ -1,22 +1,6 @@
 [
   {
     "code": "WP_VARIABLES_HISTOGRAM",
-    "label": " Histogram",
-    "type": ["statistics"],
-    "environment": "Exareme",
-    "description": "Histograms",
-    "parameters": [{
-      "code": "nobuckets",
-      "label": "nobuckets",
-      "default_value": 4,
-      "type": "int",
-      "constraints": {
-        "min": 1,
-        "max": null
-      },
-      "description":
-      "The number of clusters. Typical values range from 2 to 10."
-    }],
     "constraints": {
       "variable": {
         "binominal": true,
@@ -24,15 +8,29 @@
         "polynominal": true,
         "real": true
       }
-    }
+    },
+    "description": "Histograms",
+    "environment": "Exareme",
+    "label": " Histogram",
+    "parameters": [
+      {
+        "code": "nobuckets",
+        "constraints": {
+          "max": null,
+          "min": 1
+        },
+        "default_value": 4,
+        "description": "The number of clusters. Typical values range from 2 to 10.",
+        "label": "nobuckets",
+        "type": "int"
+      }
+    ],
+    "type": [
+      "statistics"
+    ]
   },
   {
     "code": "PIPELINE_ISOUP_REGRESSION_TREE_SERIALIZER",
-    "label": " Regression Tree",
-    "type": ["statistics"],
-    "environment": "Exareme",
-    "description": "Regression Tree Serializer",
-    "parameters": [],
     "constraints": {
       "variable": {
         "binominal": true,
@@ -40,15 +38,17 @@
         "polynominal": true,
         "real": true
       }
-    }
+    },
+    "description": "Regression Tree Serializer",
+    "environment": "Exareme",
+    "label": " Regression Tree",
+    "parameters": [],
+    "type": [
+      "statistics"
+    ]
   },
   {
     "code": "PIPELINE_ISOUP_MODEL_TREE_SERIALIZER",
-    "label": "Model Tree",
-    "type": ["statistics"],
-    "environment": "Exareme",
-    "description": "Model Tree Serializer",
-    "parameters": [],
     "constraints": {
       "variable": {
         "binominal": true,
@@ -56,25 +56,17 @@
         "polynominal": true,
         "real": true
       }
-    }
+    },
+    "description": "Model Tree Serializer",
+    "environment": "Exareme",
+    "label": "Model Tree",
+    "parameters": [],
+    "type": [
+      "statistics"
+    ]
   },
   {
     "code": "WP_LINEAR_REGRESSION",
-    "label": "Linear regression",
-    "type": ["statistics"],
-    "environment": "Exareme",
-    "description": "Linear Regression using Exareme services",
-    "parameters": [
-      {
-        "code": "design",
-        "default_value": "factorial",
-        "description":
-        "The type of multi-factors design. Choose 'factorial' to enable interactions analysis or 'additive' for a model without no interaction at all.",
-        "label": "design",
-        "type": "enumeration",
-        "values": ["factorial", "additive"]
-      }
-    ],
     "constraints": {
       "variable": {
         "binominal": false,
@@ -82,44 +74,64 @@
         "polynominal": false,
         "real": true
       }
-    }
+    },
+    "description": "Linear Regression using Exareme services",
+    "environment": "Exareme",
+    "label": "Linear regression",
+    "parameters": [
+      {
+        "code": "design",
+        "default_value": "factorial",
+        "description": "The type of multi-factors design. Choose 'factorial' to enable interactions analysis or 'additive' for a model without no interaction at all.",
+        "label": "design",
+        "type": "enumeration",
+        "values": [
+          "factorial",
+          "additive"
+        ]
+      }
+    ],
+    "type": [
+      "statistics"
+    ]
   },
   {
     "code": "K_MEANS",
-    "label": "K_MEANS",
-    "type": ["statistics"],
-    "environment": "Exareme",
+    "constraints": {
+      "covariables": {
+        "max_count": null,
+        "min_count": "1"
+      },
+      "groupings": {
+        "max_count": 0,
+        "min_count": 0
+      },
+      "mixed": false,
+      "variable": {
+        "binominal": true,
+        "integer": true,
+        "polynominal": true,
+        "real": true
+      }
+    },
     "description": "k-Means using Exareme services",
+    "environment": "Exareme",
+    "label": "K_MEANS",
     "parameters": [
       {
         "code": "k",
-        "label": "k",
-        "default_value": 5,
-        "type": "int",
         "constraints": {
-          "min": 1,
-          "max": null
+          "max": null,
+          "min": 1
         },
-        "description":
-        "The number of clusters. Typical values range from 2 to 10."
+        "default_value": 5,
+        "description": "The number of clusters. Typical values range from 2 to 10.",
+        "label": "k",
+        "type": "int"
       }
     ],
-    "constraints": {
-      "variable": {
-        "real": true,
-        "integer": true,
-        "binominal": true,
-        "polynominal": true
-      },
-      "groupings": {
-        "min_count": 0,
-        "max_count": 0
-      },
-      "covariables": {
-        "min_count": "1",
-        "max_count": null
-      },
-      "mixed": false
-    }
+    "type": [
+      "statistics"
+    ]
   }
 ]
