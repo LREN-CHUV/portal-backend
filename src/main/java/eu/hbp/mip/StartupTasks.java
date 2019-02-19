@@ -47,7 +47,7 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
         for (int i = 0; i < 5; i++) {
             try {
                 for (Dataset dataset : datasetsApi.fetchDatasets()) {
-                    final String code = dataset.dataset().code();
+                    final String code = dataset.id().code();
                     Variable v = variableRepository.findOne(code);
                     if (v == null) {
                         LOGGER.info("Store additional variable {}", code);
