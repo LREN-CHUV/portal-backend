@@ -6,6 +6,7 @@ repos:
     - id: end-of-file-fixer
       exclude: .bumpversion.cfg
     - id: check-merge-conflict
+      exclude: LICENSE
     - id: check-added-large-files
     - id: check-yaml
     - id: check-json
