@@ -1,6 +1,7 @@
 package eu.hbp.mip.controllers;
 
 import akka.dispatch.OnSuccess;
+import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -269,11 +270,9 @@ public class ExperimentApi extends WokenClientController {
                 } else {
                     if (queryResult.error().nonEmpty()) {
                         experiment.setHasServerError(true);
-                        experiment.setResult(queryResult.error().get());
                         LOGGER.error("Experiment failed with message: " + queryResult.error().get());
-                    } else {
-                        experiment.setResult(queryResult.data().get().compactPrint());
                     }
+                    experiment.setResult(new WokenConversions().toJson(queryResult));
                     experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
                     experimentRepository.save(experiment);
                     LOGGER.info("Experiment " + uuid + " updated (finished)");
