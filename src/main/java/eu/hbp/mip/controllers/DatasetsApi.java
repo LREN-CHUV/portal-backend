@@ -49,7 +49,7 @@ public class DatasetsApi extends WokenClientController {
             for (Dataset d: fetchDatasets()) {
                 DatasetDescription dataset = new DatasetDescription();
                 LOGGER.info("Dataset {}", d);
-                dataset.setCode(d.dataset().code());
+                dataset.setCode(d.id().code());
                 dataset.setLabel(d.label());
                 dataset.setDescription(d.description());
                 dataset.setAnonymisationLevel(d.anonymisationLevel().toString());

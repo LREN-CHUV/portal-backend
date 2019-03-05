@@ -2,9 +2,10 @@ package ch.chuv.lren.mip.portal
 
 import eu.hbp.mip.model.Variable
 import ch.chuv.lren.woken.messages.datasets.DatasetId
+import ch.chuv.lren.woken.messages.query.QueryResult
 import ch.chuv.lren.woken.messages.query.filters.FilterRule
 import ch.chuv.lren.woken.messages.query.filters.FilterRule._
-import ch.chuv.lren.woken.messages.query.filters.queryFiltersProtocol._
+import ch.chuv.lren.woken.messages.query.queryProtocol._
 import org.springframework.stereotype.Component
 import spray.json._
 
@@ -24,4 +25,6 @@ class WokenConversions {
 
   def toSqlWhere(filter: Option[FilterRule]): String = filter.fold("")(_.toSqlWhere)
 
+  def toJson(result: QueryResult): String =
+    result.toJson.compactPrint
 }

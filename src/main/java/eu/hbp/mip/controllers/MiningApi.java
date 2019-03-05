@@ -2,11 +2,9 @@ package eu.hbp.mip.controllers;
 
 import com.google.gson.Gson;
 import eu.hbp.mip.akka.WokenClientController;
-import eu.hbp.mip.configuration.SecurityConfiguration;
 import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
-import eu.hbp.mip.utils.HTTPUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scala.Option;
 
-import java.io.IOException;
 import java.sql.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -61,7 +58,7 @@ public class MiningApi extends WokenClientController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"" + result.error().get() + "\"}");
                 } else {
                     Mining mining = new Mining(
-                        unwrap(result.jobId()),
+                        result.jobId(),
                         result.node(),
                         unwrap(result.algorithm()),
                         result.type().mime(),
