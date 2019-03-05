@@ -55,7 +55,7 @@ public class SecurityApi {
         }
 
         if (!securityConfiguration.isAuthentication()) {
-            if (!userInfo.isFakeAuth()) {
+            if (userInfo.isFakeAuth()) {
                 response.setStatus(401);
             }
             String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {" +
