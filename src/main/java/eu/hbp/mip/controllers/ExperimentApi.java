@@ -272,7 +272,8 @@ public class ExperimentApi extends WokenClientController {
                         experiment.setHasServerError(true);
                         LOGGER.error("Experiment failed with message: " + queryResult.error().get());
                     }
-                    experiment.setResult(new WokenConversions().toJson(queryResult));
+                    // TODO: use new WokenConversions().toJson(queryResult)
+                    experiment.setResult(queryResult.data().get().compactPrint());
                     experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
                     experimentRepository.save(experiment);
                     LOGGER.info("Experiment " + uuid + " updated (finished)");

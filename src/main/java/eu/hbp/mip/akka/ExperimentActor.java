@@ -47,6 +47,7 @@ public class ExperimentActor extends AbstractActor {
                 experiment.setHasServerError(true);
                 experiment.setResult(queryResult.error().get());
             } else {
+                // TODO: use new WokenConversions().toJson(queryResult)
                 experiment.setResult(queryResult.data().get().compactPrint());
             }
             experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
