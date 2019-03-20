@@ -1,6 +1,7 @@
 .idea*
 *.iml
 target/
+project/
 .DS_Store
 .m2
 *.jar
