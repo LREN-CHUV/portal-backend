@@ -309,7 +309,7 @@ public class Experiment {
             exp.remove("result");
 
             if (!isExaremeAlgorithm._1) {
-                JsonArray jsonResult = parser.parse(this.result).getAsJsonArray();
+                JsonElement jsonResult = parser.parse(this.result);
                 exp.add("result", jsonResult);
             } else {
                 JsonArray jsonArrayResult = new JsonArray();

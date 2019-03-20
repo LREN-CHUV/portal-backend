@@ -19,7 +19,13 @@ public class PortalErrorAttributes extends DefaultErrorAttributes {
         Map<String, Object> errorAttributes = super.getErrorAttributes(requestAttributes, includeStackTrace);
 
         Throwable throwable = getError(requestAttributes);
-        LOGGER.warn("Reporting server error", throwable);
+        StringBuilder sb = new StringBuilder("[");
+        for (String attr: requestAttributes.getAttributeNames(RequestAttributes.SCOPE_REQUEST)) {
+            Object v = requestAttributes.getAttribute(attr, RequestAttributes.SCOPE_REQUEST);
+            sb.append(attr).append(" = ").append(v).append('\n');
+        }
+        sb.append("]");
+        LOGGER.error("Reporting server error on request with attributes " + sb.toString(), throwable);
 
         if (throwable != null) {
 
