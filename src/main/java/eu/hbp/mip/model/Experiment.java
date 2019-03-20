@@ -275,6 +275,14 @@ public class Experiment {
         datasetsEl.setValue(datasets.toString());
         queryElements.add(datasetsEl);
 
+        // filter
+        String filter = model.getQuery().getFilters();
+        ExaremeQueryElement filterEl = new ExaremeQueryElement();
+        filterEl.setName("filter");
+        filterEl.setDesc("");
+        filterEl.setValue(filter);
+        queryElements.add(filterEl);
+
         return gson.toJson(queryElements);
     }
 
