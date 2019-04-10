@@ -6,6 +6,7 @@ import akka.actor.ExtendedActorSystem;
 import akka.cluster.Cluster;
 import akka.cluster.Member;
 import akka.cluster.pubsub.DistributedPubSub;
+import ch.chuv.lren.woken.utils.ConfigurationLoader;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -37,18 +38,9 @@ public class AkkaConfiguration {
     private final Config config;
 
     {
-        Config remotingConfig = ConfigFactory.parseResourcesAnySyntax("akka-remoting.conf").resolve();
-        String remotingImpl = remotingConfig.getString("remoting.implementation");
-        config = ConfigFactory
-                .parseString("akka {\n" +
-                        "  actor.provider = cluster\n" +
-                        "  extensions += \"akka.cluster.pubsub.DistributedPubSub\"\n" +
-                        "}")
-                .withFallback(ConfigFactory.parseResourcesAnySyntax("akka.conf"))
-                .withFallback(ConfigFactory.parseResourcesAnySyntax("akka-" + remotingImpl + "-remoting.conf"))
-                .withFallback(ConfigFactory.parseResourcesAnySyntax("kamon.conf"))
-                .withFallback(ConfigFactory.load())
-                .resolve();
+        Config appConfig = ConfigFactory.parseResourcesAnySyntax("akka.conf")
+                .withFallback(ConfigFactory.parseResourcesAnySyntax("kamon.conf"));
+        config = ConfigurationLoader.appendClusterConfiguration(appConfig).resolve();
     }
 
     @Bean
