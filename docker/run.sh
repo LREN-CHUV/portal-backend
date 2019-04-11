@@ -22,4 +22,6 @@ fi
 if [ ! -z "$HTTPS_PROXY_PORT" ]; then
   JAVA_OPTIONS="$JAVA_OPTIONS -Dhttps.proxyPort=$HTTPS_PROXY_PORT"
 fi
+JAVA_OPTIONS="$JAVA_OPTIONS -Daeron.term.buffer.length=100m"
+
 dockerize $OPTS java ${JAVA_OPTIONS} -jar /usr/share/jars/portal-backend.jar
