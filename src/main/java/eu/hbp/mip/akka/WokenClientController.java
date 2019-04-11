@@ -6,6 +6,7 @@ import akka.cluster.pubsub.DistributedPubSub;
 import akka.cluster.pubsub.DistributedPubSubMediator;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import ch.chuv.lren.woken.messages.RemoteMessage;
 import ch.chuv.lren.woken.messages.query.Query;
 import ch.chuv.lren.woken.messages.query.QueryResult;
 import org.slf4j.Logger;
@@ -36,18 +37,20 @@ public abstract class WokenClientController {
     private String wokenPath;
 
     @SuppressWarnings("unchecked")
-    protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {
-        LOGGER.info("Akka is trying to reach remote " + wokenPath);
+    protected <A extends RemoteMessage, B> B askWoken(A message, int waitInSeconds) throws Exception {
+        LOGGER.info("Trying to reach remote Akka actor " + wokenPath + "...");
 
         DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, message, false);
         Timeout timeout = new Timeout(Duration.create(waitInSeconds, "seconds"));
 
         Future<Object> future = Patterns.ask(wokenMediator(), queryMessage, timeout);
 
-        return (B) Await.result(future, timeout.duration());
+        B result = (B) Await.result(future, timeout.duration());
+        LOGGER.info("Akka actor returned a result for message of class " + message.getClass());
+        return result;
     }
 
-    protected <A, B> ResponseEntity requestWoken(A message, int waitInSeconds, Function<B, ResponseEntity> handleResponse) {
+    protected <A extends RemoteMessage, B> ResponseEntity requestWoken(A message, int waitInSeconds, Function<B, ResponseEntity> handleResponse) {
         try {
             B result = askWoken(message, waitInSeconds);
             return handleResponse.apply(result);

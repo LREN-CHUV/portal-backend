@@ -8,8 +8,6 @@ package eu.hbp.mip.controllers;
 import ch.chuv.lren.woken.messages.datasets.Dataset;
 import ch.chuv.lren.woken.messages.datasets.DatasetsQuery;
 import ch.chuv.lren.woken.messages.datasets.DatasetsResponse;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import eu.hbp.mip.akka.WokenClientController;
 import eu.hbp.mip.model.DatasetDescription;
 import io.swagger.annotations.*;
@@ -25,7 +23,6 @@ import scala.Option;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

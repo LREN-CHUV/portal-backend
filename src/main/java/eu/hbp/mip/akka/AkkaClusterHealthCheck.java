@@ -1,14 +1,16 @@
 package eu.hbp.mip.akka;
 
 import akka.cluster.Cluster;
+import ch.chuv.lren.woken.messages.Ping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
+import scala.Option;
 
 
 @Component
-public class AkkaClusterHealthCheck implements HealthIndicator {
+public class AkkaClusterHealthCheck extends WokenClientController implements HealthIndicator {
 
     @Autowired
     private Cluster wokenCluster;
@@ -20,7 +22,12 @@ public class AkkaClusterHealthCheck implements HealthIndicator {
         } else if (!wokenCluster.state().allRoles().contains("woken")) {
             return Health.down().withDetail("Error", "Woken server cannot be seen in the cluster").build();
         }
-        return Health.up().build();
+        try {
+            askWoken(new Ping(Option.apply("woken")), 5);
+            return Health.up().build();
+        } catch (Exception e) {
+            return Health.down().withDetail("Error", "Cannot reach Woken: " + e.toString()).build();
+        }
     }
 
 }

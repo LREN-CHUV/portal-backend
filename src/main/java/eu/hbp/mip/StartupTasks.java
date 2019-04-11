@@ -46,8 +46,10 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
         LOGGER.info("Prefill variable repository with datasets...");
         for (int i = 0; i < 5; i++) {
             try {
+                StringBuilder fetchedDatasets = new StringBuilder();
                 for (Dataset dataset : datasetsApi.fetchDatasets()) {
                     final String code = dataset.id().code();
+                    fetchedDatasets.append(code).append(' ');
                     Variable v = variableRepository.findOne(code);
                     if (v == null) {
                         LOGGER.info("Store additional variable {}", code);
@@ -55,7 +57,7 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
                         variableRepository.save(v);
                     }
                 }
-                LOGGER.info("Datasets fetched from Woken");
+                LOGGER.info("Datasets fetched from Woken: " + fetchedDatasets.toString());
                 variablesRepositoryOk = true;
                 break;
             } catch (Exception e) {
@@ -80,7 +82,7 @@ public class StartupTasks implements ApplicationListener<ApplicationReadyEvent> 
         }
         */
 
-        LOGGER.info("MIP Portal backend is ready!");
+        LOGGER.info("[OK] MIP Portal backend is ready!");
     }
 
 }
