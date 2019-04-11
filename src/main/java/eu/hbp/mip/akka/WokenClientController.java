@@ -2,6 +2,7 @@ package eu.hbp.mip.akka;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.cluster.pubsub.DistributedPubSub;
 import akka.cluster.pubsub.DistributedPubSubMediator;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
@@ -10,6 +11,7 @@ import ch.chuv.lren.woken.messages.query.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,6 @@ public abstract class WokenClientController {
     @Value("#{'${akka.woken.path:/user/entrypoint}'}")
     private String wokenPath;
 
-    @Autowired
-    private ActorRef wokenMediator;
-
     @SuppressWarnings("unchecked")
     protected <A, B> B askWoken(A message, int waitInSeconds) throws Exception {
         LOGGER.info("Akka is trying to reach remote " + wokenPath);
@@ -43,7 +42,7 @@ public abstract class WokenClientController {
         DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, message, false);
         Timeout timeout = new Timeout(Duration.create(waitInSeconds, "seconds"));
 
-        Future<Object> future = Patterns.ask(wokenMediator, queryMessage, timeout);
+        Future<Object> future = Patterns.ask(wokenMediator(), queryMessage, timeout);
 
         return (B) Await.result(future, timeout.duration());
     }
@@ -75,10 +74,14 @@ public abstract class WokenClientController {
 
         DistributedPubSubMediator.Send queryMessage = new DistributedPubSubMediator.Send(wokenPath, query, false);
 
-        return Patterns.ask(wokenMediator, queryMessage, waitInSeconds);
+        return Patterns.ask(wokenMediator(), queryMessage, waitInSeconds);
     }
 
     protected ExecutionContext getExecutor() {
         return actorSystem.dispatcher();
+    }
+
+    private ActorRef wokenMediator() {
+        return DistributedPubSub.get(actorSystem).mediator();
     }
 }

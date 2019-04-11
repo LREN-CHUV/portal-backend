@@ -53,6 +53,7 @@ public class AkkaConfiguration {
     }
 
     @Bean
+    @DependsOn("actorSystem")
     public Cluster wokenCluster() {
         Cluster cluster = Cluster.get(actorSystem());
         LOGGER.info("Connect to Woken cluster nodes at " + String.join(",", wokenPath()));
@@ -118,13 +119,6 @@ public class AkkaConfiguration {
     @Bean
     public List<String> wokenPath() {
         return config.getStringList("akka.cluster.seed-nodes");
-    }
-
-    @Bean
-    @Lazy
-    @DependsOn("wokenCluster")
-    public ActorRef wokenMediator() {
-        return DistributedPubSub.get(actorSystem()).mediator();
     }
 
 }
