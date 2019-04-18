@@ -61,7 +61,7 @@ frontend:
 
 logging:
   level:
-    root: INFO
+    root: {{ default .Env.LOG_LEVEL "INFO" }}
     org:
       springframework:
         web: {{ default .Env.LOGGING_LEVEL_WEB "WARN" }}

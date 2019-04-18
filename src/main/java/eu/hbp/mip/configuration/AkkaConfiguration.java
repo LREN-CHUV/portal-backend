@@ -38,7 +38,7 @@ public class AkkaConfiguration {
     private final Config config;
 
     {
-        Config appConfig = ConfigFactory.parseResourcesAnySyntax("akka.conf")
+        Config appConfig = ConfigFactory.parseResourcesAnySyntax("application.conf")
                 .withFallback(ConfigFactory.parseResourcesAnySyntax("kamon.conf"));
         config = ConfigurationLoader.appendClusterConfiguration(appConfig).resolve();
     }

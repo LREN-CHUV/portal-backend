@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OPTS="-template /config/application.tmpl:/config/application.yml"
+OPTS="-template /opt/portal/config/application.tmpl:/opt/portal/config/application.yml"
 if [ ! -z "$PORTAL_DB_SERVER" ]; then
   OPTS="$OPTS -wait tcp://$PORTAL_DB_SERVER -timeout 60s"
 fi
@@ -23,5 +23,9 @@ if [ ! -z "$HTTPS_PROXY_PORT" ]; then
   JAVA_OPTIONS="$JAVA_OPTIONS -Dhttps.proxyPort=$HTTPS_PROXY_PORT"
 fi
 JAVA_OPTIONS="$JAVA_OPTIONS -Daeron.term.buffer.length=100m"
+
+export SPRING_CONFIG_LOCATION=file:/opt/portal/config/application.yml
+
+cd /opt/portal
 
 dockerize $OPTS java ${JAVA_OPTIONS} -jar /usr/share/jars/portal-backend.jar

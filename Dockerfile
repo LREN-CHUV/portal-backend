@@ -17,8 +17,14 @@ FROM hbpmip/java-base:11.0.1-1
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
-COPY docker/config/application.tmpl /config/application.tmpl
-COPY docker/README.md docker/run.sh /
+COPY docker/config/application.tmpl /opt/portal/config/application.tmpl
+COPY docker/README.md docker/run.sh /opt/portal/
+
+RUN addgroup portal \
+    && adduser --system --disabled-password --uid 1000 --ingroup portal portal \
+    && chmod +x /opt/portal/run.sh \
+    && ln -s /opt/portal/run.sh /run.sh \
+    && chown -R portal:portal /opt/portal
 
 COPY --from=java-build-env /project/target/portal-backend.jar /usr/share/jars/
 
@@ -26,6 +32,7 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
+USER portal
 ENV APP_NAME="Portal backend" \
     APP_TYPE="Spring" \
     VERSION=$VERSION \
@@ -33,6 +40,7 @@ ENV APP_NAME="Portal backend" \
     CONTEXT_PATH="/services" \
     BUGSNAG_KEY="dff301aa15eb795a6d8b22b600586f77"
 
+WORKDIR /home/portal
 ENTRYPOINT ["/run.sh"]
 
 # 8080: Web service API, health checks on http://host:8080$CONTEXT_PATH/health
