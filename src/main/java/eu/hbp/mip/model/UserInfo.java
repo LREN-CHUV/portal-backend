@@ -52,6 +52,7 @@ public class UserInfo {
                 user = new User();
                 user.setUsername("anonymous");
                 user.setFullname("anonymous");
+                user.setEmail("anonymous@anonymous.com");
                 user.setPicture("images/users/default_user.png");
             } else {
                 user = new User(getUserInfos());
