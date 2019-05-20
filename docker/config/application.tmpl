@@ -89,3 +89,4 @@ endpoints:
 services:
   exareme:
     miningExaremeUrl: {{ default .Env.EXAREME_URL "http://localhost:9090" }}/mining/query
+    algorithmsUrl: {{ default .Env.EXAREME_URL "http://localhost:9090" }}/mining/algorithms.json
