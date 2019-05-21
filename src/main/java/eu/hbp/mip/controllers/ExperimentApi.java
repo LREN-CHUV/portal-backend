@@ -76,11 +76,12 @@ public class ExperimentApi extends WokenClientController {
         experiment.setName(expQuery.getName());
         experiment.setCreatedBy(user);
         experiment.setModel(modelRepository.findOne(expQuery.getModel()));
+        experiment.setSource(expQuery.getSource());
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment saved");
 
-        if (!experiment.isExaremeAlgorithm()._1) {
+        if (experiment.getSource() != "exareme") {
             sendExperiment(experiment);
         } else {
             String algoCode = expQuery.getAlgorithms().get(0).getCode();
@@ -286,7 +287,7 @@ public class ExperimentApi extends WokenClientController {
         // >> Temporary: we should integrate exareme in a proper way in the future
         // this runs in the background. For future optimization: use a thread pool
         new Thread(() -> {
-            String query = experiment.computeExaremeQuery(params);
+            String query = ""; //experiment.computeExaremeQuery(params);
             String url = miningExaremeQueryUrl + "/" + algoCode;
 
             // Results are stored in the experiment object
