@@ -11,6 +11,15 @@ public class AlgorithmParam {
 
     public String getCode() {
         return code;
+
+    }
+
+    public void setName(String name) {
+        this.code = name;
+    }
+
+    public String getName() {
+        return this.code;
     }
 
     public void setCode(String code) {

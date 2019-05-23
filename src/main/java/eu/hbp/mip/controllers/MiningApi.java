@@ -38,9 +38,6 @@ public class MiningApi extends WokenClientController {
     @Autowired
     private UserInfo userInfo;
 
-    @Value("#{'${services.query.miningExaremeUrl:http://localhost:9090/mining/query}'}")
-    public String queryUrl;
-
     @ApiOperation(value = "Run an algorithm", response = String.class)
     @Cacheable(value = "mining",
             condition = "#query != null and (#query.getAlgorithm().getCode() == 'histograms' or #query.getAlgorithm().getCode() == 'histograms')",

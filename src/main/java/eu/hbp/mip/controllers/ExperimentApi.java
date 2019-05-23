@@ -25,18 +25,14 @@ import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
+import java.util.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Created by habfast on 21/04/16.
  */
 @RestController
-@RequestMapping(value = "/experiments", produces = {APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/experiments", produces = { APPLICATION_JSON_VALUE })
 @Api(value = "/experiments", description = "the experiments API")
 public class ExperimentApi extends WokenClientController {
 
@@ -44,11 +40,8 @@ public class ExperimentApi extends WokenClientController {
 
     private static final Gson gson = new Gson();
 
-    private static final Gson gsonOnlyExposed = new GsonBuilder()
-            .serializeNulls()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
+    private static final Gson gsonOnlyExposed = new GsonBuilder().serializeNulls()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").excludeFieldsWithoutExposeAnnotation().create();
 
     @Value("#{'${services.exareme.miningExaremeUrl:http://localhost:9090/mining/query}'}")
     public String miningExaremeQueryUrl;
@@ -79,21 +72,38 @@ public class ExperimentApi extends WokenClientController {
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment saved");
+        sendExperiment(experiment);
 
-        if (!experiment.isExaremeAlgorithm()._1) {
-            sendExperiment(experiment);
-        } else {
-            String algoCode = expQuery.getAlgorithms().get(0).getCode();
-            List<AlgorithmParam> params =  expQuery.getAlgorithms().get(0).getParameters();
-            sendExaremeExperiment(experiment, algoCode, params);
-        }
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Create an experiment on Exareme", response = Experiment.class)
+    @RequestMapping(value = "/exareme", method = RequestMethod.POST)
+    public ResponseEntity<String> runExaremeExperiment(@RequestBody ExperimentQuery expQuery) {
+        LOGGER.info("sendExaremeExperiment");
+
+        Experiment experiment = new Experiment();
+        experiment.setUuid(UUID.randomUUID());
+        User user = userInfo.getUser();
+
+        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
+        experiment.setValidations(gson.toJson(expQuery.getValidations()));
+        experiment.setName(expQuery.getName());
+        experiment.setCreatedBy(user);
+        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
+        experimentRepository.save(experiment);
+
+        String algoCode = expQuery.getAlgorithms().get(0).getCode();
+        List<AlgorithmParam> params = expQuery.getAlgorithms().get(0).getParameters();
+        sendExaremeExperiment(experiment, algoCode, params);
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "get an experiment", response = Experiment.class)
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getExperiment(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+    public ResponseEntity<String> getExperiment(
+            @ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Get an experiment");
 
         Experiment experiment;
@@ -117,7 +127,8 @@ public class ExperimentApi extends WokenClientController {
 
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
     @RequestMapping(value = "/{uuid}/markAsViewed", method = RequestMethod.GET)
-    public ResponseEntity<String> markExperimentAsViewed(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+    public ResponseEntity<String> markExperimentAsViewed(
+            @ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as viewed");
 
         Experiment experiment;
@@ -144,7 +155,8 @@ public class ExperimentApi extends WokenClientController {
 
     @ApiOperation(value = "Mark an experiment as shared", response = Experiment.class)
     @RequestMapping(value = "/{uuid}/markAsShared", method = RequestMethod.GET)
-    public ResponseEntity<String> markExperimentAsShared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+    public ResponseEntity<String> markExperimentAsShared(
+            @ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as shared");
 
         return doMarkExperimentAsShared(uuid, true);
@@ -152,72 +164,62 @@ public class ExperimentApi extends WokenClientController {
 
     @ApiOperation(value = "Mark an experiment as unshared", response = Experiment.class)
     @RequestMapping(value = "/{uuid}/markAsUnshared", method = RequestMethod.GET)
-    public ResponseEntity<String> markExperimentAsUnshared(@ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
+    public ResponseEntity<String> markExperimentAsUnshared(
+            @ApiParam(value = "uuid", required = true) @PathVariable("uuid") String uuid) {
         LOGGER.info("Mark an experiment as unshared");
 
         return doMarkExperimentAsShared(uuid, false);
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @RequestMapping(method = RequestMethod.GET, params = {"maxResultCount"})
+    @RequestMapping(method = RequestMethod.GET, params = { "maxResultCount" })
     public ResponseEntity<String> listExperiments(
-            @ApiParam(value = "maxResultCount") @RequestParam int maxResultCount
-    ) {
+            @ApiParam(value = "maxResultCount") @RequestParam int maxResultCount) {
         LOGGER.info("List experiments");
 
         return doListExperiments(false, null);
     }
 
     @ApiOperation(value = "list experiments", response = Experiment.class, responseContainer = "List")
-    @RequestMapping(method = RequestMethod.GET, params = {"slug", "maxResultCount"})
-    public ResponseEntity<String> listExperiments(
-            @ApiParam(value = "slug") @RequestParam("slug") String modelSlug,
-            @ApiParam(value = "maxResultCount") @RequestParam("maxResultCount") int maxResultCount
-    ) {
+    @RequestMapping(method = RequestMethod.GET, params = { "slug", "maxResultCount" })
+    public ResponseEntity<String> listExperiments(@ApiParam(value = "slug") @RequestParam("slug") String modelSlug,
+            @ApiParam(value = "maxResultCount") @RequestParam("maxResultCount") int maxResultCount) {
         LOGGER.info("List experiments");
 
         if (maxResultCount <= 0 && (modelSlug == null || "".equals(modelSlug))) {
-            return new ResponseEntity<>("You must provide at least a slug or a limit of result", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("You must provide at least a slug or a limit of result",
+                    HttpStatus.BAD_REQUEST);
         }
 
         return doListExperiments(false, modelSlug);
     }
 
     @ApiOperation(value = "list my experiments", response = Experiment.class, responseContainer = "List")
-    @RequestMapping(method = RequestMethod.GET, params = {"mine"})
-    public ResponseEntity<String> listMyExperiments(
-            @ApiParam(value = "mine") @RequestParam("mine") boolean mine
-    ) {
+    @RequestMapping(method = RequestMethod.GET, params = { "mine" })
+    public ResponseEntity<String> listMyExperiments(@ApiParam(value = "mine") @RequestParam("mine") boolean mine) {
         LOGGER.info("List my experiments");
 
         return doListExperiments(true, null);
     }
 
-
-    private ResponseEntity<String> doListExperiments(
-            boolean mine,
-            String modelSlug
-    ) {
+    private ResponseEntity<String> doListExperiments(boolean mine, String modelSlug) {
         User user = userInfo.getUser();
 
         Iterable<Experiment> myExperiments = experimentRepository.findByCreatedBy(user);
         List<Experiment> expList = Lists.newLinkedList(myExperiments);
-        if(!mine)
-        {
+        if (!mine) {
             Iterable<Experiment> sharedExperiments = experimentRepository.findByShared(true);
             List<Experiment> sharedExpList = Lists.newLinkedList(sharedExperiments);
             expList.addAll(sharedExpList);
         }
 
         if (modelSlug != null && !"".equals(modelSlug)) {
-            for(Iterator<Experiment> it = expList.iterator(); it.hasNext();)
-            {
+            for (Iterator<Experiment> it = expList.iterator(); it.hasNext();) {
                 Experiment e = it.next();
                 e.setResult(null);
                 e.setAlgorithms(null);
                 e.setValidations(null);
-                if(!e.getModel().getSlug().equals(modelSlug))
-                {
+                if (!e.getModel().getSlug().equals(modelSlug)) {
                     it.remove();
                 }
             }
@@ -255,10 +257,11 @@ public class ExperimentApi extends WokenClientController {
         User user = userInfo.getUser();
 
         // this runs in the background. For future optimization: use a thread pool
-        final ch.chuv.lren.woken.messages.query.ExperimentQuery experimentQuery = experiment.prepareQuery(user.getUsername());
+        final ch.chuv.lren.woken.messages.query.ExperimentQuery experimentQuery = experiment
+                .prepareQuery(user.getUsername());
         final ExecutionContext ec = getExecutor();
 
-        Future<Object> response = sendWokenQuery(experimentQuery, 24*3600);
+        Future<Object> response = sendWokenQuery(experimentQuery, 24 * 3600);
         response.onSuccess(new OnSuccess<Object>() {
             public void onSuccess(Object result) {
                 QueryResult queryResult = (QueryResult) result;
@@ -282,11 +285,27 @@ public class ExperimentApi extends WokenClientController {
         }, ec);
     }
 
-    private void sendExaremeExperiment(Experiment experiment, String algoCode, List <AlgorithmParam> params) {
-        // >> Temporary: we should integrate exareme in a proper way in the future
+    private void sendExaremeExperiment(Experiment experiment, String algoCode, List<AlgorithmParam> params) {
         // this runs in the background. For future optimization: use a thread pool
         new Thread(() -> {
-            String query = experiment.computeExaremeQuery(params);
+            List<HashMap<String, String>> queryList = new ArrayList<HashMap<String, String>>();
+
+            Query modelQuery = experiment.getModel().getQuery();
+            queryList.add(makeObject("x", Variable.stringFromVariables(modelQuery.getVariables(), ",")));
+
+            List<Variable> mergedCovariables = new ArrayList<Variable>(modelQuery.getCovariables());
+            queryList.add(makeObject("y", Variable.stringFromVariables(mergedCovariables, ",")));
+
+            List<Variable> mergedDatasets = new ArrayList<Variable>(modelQuery.getTrainingDatasets());
+            queryList.add(makeObject("dataset", Variable.stringFromVariables(mergedDatasets, ",")));
+
+            if (params != null) {
+                for (AlgorithmParam p : params) {
+                    queryList.add(makeObject(p.getName(), p.getValue()));
+                }
+            }
+
+            String query = gson.toJson(queryList);
             String url = miningExaremeQueryUrl + "/" + algoCode;
 
             // Results are stored in the experiment object
@@ -305,14 +324,21 @@ public class ExperimentApi extends WokenClientController {
             }
             finishExperiment(experiment);
         }).start();
-        // << Temporary
     }
 
-    private void finishExperiment(Experiment experiment)
-    {
+    private void finishExperiment(Experiment experiment) {
         experiment.setFinished(new Date());
         experimentRepository.save(experiment);
 
         LOGGER.info("Experiment updated (finished)");
     }
+
+    private HashMap<String, String> makeObject(String name, String value) {
+        HashMap<String, String> o =  new HashMap<String, String>();
+        o.put("name", name);
+        o.put("value", value);
+
+        return o;
+    }
+
 }

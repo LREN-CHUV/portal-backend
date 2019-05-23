@@ -26,7 +26,7 @@ public class MethodsApi extends WokenClientController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodsApi.class);
 
     private static final Gson gson = new Gson();
-d
+
     @Value("#{'${services.exareme.algorithmsUrl:http://localhost:9090/mining/algorithms.json}'}")
     private String exaremeAlgorithmsUrl;
 
