@@ -137,7 +137,6 @@ public class Experiment {
     public JsonObject jsonify() {
         JsonObject exp = gson.toJsonTree(this).getAsJsonObject();
         JsonParser parser = new JsonParser();
-        Boolean isExaremeAlgorithm = this.getSource() == "exareme";
 
         if (this.algorithms != null)
         {
@@ -156,33 +155,9 @@ public class Experiment {
         if (this.result != null && !this.hasServerError) {
             exp.remove("result");
 
-            if (!isExaremeAlgorithm) {
-                JsonElement jsonResult = parser.parse(this.result);
-                exp.add("result", jsonResult);
-            } else {
-                JsonArray jsonArrayResult = new JsonArray();
-                JsonObject jsonObjectResult = new JsonObject();
+            JsonElement jsonResult = parser.parse(this.result);
+            exp.add("result", jsonResult);
 
-                JsonObject algoObject = parser.parse(this.algorithms).getAsJsonArray().get(0).getAsJsonObject();
-                jsonObjectResult.add("algorithm", algoObject.get("name"));
-                jsonObjectResult.add("code", algoObject.get("code"));
-
-                exp.remove("result");
-                JsonObject tryJson;
-                try {
-                    tryJson = parser.parse(this.result).getAsJsonArray().get(0).getAsJsonObject();
-                } catch(JsonParseException e) {
-                    tryJson = new JsonObject();
-                    tryJson.add("result", new JsonPrimitive(this.result));
-                }
-
-                JsonObject jsonData = tryJson;
-                jsonObjectResult.add("data", jsonData);
-
-                jsonArrayResult.add(jsonObjectResult);
-
-                exp.add("result", jsonArrayResult);
-            }
         }
 
         return exp;
@@ -290,13 +265,5 @@ public class Experiment {
 
     public void setShared(boolean shared) {
         this.shared = shared;
-    }
-
-    public String getSource() {
-        return this.source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 }
