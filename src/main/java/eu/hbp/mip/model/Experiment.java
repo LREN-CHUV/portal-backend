@@ -82,10 +82,6 @@ public class Experiment {
     @Expose
     private boolean resultsViewed = false;
 
-    @Column(columnDefinition="TEXT")
-    @Expose
-    private String source;
-
     public Experiment() {
         /*
         *  Empty constructor is needed by Hibernate

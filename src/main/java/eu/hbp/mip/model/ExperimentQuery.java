@@ -9,7 +9,6 @@ public class ExperimentQuery {
 
     private String name;
     private String model;
-    private String source;
     private List<ExperimentValidator> validations;
     private List<Algorithm> algorithms;
 
@@ -27,14 +26,6 @@ public class ExperimentQuery {
 
     public void setModel(String model) {
         this.model = model;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 
     public List<ExperimentValidator> getValidations() {

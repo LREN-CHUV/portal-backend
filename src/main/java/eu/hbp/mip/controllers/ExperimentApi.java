@@ -60,18 +60,7 @@ public class ExperimentApi extends WokenClientController {
     public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("Run an experiment");
 
-        Experiment experiment = new Experiment();
-        experiment.setUuid(UUID.randomUUID());
-        User user = userInfo.getUser();
-
-        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
-        experiment.setValidations(gson.toJson(expQuery.getValidations()));
-        experiment.setName(expQuery.getName());
-        experiment.setCreatedBy(user);
-        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
-        experimentRepository.save(experiment);
-
-        LOGGER.info("Experiment saved");
+        Experiment experiment = saveExperiment(expQuery);
         sendExperiment(experiment);
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
@@ -82,16 +71,7 @@ public class ExperimentApi extends WokenClientController {
     public ResponseEntity<String> runExaremeExperiment(@RequestBody ExperimentQuery expQuery) {
         LOGGER.info("sendExaremeExperiment");
 
-        Experiment experiment = new Experiment();
-        experiment.setUuid(UUID.randomUUID());
-        User user = userInfo.getUser();
-
-        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
-        experiment.setValidations(gson.toJson(expQuery.getValidations()));
-        experiment.setName(expQuery.getName());
-        experiment.setCreatedBy(user);
-        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
-        experimentRepository.save(experiment);
+        Experiment experiment = saveExperiment(expQuery);
 
         String algoCode = expQuery.getAlgorithms().get(0).getCode();
         List<AlgorithmParam> params = expQuery.getAlgorithms().get(0).getParameters();
@@ -339,6 +319,25 @@ public class ExperimentApi extends WokenClientController {
         o.put("value", value);
 
         return o;
+    }
+
+    private Experiment saveExperiment(ExperimentQuery expQuery) {
+        LOGGER.info("sendExaremeExperiment");
+
+        Experiment experiment = new Experiment();
+        experiment.setUuid(UUID.randomUUID());
+        User user = userInfo.getUser();
+
+        experiment.setAlgorithms(gson.toJson(expQuery.getAlgorithms()));
+        experiment.setValidations(gson.toJson(expQuery.getValidations()));
+        experiment.setName(expQuery.getName());
+        experiment.setCreatedBy(user);
+        experiment.setModel(modelRepository.findOne(expQuery.getModel()));
+        experimentRepository.save(experiment);
+
+        LOGGER.info("Experiment saved");
+
+        return experiment;
     }
 
 }
