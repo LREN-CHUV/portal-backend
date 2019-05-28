@@ -270,15 +270,6 @@ public class ExperimentApi extends WokenClientController {
         new Thread(() -> {
             List<HashMap<String, String>> queryList = new ArrayList<HashMap<String, String>>();
 
-            Query modelQuery = experiment.getModel().getQuery();
-            queryList.add(makeObject("x", Variable.stringFromVariables(modelQuery.getVariables(), ",")));
-
-            List<Variable> mergedCovariables = new ArrayList<Variable>(modelQuery.getCovariables());
-            queryList.add(makeObject("y", Variable.stringFromVariables(mergedCovariables, ",")));
-
-            List<Variable> mergedDatasets = new ArrayList<Variable>(modelQuery.getTrainingDatasets());
-            queryList.add(makeObject("dataset", Variable.stringFromVariables(mergedDatasets, ",")));
-
             if (params != null) {
                 for (AlgorithmParam p : params) {
                     queryList.add(makeObject(p.getName(), p.getValue()));
