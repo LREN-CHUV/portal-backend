@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "`variable`")
@@ -42,6 +43,17 @@ public class Variable {
         this.code = code;
     }
 
-
+    public static String stringFromVariables(List<Variable> variables, String operator) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (Variable s : variables) {
+            i++;
+            sb.append(s.getCode());
+            if (i < variables.size()) {
+                sb.append(operator);
+            }
+        }
+        return sb.toString();
+    }
 
 }

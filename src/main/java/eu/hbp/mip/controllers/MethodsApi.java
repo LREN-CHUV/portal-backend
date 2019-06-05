@@ -12,14 +12,14 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import eu.hbp.mip.utils.HTTPUtil;
+import org.springframework.beans.factory.annotation.Value;
+import java.io.IOException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/methods", produces = {APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/methods", produces = { APPLICATION_JSON_VALUE })
 @Api(value = "/methods", description = "the methods API")
 public class MethodsApi extends WokenClientController {
 
@@ -27,7 +27,8 @@ public class MethodsApi extends WokenClientController {
 
     private static final Gson gson = new Gson();
 
-    private static final String EXAREME_ALGO_JSON_FILE="data/exareme_algorithms.json";
+    @Value("#{'${services.exareme.algorithmsUrl:http://localhost:9090/mining/algorithms.json}'}")
+    private String exaremeAlgorithmsUrl;
 
     @ApiOperation(value = "List available methods and validations", response = String.class)
     @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
@@ -37,19 +38,28 @@ public class MethodsApi extends WokenClientController {
 
         return requestWoken(MethodsQuery$.MODULE$, 10, r -> {
             MethodsResponse result = (MethodsResponse) r;
-
-            // >> Temporary : should return result.methods() in the future
             JsonObject catalog = new JsonParser().parse(result.methods().compactPrint()).getAsJsonObject();
-            InputStream is = MethodsApi.class.getClassLoader().getResourceAsStream(EXAREME_ALGO_JSON_FILE);
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            JsonElement element = new JsonParser().parse(br);
-            JsonArray exaremeAlgo = element.getAsJsonArray();
-            catalog.get("algorithms").getAsJsonArray().addAll(exaremeAlgo);
-            // << Temporary
 
             return ResponseEntity.ok(gson.toJson(catalog));
         });
+    }
+
+    @ApiOperation(value = "List Exareme algorithms and validations", response = String.class)
+    @Cacheable(value = "exareme", unless = "#result.getStatusCode().value()!=200")
+    @RequestMapping(value = "/exareme", method = RequestMethod.GET)
+    public ResponseEntity<Object> getExaremeAlgorithms() {
+        LOGGER.info("List Exareme algorithms and validations");
+
+        try {
+            StringBuilder response = new StringBuilder();
+            HTTPUtil.sendGet(exaremeAlgorithmsUrl, response);
+            JsonElement element = new JsonParser().parse(response.toString());
+
+            return ResponseEntity.ok(gson.toJson(element));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+
     }
 
 }
