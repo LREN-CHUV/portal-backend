@@ -33,10 +33,10 @@ public class JWTApi {
 
         LOGGER.info("Create a JSON Web Token");
 
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        String apiKey = "6v2oxpJMzU14U-dqVireln5AUKTtx5fBPSEgaBZiI983d98cfa6";
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiKey);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+        // SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        // String apiKey = "6v2oxpJMzU14U-dqVireln5AUKTtx5fBPSEgaBZiI983d98cfa6";
+        // byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiKey);
+        // Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
@@ -44,13 +44,16 @@ public class JWTApi {
         User user = userInfo.getUser();
 
         // Set the JWT Claims
-        JwtBuilder builder = Jwts.builder().setIssuedAt(now)
-                .setIssuer("mip.humanbrainproject.eu").setSubject(user.getEmail()).signWith(signatureAlgorithm, signingKey);
+        JwtBuilder builder = Jwts.builder().setIssuedAt(now).setIssuer("mip.humanbrainproject.eu")
+                .setSubject(user.getEmail()).signWith(SignatureAlgorithm.HS512,
+                        "hbpSecret");
 
-        long expMillis = nowMillis + 86400 * 24;
-        Date exp = new Date(expMillis);
-        builder.setExpiration(exp);
+        String token = builder.compact();
+        LOGGER.info(token);
+        // long expMillis = nowMillis + 86400 * 24;
+        // Date exp = new Date(expMillis);
+        // builder.setExpiration(exp);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(builder.compact());
+        return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
 }
