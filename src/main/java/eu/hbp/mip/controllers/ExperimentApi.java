@@ -69,13 +69,27 @@ public class ExperimentApi extends WokenClientController {
     @ApiOperation(value = "Create an experiment on Exareme", response = Experiment.class)
     @RequestMapping(value = "/exareme", method = RequestMethod.POST)
     public ResponseEntity<String> runExaremeExperiment(@RequestBody ExperimentQuery expQuery) {
-        LOGGER.info("sendExaremeExperiment");
+        LOGGER.info("send ExaremeExperiment");
 
         Experiment experiment = saveExperiment(expQuery);
 
         String algoCode = expQuery.getAlgorithms().get(0).getCode();
         List<AlgorithmParam> params = expQuery.getAlgorithms().get(0).getParameters();
         sendExaremeExperiment(experiment, algoCode, params);
+
+        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Create a workflow", response = Experiment.class)
+    @RequestMapping(value = "/workflow", method = RequestMethod.POST)
+    public ResponseEntity<String> runWorkflow(@RequestBody ExperimentQuery expQuery) {
+        LOGGER.info("send Workflow");
+
+        Experiment experiment = saveExperiment(expQuery);
+
+        String algoCode = expQuery.getAlgorithms().get(0).getCode();
+        List<AlgorithmParam> params = expQuery.getAlgorithms().get(0).getParameters();
+        sendWorkflow(experiment, algoCode, params);
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
     }
@@ -283,6 +297,37 @@ public class ExperimentApi extends WokenClientController {
             try {
                 StringBuilder results = new StringBuilder();
                 int code = HTTPUtil.sendPost(url, query, results);
+                experiment.setResult("[" + results.toString() + "]");
+                experiment.setHasError(code >= 400);
+                experiment.setHasServerError(code >= 500);
+            } catch (IOException e) {
+                LOGGER.trace("Invalid UUID", e);
+                LOGGER.warn("Exareme experiment failed to run properly !");
+                experiment.setHasError(true);
+                experiment.setHasServerError(true);
+                experiment.setResult(e.getMessage());
+            }
+            finishExperiment(experiment);
+        }).start();
+    }
+
+    private void sendWorkflow(Experiment experiment, String algoCode, List<AlgorithmParam> params) {
+        // this runs in the background. For future optimization: use a thread pool
+        new Thread(() -> {
+            HashMap<String, String> queryMap = new HashMap<String, String>();
+
+            if (params != null) {
+                for (AlgorithmParam p : params) {
+                    queryMap.put(p.getName(), p.getValue());
+                }
+            }
+
+            String query = gson.toJson(queryMap);
+            String url = "http://88.197.53.36:8080/Gateway_API-1.0.0-SNAPSHOT/api/runWorkflow/3f5830403180d620";
+            // Results are stored in the experiment object
+            try {
+                StringBuilder results = new StringBuilder();
+                int code = HTTPUtil.sendWorkflowHTTP(url, query, results);
                 experiment.setResult("[" + results.toString() + "]");
                 experiment.setHasError(code >= 400);
                 experiment.setHasServerError(code >= 500);
