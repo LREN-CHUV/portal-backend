@@ -30,6 +30,12 @@ public class MethodsApi extends WokenClientController {
     @Value("#{'${services.exareme.algorithmsUrl:http://localhost:9090/mining/algorithms.json}'}")
     private String exaremeAlgorithmsUrl;
 
+    @Value("#{'${services.workflows.workflowUrl}'}")
+    private String workflowUrl;
+
+    @Value("#{'${services.workflows.workflowAuthorization}'}")
+    private String workflowAuthorization;
+
     @ApiOperation(value = "List available methods and validations", response = String.class)
     @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(method = RequestMethod.GET)
@@ -53,6 +59,27 @@ public class MethodsApi extends WokenClientController {
         try {
             StringBuilder response = new StringBuilder();
             HTTPUtil.sendGet(exaremeAlgorithmsUrl, response);
+            JsonElement element = new JsonParser().parse(response.toString());
+
+            return ResponseEntity.ok(gson.toJson(element));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+
+    }
+
+    @ApiOperation(value = "List Galaxy workflows", response = String.class)
+    @RequestMapping(value = "/workflows", method = RequestMethod.GET)
+    public ResponseEntity<Object> getWorkflows() {
+        LOGGER.info("List Galaxy workflows");
+
+        try {
+            StringBuilder response = new StringBuilder();
+            HTTPUtil.sendAuthorizedHTTP(workflowUrl + "/getAllWorkflowWithDetails", "", response, "GET", workflowAuthorization);
+            LOGGER.info("************************************************* workflows");
+            LOGGER.info(workflowUrl + "/getAllWorkflowWithDetails");
+            LOGGER.info(workflowAuthorization);
+            LOGGER.info(response.toString());
             JsonElement element = new JsonParser().parse(response.toString());
 
             return ResponseEntity.ok(gson.toJson(element));
