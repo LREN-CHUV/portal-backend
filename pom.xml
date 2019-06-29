@@ -30,7 +30,7 @@
         <spring-data-commons.version>1.12.3.RELEASE</spring-data-commons.version>
         <angularjs.version>1.5.7</angularjs.version>
         <jquery.version>3.0.0</jquery.version>
-        <bootstrap.version>3.3.7</bootstrap.version>
+        <bootstrap.version>3.4.1</bootstrap.version>
         <h2.version>1.4.192</h2.version>
         <postgresql.version>42.2.1</postgresql.version>
         <springfox-swagger.version>2.5.0</springfox-swagger.version>
