@@ -66,11 +66,10 @@ public class MiningApi extends WokenClientController {
         });
     }
 
-    @ApiOperation(value = "Create an experiment on Exareme", response = String.class)
+    @ApiOperation(value = "Create an histogram on Exareme", response = String.class)
     @RequestMapping(value = "/exareme", method = RequestMethod.POST)
     public ResponseEntity runExaremeMining(@RequestBody List<HashMap<String, String>> queryList) {
         LOGGER.info("Run an histogram");
-        // Mining mining = new Mining();
 
         String query = gson.toJson(queryList);
         String url = miningExaremeQueryUrl + "/" + "HISTOGRAMS";
@@ -78,12 +77,6 @@ public class MiningApi extends WokenClientController {
         try {
             StringBuilder results = new StringBuilder();
             int code = HTTPUtil.sendPost(url, query, results);
-            if (code >= 500) {
-                return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            if (code >= 400) {
-                return new ResponseEntity<>("Bad request", HttpStatus.BAD_REQUEST);
-            }
 
             return ResponseEntity.ok(gson.toJson(results.toString()));
         } catch (IOException e) {
