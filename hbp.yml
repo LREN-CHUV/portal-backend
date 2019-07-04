@@ -58,9 +58,9 @@ testing:
     command: ./test.sh
 
 release_management:
-  current_version: 3.1.0
-  current_code_release: https://github.com/HBPMedical/portal-backend/archive/3.1.0.zip
-  current_binary_release: https://pypi.python.org/pypi/portal-backend/3.1.0
+  current_version: 4.0.0
+  current_code_release: https://github.com/HBPMedical/portal-backend/archive/4.0.0.zip
+  current_binary_release: https://pypi.python.org/pypi/portal-backend/4.0.0
   release_script: 'publish.sh'
 
 continuous_integration:
@@ -75,10 +75,10 @@ continuous_integration:
 distribution:
   docker_hub:
     name: hbpmip/portal-backend
-    current_tag: 3.1.0
+    current_tag: 4.0.0
     url: https://hub.docker.com/r/hbpmip/portal-backend/
     badge: https://img.shields.io/badge/docker-hbpmip%2Fportal--backend-008bb8.svg
-    command: docker pull hbpmip/portal-backend:3.1.0
+    command: docker pull hbpmip/portal-backend:4.0.0
 
 planning:
   github:
