@@ -132,6 +132,7 @@ public class ModelsApi {
         saveVariables(model.getQuery().getVariables());
         saveVariables(model.getQuery().getCovariables());
         saveVariables(model.getQuery().getGrouping());
+	saveVariables(model.getQuery().getTrainingDatasets());
 
         configRepository.save(model.getConfig());
         queryRepository.save(model.getQuery());
@@ -269,6 +270,11 @@ public class ModelsApi {
         Map<String, String> map = new HashMap<>(model.getConfig().getTitle());
         map.put("text", model.getTitle());
         model.getConfig().setTitle(map);
+
+        saveVariables(model.getQuery().getVariables());
+        saveVariables(model.getQuery().getCovariables());
+        saveVariables(model.getQuery().getGrouping());
+        saveVariables(model.getQuery().getTrainingDatasets());
 
         configRepository.save(model.getConfig());
         queryRepository.save(model.getQuery());
