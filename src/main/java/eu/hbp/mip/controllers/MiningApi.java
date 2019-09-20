@@ -82,7 +82,24 @@ public class MiningApi extends WokenClientController {
         } catch (IOException e) {
             return new ResponseEntity<>("Not found", HttpStatus.BAD_REQUEST);
         }
+    }
 
+    @ApiOperation(value = "Create an descriptive statistic on Exareme", response = String.class)
+    @RequestMapping(value = "/exareme-stats", method = RequestMethod.POST)
+    public ResponseEntity runExaremeDescriptiveStats(@RequestBody List<HashMap<String, String>> queryList) {
+        LOGGER.info("Run descriptive stats");
+
+        String query = gson.toJson(queryList);
+        String url = miningExaremeQueryUrl + "/" + "DESCRIPTIVE_STATS";
+
+        try {
+            StringBuilder results = new StringBuilder();
+            int code = HTTPUtil.sendPost(url, query, results);
+
+            return ResponseEntity.ok(gson.toJson(results.toString()));
+        } catch (IOException e) {
+            return new ResponseEntity<>("Not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private static String unwrap(Option<String> option) {
