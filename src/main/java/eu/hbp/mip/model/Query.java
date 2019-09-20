@@ -69,6 +69,9 @@ public class Query {
     @Column(columnDefinition = "text")
     private String filters = "";
 
+    @Column(columnDefinition = "text")
+    private String pathology = "";
+
 
     public Query() {
         /*
@@ -148,6 +151,14 @@ public class Query {
 
     public void setFilters(String filters) {
         this.filters = filters;
+    }
+
+    public String getPathology() {
+        return pathology;
+    }
+
+    public void setPathology(String pathology) {
+        this.pathology = pathology;
     }
 
 }
