@@ -3,7 +3,7 @@ package eu.hbp.mip.controllers;
 import eu.hbp.mip.utils.HTTPUtil;
 
 import com.google.gson.Gson;
-import eu.hbp.mip.akka.WokenClientController;
+
 import eu.hbp.mip.model.Mining;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/mining", produces = { APPLICATION_JSON_VALUE })
 @Api(value = "/mining", description = "the mining API")
-public class MiningApi extends WokenClientController {
+public class MiningApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MiningApi.class);
     private static final Gson gson = new Gson();
@@ -44,27 +44,6 @@ public class MiningApi extends WokenClientController {
 
     @Value("#{'${services.exareme.miningExaremeUrl:http://localhost:9090/mining/query}'}")
     public String miningExaremeQueryUrl;
-
-    @ApiOperation(value = "Run an algorithm", response = String.class)
-    @Cacheable(value = "mining", condition = "#query != null and (#query.getAlgorithm().getCode() == 'histograms' or #query.getAlgorithm().getCode() == 'histograms')", key = "#query.toString()", unless = "#result.getStatusCode().value()!=200")
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity runAlgorithm(@RequestBody eu.hbp.mip.model.MiningQuery query) {
-        LOGGER.info("Run an algorithm");
-        User user = userInfo.getUser();
-
-        return askWokenQuery(query.prepareQuery(user.getUsername()), 120, result -> {
-            if (result.error().nonEmpty()) {
-                LOGGER.error(result.error().get());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("{\"error\":\"" + result.error().get() + "\"}");
-            } else {
-                Mining mining = new Mining(result.jobId(), result.node(), unwrap(result.algorithm()),
-                        result.type().mime(), Date.from(result.timestamp().toInstant()),
-                        result.data().get().compactPrint());
-                return ResponseEntity.ok(gson.toJson(mining.jsonify()));
-            }
-        });
-    }
 
     @ApiOperation(value = "Create an histogram on Exareme", response = String.class)
     @RequestMapping(value = "/exareme", method = RequestMethod.POST)

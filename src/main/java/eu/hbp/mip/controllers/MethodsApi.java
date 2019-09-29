@@ -1,7 +1,7 @@
 package eu.hbp.mip.controllers;
 
 import com.google.gson.*;
-import eu.hbp.mip.akka.WokenClientController;
+
 import ch.chuv.lren.woken.messages.query.MethodsQuery$;
 import ch.chuv.lren.woken.messages.query.MethodsResponse;
 import io.swagger.annotations.Api;
@@ -21,7 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/methods", produces = { APPLICATION_JSON_VALUE })
 @Api(value = "/methods", description = "the methods API")
-public class MethodsApi extends WokenClientController {
+public class MethodsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodsApi.class);
 
@@ -35,20 +35,6 @@ public class MethodsApi extends WokenClientController {
 
     @Value("#{'${services.workflows.workflowAuthorization}'}")
     private String workflowAuthorization;
-
-    @ApiOperation(value = "List available methods and validations", response = String.class)
-    @Cacheable(value = "methods", unless = "#result.getStatusCode().value()!=200")
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity listAvailableMethodsAndValidations() {
-        LOGGER.info("List available methods and validations");
-
-        return requestWoken(MethodsQuery$.MODULE$, 10, r -> {
-            MethodsResponse result = (MethodsResponse) r;
-            JsonObject catalog = new JsonParser().parse(result.methods().compactPrint()).getAsJsonObject();
-
-            return ResponseEntity.ok(gson.toJson(catalog));
-        });
-    }
 
     @ApiOperation(value = "List Exareme algorithms and validations", response = String.class)
     @Cacheable(value = "exareme", unless = "#result.getStatusCode().value()!=200")
