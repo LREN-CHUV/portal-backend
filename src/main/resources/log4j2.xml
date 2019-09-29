@@ -10,7 +10,13 @@
     <Root level="${env:LOG_LEVEL:-INFO}">
       <AppenderRef ref="Console"/>
     </Root>
-    <Logger name="akka.actor.LocalActorRefProvider(akka://woken)" level="INFO">
+    <Logger name="akka.actor.LocalActorRefProvider(akka://
+    <Logger name="io.netty" level="${env:NETTY_LOG_LEVEL:-ERROR}">
+      <AppenderRef ref="Console"/>
+    </Logger>
+  </Loggers>
+</Configuration>
+woken)" level="INFO">
       <AppenderRef ref="Console"/>
     </Logger>
     <Logger name="akka.cluster" level="${env:AKKA_CLUSTER_LOG_LEVEL:-INFO}">
@@ -31,8 +37,3 @@
     <Logger name="akka.stream.impl" level="${env:AKKA_STREAM_LOG_LEVEL:-INFO}">
       <AppenderRef ref="Console"/>
     </Logger>
-    <Logger name="io.netty" level="${env:NETTY_LOG_LEVEL:-ERROR}">
-      <AppenderRef ref="Console"/>
-    </Logger>
-  </Loggers>
-</Configuration>

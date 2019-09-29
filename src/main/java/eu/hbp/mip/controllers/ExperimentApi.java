@@ -6,7 +6,7 @@ import com.google.gson.*;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import eu.hbp.mip.akka.WokenClientController;
+
 import eu.hbp.mip.model.*;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
@@ -35,7 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/experiments", produces = { APPLICATION_JSON_VALUE })
 @Api(value = "/experiments", description = "the experiments API")
-public class ExperimentApi extends WokenClientController {
+public class ExperimentApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentApi.class);
 
@@ -62,16 +62,7 @@ public class ExperimentApi extends WokenClientController {
     @Autowired
     private ExperimentRepository experimentRepository;
 
-    @ApiOperation(value = "Send a request to the workflow to run an experiment", response = Experiment.class)
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> runExperiment(@RequestBody ExperimentQuery expQuery) {
-        LOGGER.info("Run an experiment");
 
-        Experiment experiment = saveExperiment(expQuery);
-        sendExperiment(experiment);
-
-        return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
-    }
 
     @ApiOperation(value = "Create an experiment on Exareme", response = Experiment.class)
     @RequestMapping(value = "/exareme", method = RequestMethod.POST)
@@ -365,38 +356,6 @@ public class ExperimentApi extends WokenClientController {
         LOGGER.info("Experiment updated (marked as shared)");
 
         return new ResponseEntity<>(gsonOnlyExposed.toJson(experiment.jsonify()), HttpStatus.OK);
-    }
-
-    private void sendExperiment(final Experiment experiment) {
-        User user = userInfo.getUser();
-
-        // this runs in the background. For future optimization: use a thread pool
-        final ch.chuv.lren.woken.messages.query.ExperimentQuery experimentQuery = experiment
-                .prepareQuery(user.getUsername());
-        final ExecutionContext ec = getExecutor();
-
-        Future<Object> response = sendWokenQuery(experimentQuery, 24 * 3600);
-        response.onSuccess(new OnSuccess<Object>() {
-            public void onSuccess(Object result) {
-                QueryResult queryResult = (QueryResult) result;
-                UUID uuid = experiment.getUuid();
-                LOGGER.info("\n\nExperimentActor received response from woken for UUID: \n" + uuid.toString());
-                Experiment experiment = experimentRepository.findOne(uuid);
-                if (experiment == null) {
-                    LOGGER.error("Experiment with UUID=" + uuid + " not found in DB");
-                } else {
-                    if (queryResult.error().nonEmpty()) {
-                        experiment.setHasServerError(true);
-                        LOGGER.error("Experiment failed with message: " + queryResult.error().get());
-                    }
-                    // TODO: use new WokenConversions().toJson(queryResult)
-                    experiment.setResult(queryResult.data().get().compactPrint());
-                    experiment.setFinished(Date.from(queryResult.timestamp().toInstant()));
-                    experimentRepository.save(experiment);
-                    LOGGER.info("Experiment " + uuid + " updated (finished)");
-                }
-            }
-        }, ec);
     }
 
     private void finishExperiment(Experiment experiment) {

@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import eu.hbp.mip.akka.WokenClientController;
+
 import eu.hbp.mip.model.Algorithm;
 import eu.hbp.mip.model.MiningQuery;
 import eu.hbp.mip.model.Variable;
@@ -43,7 +43,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/variables", produces = {APPLICATION_JSON_VALUE})
 @Api(value = "/variables", description = "the variables API")
-public class VariablesApi extends WokenClientController {
+public class VariablesApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VariablesApi.class);
 
@@ -79,36 +79,7 @@ public class VariablesApi extends WokenClientController {
         return ResponseEntity.ok(variablesObjects);
     }
 
-    @ApiOperation(value = "Get variables available for a dataset", response = List.class, responseContainer = "List")
-    @Cacheable(value = "availableVariables",
-            unless = "#result.getStatusCode().value()!=200")
-    @RequestMapping(value = "/availableVariables", method = RequestMethod.GET)
-    public ResponseEntity getAvailableVariables(
-            @ApiParam(value = "List of datasets : ds1,ds2,...") @RequestParam(value = "datasets") String datasets)  {
-
-        LOGGER.info("Get available variables for datasets " + datasets);
-
-        List<Variable> dsAsVariables = Arrays.stream(datasets.split(",")).map(Variable::new).collect(Collectors.toList());
-        WokenConversions conv = new WokenConversions();
-
-        VariablesForDatasetsQuery query = new VariablesForDatasetsQuery(conv.toDatasets(dsAsVariables), true);
-
-        return requestWoken(query, 30, r -> {
-            VariablesForDatasetsResponse response = (VariablesForDatasetsResponse) r;
-
-            if (response.error().isDefined()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.error().get());
-            } else {
-                List<Variable> variables = new ArrayList<>();
-                for (VariableMetaData var: JavaConversions.setAsJavaSet(response.variables())) {
-                    variables.add(new Variable(var.code()));
-                }
-                return ResponseEntity.ok(variables);
-            }
-        });
-
-    }
-
+    
 
     @ApiOperation(value = "Get a variable", response = Object.class)
     @Cacheable("variable")
