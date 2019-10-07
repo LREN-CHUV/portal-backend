@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.JWT;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import eu.hbp.mip.utils.JWTUtil;
 
 @RestController
 @RequestMapping(value = "/jwt", produces = { TEXT_PLAIN_VALUE })
@@ -25,8 +24,8 @@ public class JWTApi {
     @Autowired
     private UserInfo userInfo;
 
-    @Value("#{'${services.workflows.JWTSecret}'}")
-    private String JWTSecret;
+    @Value("#{'${services.workflows.jwtSecret}'}")
+    private String jwtSecret;
 
     @ApiOperation(value = "Create a JSON Web Token", response = String.class)
     @RequestMapping(method = RequestMethod.POST)
@@ -35,12 +34,7 @@ public class JWTApi {
         LOGGER.info("Create a JSON Web Token");
 
         User user = userInfo.getUser();
-
-        Algorithm algorithm = Algorithm.HMAC512(JWTSecret);
-        String token = JWT.create().withIssuer("mip.humanbrainproject.eu").withSubject(user.getEmail()).sign(algorithm);
-
-        LOGGER.info(algorithm.toString());
-        LOGGER.info(token);
+        String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }

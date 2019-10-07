@@ -1,9 +1,6 @@
 package eu.hbp.mip.controllers;
 
 import com.google.gson.*;
-
-import ch.chuv.lren.woken.messages.query.MethodsQuery$;
-import ch.chuv.lren.woken.messages.query.MethodsResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -11,12 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import eu.hbp.mip.model.User;
+import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.utils.HTTPUtil;
 import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
-
+import eu.hbp.mip.utils.JWTUtil;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping(value = "/methods", produces = { APPLICATION_JSON_VALUE })
@@ -33,8 +32,11 @@ public class MethodsApi {
     @Value("#{'${services.workflows.workflowUrl}'}")
     private String workflowUrl;
 
-    @Value("#{'${services.workflows.workflowAuthorization}'}")
-    private String workflowAuthorization;
+    @Value("#{'${services.workflows.jwtSecret}'}")
+    private String jwtSecret;
+
+    @Autowired
+    private UserInfo userInfo;
 
     @ApiOperation(value = "List Exareme algorithms and validations", response = String.class)
     @Cacheable(value = "exareme", unless = "#result.getStatusCode().value()!=200")
@@ -60,12 +62,11 @@ public class MethodsApi {
         LOGGER.info("List Galaxy workflows");
 
         try {
+            User user = userInfo.getUser();
+            String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+
             StringBuilder response = new StringBuilder();
-            HTTPUtil.sendAuthorizedHTTP(workflowUrl + "/getAllWorkflowWithDetails", "", response, "GET", workflowAuthorization);
-            LOGGER.info("************************************************* workflows");
-            LOGGER.info(workflowUrl + "/getAllWorkflowWithDetails");
-            LOGGER.info(workflowAuthorization);
-            LOGGER.info(response.toString());
+            HTTPUtil.sendAuthorizedHTTP(workflowUrl + "/getAllWorkflowWithDetails", "", response, "GET", "Bearer " + token);
             JsonElement element = new JsonParser().parse(response.toString());
 
             return ResponseEntity.ok(gson.toJson(element));
