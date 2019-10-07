@@ -93,3 +93,4 @@ services:
   workflows:
     workflowUrl: {{ default .Env.WORKFLOW_URL "http://localhost:9090" }}
     workflowAuthorization: {{ default .Env.WORKFLOW_AUTHORIZATION "undefined" }}
+    JWTSecret: {{ default .Env.JWT_SECRET "secret" }}
