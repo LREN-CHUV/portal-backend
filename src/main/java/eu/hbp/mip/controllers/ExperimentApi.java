@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
+import eu.hbp.mip.utils.JWTUtil;
 
 import java.io.IOException;
 import java.util.*;
@@ -50,8 +51,8 @@ public class ExperimentApi {
     @Value("#{'${services.workflows.workflowUrl}'}")
     private String workflowUrl;
 
-    @Value("#{'${services.workflows.workflowAuthorization}'}")
-    private String workflowAuthorization;
+    @Value("#{'${services.workflows.jwtSecret}'}")
+    private String jwtSecret;
 
     @Autowired
     private UserInfo userInfo;
@@ -61,8 +62,6 @@ public class ExperimentApi {
 
     @Autowired
     private ExperimentRepository experimentRepository;
-
-
 
     @ApiOperation(value = "Create an experiment on Exareme", response = Experiment.class)
     @RequestMapping(value = "/exareme", method = RequestMethod.POST)
@@ -124,21 +123,18 @@ public class ExperimentApi {
             }
 
             String query = gson.toJson(queryMap);
-            LOGGER.info("****************************** query");
-            LOGGER.info(query);
             String url = workflowUrl + "/runWorkflow/" + algoCode;
             // Results are stored in the experiment object
             try {
                 StringBuilder results = new StringBuilder();
-                int code = HTTPUtil.sendAuthorizedHTTP(url, query, results, "POST", workflowAuthorization);
+                User user = userInfo.getUser();
+                String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+                int code = HTTPUtil.sendAuthorizedHTTP(url, query, results, "POST", "Bearer " + token);
                 experiment.setResult("[" + results.toString() + "]");
-                LOGGER.info("****************************** results");
-                LOGGER.info(results.toString());
                 experiment.setHasError(code >= 400);
                 experiment.setHasServerError(code >= 500);
             } catch (IOException e) {
                 LOGGER.trace("Invalid UUID", e);
-                LOGGER.warn("Workflow failed to run properly !");
                 experiment.setHasError(true);
                 experiment.setHasServerError(true);
                 experiment.setResult(e.getMessage());
@@ -182,8 +178,10 @@ public class ExperimentApi {
 
         String url = workflowUrl + "/getWorkflowStatus/" + historyId;
         try {
+            User user = userInfo.getUser();
+            String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
             StringBuilder response = new StringBuilder();
-            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", workflowAuthorization);
+            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", "Bearer " + token);
             JsonElement element = new JsonParser().parse(response.toString());
 
             return ResponseEntity.ok(gson.toJson(element));
@@ -202,7 +200,9 @@ public class ExperimentApi {
         String url = workflowUrl + "/getWorkflowResults/" + historyId;
         try {
             StringBuilder response = new StringBuilder();
-            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", workflowAuthorization);
+            User user = userInfo.getUser();
+            String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", "Bearer " + token);
             JsonElement element = new JsonParser().parse(response.toString());
 
             return ResponseEntity.ok(gson.toJson(element));
@@ -221,7 +221,9 @@ public class ExperimentApi {
         String url = workflowUrl + "/getWorkflowResultsBody/" + historyId + "/contents/" + resultId;
         try {
             StringBuilder response = new StringBuilder();
-            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", workflowAuthorization);
+            User user = userInfo.getUser();
+            String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", "Bearer " + token);
             JsonElement element = new JsonParser().parse(response.toString());
 
             return ResponseEntity.ok(gson.toJson(element));
