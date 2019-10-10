@@ -125,6 +125,8 @@ public class ExperimentApi {
             String query = gson.toJson(queryMap);
             String url = workflowUrl + "/runWorkflow/" + algoCode;
             // Results are stored in the experiment object
+
+            
             try {
                 StringBuilder results = new StringBuilder();
                 User user = userInfo.getUser();
@@ -376,7 +378,7 @@ public class ExperimentApi {
     }
 
     private Experiment saveExperiment(ExperimentQuery expQuery) {
-        LOGGER.info("sendExaremeExperiment");
+        LOGGER.info("saveExperiment");
 
         Experiment experiment = new Experiment();
         experiment.setUuid(UUID.randomUUID());
