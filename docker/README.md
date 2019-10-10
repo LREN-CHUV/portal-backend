@@ -57,7 +57,8 @@ To use this image, you need a running instance of PostgreSQL and to configure th
 * WOKEN_AKKA_PATH default value is "/user/entrypoint".
 
 * EXAREME_URL: URL to Exareme server, default value is "http://hbps2.chuv.ch:9090".
-
+* WORKFLOW_URL: URL to Workflow server
+* JWT_SECRET: "secret"
 
 ### EMBEDDED SERVER CONFIGURATION
 
