@@ -113,24 +113,25 @@ public class ExperimentApi {
 
         String algoCode = expQuery.getAlgorithms().get(0).getCode();
         List<AlgorithmParam> params = expQuery.getAlgorithms().get(0).getParameters();
-        new Thread(() -> {
-            HashMap<String, String> queryMap = new HashMap<String, String>();
 
-            if (params != null) {
-                for (AlgorithmParam p : params) {
-                    queryMap.put(p.getName(), p.getValue());
-                }
+        User user = userInfo.getUser();
+        String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+
+        HashMap<String, String> queryMap = new HashMap<String, String>();
+
+        if (params != null) {
+            for (AlgorithmParam p : params) {
+                queryMap.put(p.getName(), p.getValue());
             }
+        }
 
-            String query = gson.toJson(queryMap);
-            String url = workflowUrl + "/runWorkflow/" + algoCode;
-            // Results are stored in the experiment object
+        String query = gson.toJson(queryMap);
+        String url = workflowUrl + "/runWorkflow/" + algoCode;
+        // Results are stored in the experiment object
 
-            
+        new Thread(() -> {
             try {
                 StringBuilder results = new StringBuilder();
-                User user = userInfo.getUser();
-                String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
                 int code = HTTPUtil.sendAuthorizedHTTP(url, query, results, "POST", "Bearer " + token);
                 experiment.setResult("[" + results.toString() + "]");
                 experiment.setHasError(code >= 400);
