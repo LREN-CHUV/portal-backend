@@ -1,7 +1,6 @@
 package eu.hbp.mip.controllers;
 
 import akka.dispatch.OnSuccess;
-import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.gson.*;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;

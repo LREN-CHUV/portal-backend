@@ -1,6 +1,5 @@
 package eu.hbp.mip.model;
 
-import ch.chuv.lren.mip.portal.WokenConversions;
 import com.google.gson.Gson;
 import eu.hbp.mip.utils.TypesConvert;
 import ch.chuv.lren.woken.messages.datasets.DatasetId;
@@ -85,28 +84,6 @@ public class MiningQuery {
 
     public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
-    }
-
-    public ch.chuv.lren.woken.messages.query.MiningQuery prepareQuery(String user) {
-
-        ch.chuv.lren.woken.messages.query.AlgorithmSpec scalaAlgorithm = new ch.chuv.lren.woken.messages.query.AlgorithmSpec(
-                algorithm.getCode(), TypesConvert.algoParamsToScala(algorithm.getParameters()), Option.empty());
-
-        scala.collection.immutable.List<FeatureIdentifier> variablesSeq =
-                TypesConvert.variablesToIdentifiers(getVariables());
-        scala.collection.immutable.List<FeatureIdentifier> covariablesSeq =
-                TypesConvert.variablesToIdentifiers(getCovariables());
-        scala.collection.immutable.List<FeatureIdentifier> groupingSeq =
-                TypesConvert.variablesToIdentifiers(getGrouping());
-        UserId userId = new UserId(user);
-
-        WokenConversions conv = new WokenConversions();
-        scala.collection.immutable.SortedSet<DatasetId> datasets = conv.toDatasets(getDatasets());
-        String filtersJson = getFilters();
-        Option<FilterRule> filters = conv.toFilterRule(filtersJson);
-
-        return new ch.chuv.lren.woken.messages.query.MiningQuery(userId,
-                variablesSeq, covariablesSeq, true, groupingSeq, filters, Option.empty(), datasets, scalaAlgorithm, Option.empty());
     }
 
     @Override

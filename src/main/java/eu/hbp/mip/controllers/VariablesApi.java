@@ -5,7 +5,6 @@
 package eu.hbp.mip.controllers;
 
 
-import ch.chuv.lren.mip.portal.WokenConversions;
 import ch.chuv.lren.woken.messages.variables.VariableMetaData;
 import ch.chuv.lren.woken.messages.variables.VariablesForDatasetsQuery;
 import ch.chuv.lren.woken.messages.variables.VariablesForDatasetsResponse;
