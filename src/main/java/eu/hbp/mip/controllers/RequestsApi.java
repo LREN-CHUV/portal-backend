@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -122,12 +121,6 @@ public class RequestsApi {
         return prefix + memId;
     }
 
-    @Value("#{'${services.galaxy.galaxyUsername:admin}'}")
-    private boolean galaxyUsername;
-
-    @Value("#{'${services.galaxy.galaxyPassword:admin}'}")
-    private boolean galaxyPassword;
-
     /**
      * Get Galaxy Reverse Proxy basic access token.
      *
@@ -136,7 +129,10 @@ public class RequestsApi {
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity getGalaxyBasicAccessToken(){
-        String stringEncoded = Base64.getEncoder().encodeToString((galaxyUsername + ":" + galaxyPassword).getBytes());
+        String username = "admin";
+        String password = "admin";
+
+        String stringEncoded = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
         return ResponseEntity.ok(new StringDtoResponse(stringEncoded));
     }
 
