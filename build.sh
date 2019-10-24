@@ -35,10 +35,6 @@ docker build --build-arg BUILD_DATE=$(date -Iseconds) \
     --build-arg VERSION=$VERSION \
     --tag "$IMAGE:latest" \
     --tag "$IMAGE:$VERSION" \
-    --tag kkech/portal_backend:latest \
-    .
-
-docker push kkech/portal_backend:latest
 
 BUGSNAG_KEY=""
 eval $(grep -e "^\\s*BUGSNAG_KEY" Dockerfile | tr '\\' ' ')
