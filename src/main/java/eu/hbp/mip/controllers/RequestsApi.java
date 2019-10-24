@@ -10,18 +10,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Dataset;
 import eu.hbp.mip.model.Query;
+import eu.hbp.mip.model.StringDtoResponse;
 import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,6 +119,21 @@ public class RequestsApi {
         }
 
         return prefix + memId;
+    }
+
+    /**
+     * Get Galaxy Reverse Proxy basic access token.
+     *
+     * @return Return a @{@link ResponseEntity} with the token.
+     */
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity getGalaxyBasicAccessToken(){
+        String username = "admin";
+        String password = "admin";
+
+        String stringEncoded = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        return ResponseEntity.ok(new StringDtoResponse(stringEncoded));
     }
 
 }
