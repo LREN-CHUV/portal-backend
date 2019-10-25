@@ -123,10 +123,10 @@ public class RequestsApi {
     }
 
     @Value("#{'${services.galaxy.galaxyUsername:admin}'}")
-    private boolean galaxyUsername;
+    private String galaxyUsername;
 
     @Value("#{'${services.galaxy.galaxyPassword:admin}'}")
-    private boolean galaxyPassword;
+    private String galaxyPassword;
 
     /**
      * Get Galaxy Reverse Proxy basic access token.

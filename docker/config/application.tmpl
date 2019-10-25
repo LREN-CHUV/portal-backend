@@ -95,5 +95,6 @@ services:
     jwtSecret: {{ default .Env.JWT_SECRET "secret" }}
     workflowAuthorization: {{ default .Env.WORKFLOW_AUTHORIZATION "undefined" }}
   galaxy:
-    galaxyUsername:  {{ default .Env.GALAXY_USERNAME admin }}
-    galaxyPassword:  {{ default .Env.GALAXY_PASSWORD admin }}
+    galaxyUsername:  {{ default .Env.GALAXY_USERNAME "admin" }}
+    galaxyPassword:  {{ default .Env.GALAXY_PASSWORD "admin" }}
+
