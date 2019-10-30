@@ -1,15 +1,11 @@
 package eu.hbp.mip.configuration;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -32,18 +28,6 @@ public class PersistenceConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "metaDatasource")
-    @ConfigurationProperties(prefix="spring.metaDatasource")
-    public DataSource metaDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean
-    @Autowired
-    @Qualifier("metaJdbcTemplate")
-    public JdbcTemplate metaJdbcTemplate() {
-        return new JdbcTemplate(metaDataSource());
-    }
 
     @Bean(name = "entityManagerFactory")
     @DependsOn("flyway")

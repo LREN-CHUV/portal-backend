@@ -52,10 +52,6 @@ To use this image, you need a running instance of PostgreSQL and to configure th
 
 ### ENDPOINTS
 
-* WOKEN_PORT_8088_TCP_ADDR: default value is "woken".
-* WOKEN_PORT_8088_TCP_PORT default value is "8088".
-* WOKEN_AKKA_PATH default value is "/user/entrypoint".
-
 * EXAREME_URL: URL to Exareme server, default value is "http://hbps2.chuv.ch:9090".
 * WORKFLOW_URL: URL to Workflow server
 * JWT_SECRET: "secret"

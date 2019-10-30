@@ -2,21 +2,11 @@ package eu.hbp.mip.model;
 
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
-import com.google.gson.reflect.TypeToken;
-import ch.chuv.lren.woken.messages.datasets.DatasetId;
-import ch.chuv.lren.woken.messages.query.ExperimentQuery;
-import ch.chuv.lren.woken.messages.query.*;
-import eu.hbp.mip.utils.TypesConvert;
-import ch.chuv.lren.woken.messages.query.filters.FilterRule;
-import ch.chuv.lren.woken.messages.variables.FeatureIdentifier;
 import org.hibernate.annotations.Cascade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Option;
-import scala.collection.JavaConversions;
 
 import javax.persistence.*;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**

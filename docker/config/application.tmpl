@@ -8,12 +8,6 @@ spring:
     username: {{ default .Env.PORTAL_DB_USER "postgres" }}
     password: {{ .Env.PORTAL_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
-  metaDatasource:
-    url: {{ default .Env.META_DB_URL "jdbc:postgresql://172.22.0.1:5432/meta" }}
-    schema: {{ default .Env.META_DB_SCHEMA "public" }}
-    username: {{ default .Env.META_DB_USER "postgres" }}
-    password: {{ .Env.META_DB_PASSWORD }}
-    driver-class-name: org.postgresql.Driver
 
   data:
     jpa:

@@ -1,14 +1,6 @@
 package eu.hbp.mip.model;
 
 import com.google.gson.Gson;
-import eu.hbp.mip.utils.TypesConvert;
-import ch.chuv.lren.woken.messages.datasets.DatasetId;
-import ch.chuv.lren.woken.messages.query.ExecutionPlan;
-import ch.chuv.lren.woken.messages.query.UserId;
-import ch.chuv.lren.woken.messages.query.filters.FilterRule;
-import ch.chuv.lren.woken.messages.variables.FeatureIdentifier;
-import scala.Option;
-
 import java.util.LinkedList;
 import java.util.List;
 

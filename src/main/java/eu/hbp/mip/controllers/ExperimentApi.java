@@ -1,6 +1,5 @@
 package eu.hbp.mip.controllers;
 
-import akka.dispatch.OnSuccess;
 import com.google.gson.*;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -10,7 +9,6 @@ import eu.hbp.mip.model.*;
 import eu.hbp.mip.repositories.ExperimentRepository;
 import eu.hbp.mip.repositories.ModelRepository;
 import eu.hbp.mip.utils.HTTPUtil;
-import ch.chuv.lren.woken.messages.query.QueryResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,8 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import scala.concurrent.ExecutionContext;
-import scala.concurrent.Future;
 import eu.hbp.mip.utils.JWTUtil;
 
 import java.io.IOException;
