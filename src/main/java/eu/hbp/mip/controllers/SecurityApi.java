@@ -3,11 +3,11 @@ package eu.hbp.mip.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import eu.hbp.mip.configuration.SecurityConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
-import eu.hbp.mip.model.StringDtoResponse;
 import eu.hbp.mip.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -30,6 +30,8 @@ import java.util.Base64;
 public class SecurityApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityApi.class);
+
+    private static final Gson gson = new Gson();
 
     @Autowired
     private UserInfo userInfo;
@@ -90,17 +92,24 @@ public class SecurityApi {
     @Value("#{'${services.galaxy.galaxyPassword:password}'}")
     private String galaxyPassword;
 
+    @Value("#{'${services.galaxy.galaxyContext:nativeGalaxy}'}")
+    private String galaxyContext;
+
     /**
      * Get Galaxy Reverse Proxy basic access token.
      *
      * @return Return a @{@link ResponseEntity} with the token.
      */
 
-    @RequestMapping(path = "/galaxy/token", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "/galaxy", method = RequestMethod.GET, produces = "application/json")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity getGalaxyBasicAccessToken(){
+    public ResponseEntity getGalaxyConfiguration(){
         String stringEncoded = Base64.getEncoder().encodeToString((galaxyUsername + ":" + galaxyPassword).getBytes());
-        return ResponseEntity.ok(new StringDtoResponse(stringEncoded));
+        JsonObject object = new JsonObject();
+        object.addProperty("authorization", "Basic " + stringEncoded);
+        object.addProperty("context", galaxyContext);
+
+        return ResponseEntity.ok(gson.toJson(object));
     }
 
 }
