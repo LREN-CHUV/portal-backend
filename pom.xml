@@ -51,13 +51,6 @@
         <akka.version>2.5.22</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
         <protobuf-java.version>3.1.0</protobuf-java.version>
-
-        <scala.epoch.version>2.11</scala.epoch.version>
-        <scala.release.version>2.11.12</scala.release.version>
-
-        <scala.zinc.version>1.1.0</scala.zinc.version>
-        <scala.plugin.macro.version>2.1.1</scala.plugin.macro.version>
-
     </properties>
 
     <repositories>
@@ -303,8 +296,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
-                    <skipMain>true</skipMain>
+                    
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -346,60 +338,7 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar-maven-plugin.version}</version>
             </plugin>
-            <plugin>
-                <groupId>com.carrotgarden.maven</groupId>
-                <artifactId>scalor-maven-plugin_2.12</artifactId>
-                <version>1.0.3.20180115180433</version>
-                <configuration>
-                    <!-- Required bridge. -->
-                    <defineBridge>
-                        <dependency>
-                            <groupId>org.scala-sbt</groupId>
-                            <artifactId>compiler-bridge_${scala.epoch.version}</artifactId>
-                            <version>${scala.zinc.version}</version>
-                        </dependency>
-                    </defineBridge>
-
-                    <!-- Required compiler. -->
-                    <defineCompiler>
-                        <dependency>
-                            <groupId>org.scala-lang</groupId>
-                            <artifactId>scala-compiler</artifactId>
-                            <version>${scala.release.version}</version>
-                        </dependency>
-                    </defineCompiler>
-                    <definePluginList/>
-                </configuration>
-                <executions>
-                    <execution>
-
-                        <!-- Subset of available. -->
-                        <goals>
-
-                            <!-- Setup Eclipse plugin. -->
-                            <goal>eclipse-config</goal>
-
-                            <!-- Remove build state cache. -->
-                            <goal>clean-main</goal>
-                            <goal>clean-test</goal>
-
-                            <!-- Add compilation sources. -->
-                            <goal>register-main</goal>
-                            <goal>register-test</goal>
-
-                            <!-- Compile sources. -->
-                            <goal>compile-main</goal>
-                            <goal>compile-test</goal>
-
-                            <!-- Link runtime script. -->
-                            <!--goal>link-scala-js-main</goal>
-                            <goal>link-scala-js-test</goal-->
-
-                        </goals>
-
-                    </execution>
-                </executions>
-            </plugin>
+           
       </plugins>
     </build>
 
