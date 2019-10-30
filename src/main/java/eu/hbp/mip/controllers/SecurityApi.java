@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import eu.hbp.mip.configuration.SecurityConfiguration;
-import eu.hbp.mip.model.StringDtoResponse;
+import org.springframework.beans.factory.annotation.Value;
 import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
+import eu.hbp.mip.model.StringDtoResponse;
 import eu.hbp.mip.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -57,8 +58,8 @@ public class SecurityApi {
             if (userInfo.isFakeAuth()) {
                 response.setStatus(401);
             }
-            String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {" +
-                    "\"details\": {\"preferred_username\": \"anonymous\"}}}";
+            String principalJson = "{\"principal\": \"anonymous\", \"name\": \"anonymous\", \"userAuthentication\": {"
+                    + "\"details\": {\"preferred_username\": \"anonymous\"}}}";
             return new Gson().fromJson(principalJson, Object.class);
         }
 
@@ -66,7 +67,8 @@ public class SecurityApi {
     }
 
     @RequestMapping(path = "/user", method = RequestMethod.POST)
-    public ResponseEntity<Void> postUser(@ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA") Boolean agreeNDA) {
+    public ResponseEntity<Void> postUser(
+            @ApiParam(value = "Has the user agreed on the NDA") @RequestParam(value = "agreeNDA") Boolean agreeNDA) {
         User user = userInfo.getUser();
         if (user != null) {
             user.setAgreeNDA(agreeNDA);
@@ -80,6 +82,25 @@ public class SecurityApi {
     public void noLogin(HttpServletResponse httpServletResponse) throws IOException {
         userInfo.setFakeAuth(true);
         httpServletResponse.sendRedirect(securityConfiguration.getFrontendRedirectAfterLogin());
+    }
+
+    @Value("#{'${services.galaxy.galaxyUsername:admin}'}")
+    private String galaxyUsername;
+
+    @Value("#{'${services.galaxy.galaxyPassword:password}'}")
+    private String galaxyPassword;
+
+    /**
+     * Get Galaxy Reverse Proxy basic access token.
+     *
+     * @return Return a @{@link ResponseEntity} with the token.
+     */
+
+    @RequestMapping(path = "/galaxy/token", method = RequestMethod.GET, produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity getGalaxyBasicAccessToken(){
+        String stringEncoded = Base64.getEncoder().encodeToString((galaxyUsername + ":" + galaxyPassword).getBytes());
+        return ResponseEntity.ok(new StringDtoResponse(stringEncoded));
     }
 
 }
