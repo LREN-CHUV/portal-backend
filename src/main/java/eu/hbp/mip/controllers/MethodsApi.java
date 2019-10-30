@@ -39,7 +39,6 @@ public class MethodsApi {
     private UserInfo userInfo;
 
     @ApiOperation(value = "List Exareme algorithms and validations", response = String.class)
-    @Cacheable(value = "exareme", unless = "#result.getStatusCode().value()!=200")
     @RequestMapping(value = "/exareme", method = RequestMethod.GET)
     public ResponseEntity<Object> getExaremeAlgorithms() {
         LOGGER.info("List Exareme algorithms and validations");
