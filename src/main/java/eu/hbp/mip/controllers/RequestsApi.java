@@ -11,12 +11,9 @@ import com.google.gson.JsonObject;
 import eu.hbp.mip.model.Dataset;
 import eu.hbp.mip.model.Query;
 import eu.hbp.mip.model.StringDtoResponse;
-import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,11 +38,6 @@ public class RequestsApi {
     private static final Gson gson = new Gson();
 
     private static final Pattern variableExpression = Pattern.compile("\\w+");
-
-    @Autowired
-    @Qualifier("dataUtil")
-    private DataUtil dataUtil;
-
 
     @ApiOperation(value = "Post a request", response = Dataset.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success") })
@@ -79,7 +71,6 @@ public class RequestsApi {
         dataset.add("variable", gson.toJsonTree(variables));
         dataset.add("grouping", gson.toJsonTree(groupings));
         dataset.add("header", gson.toJsonTree(covariables));
-        dataset.add("data", dataUtil.getDataFromVariables(allVars, filters));
 
         return ResponseEntity.ok(gson.fromJson(dataset, Object.class));
     }

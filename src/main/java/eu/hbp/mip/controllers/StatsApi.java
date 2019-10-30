@@ -7,7 +7,6 @@ package eu.hbp.mip.controllers;
 import eu.hbp.mip.model.GeneralStats;
 import eu.hbp.mip.repositories.ArticleRepository;
 import eu.hbp.mip.repositories.UserRepository;
-import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -34,10 +33,6 @@ public class StatsApi {
     @Autowired
     private ArticleRepository articleRepository;
 
-    @Autowired
-    @Qualifier("dataUtil")
-    private DataUtil dataUtil;
-
 
     @ApiOperation(value = "Get general statistics", response = GeneralStats.class)
     @RequestMapping(method = RequestMethod.GET)
@@ -48,7 +43,6 @@ public class StatsApi {
 
         stats.setUsers(userRepository.count());
         stats.setArticles(articleRepository.count());
-        stats.setVariables(dataUtil.countVariables());
 
         return ResponseEntity.ok(stats);
     }

@@ -1,6 +1,5 @@
 package eu.hbp.mip.configuration;
 
-import eu.hbp.mip.utils.DataUtil;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,9 +25,6 @@ import javax.sql.DataSource;
 @EntityScan(basePackages = "eu.hbp.mip.model")
 public class PersistenceConfiguration {
 
-    @Value("#{'${spring.featuresDatasource.main-table:features}'}")
-    private String featuresMainTable;
-
     @Primary
     @Bean(name = "portalDatasource")
     @ConfigurationProperties(prefix="spring.portalDatasource")
@@ -42,24 +38,11 @@ public class PersistenceConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "featuresDatasource")
-    @ConfigurationProperties(prefix="spring.featuresDatasource")
-    public DataSource featuresDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
     @Bean
     @Autowired
     @Qualifier("metaJdbcTemplate")
     public JdbcTemplate metaJdbcTemplate() {
         return new JdbcTemplate(metaDataSource());
-    }
-
-    @Bean
-    @Autowired
-    @Qualifier("featuresJdbcTemplate")
-    public JdbcTemplate featuresJdbcTemplate() {
-        return new JdbcTemplate(featuresDataSource());
     }
 
     @Bean(name = "entityManagerFactory")
@@ -78,12 +61,6 @@ public class PersistenceConfiguration {
         flyway.setBaselineOnMigrate(true);
         flyway.setDataSource(portalDataSource());
         return flyway;
-    }
-
-    @Bean(name = "dataUtil")
-    @Scope("singleton")
-    public DataUtil dataUtil() {
-        return new DataUtil(featuresJdbcTemplate(), featuresMainTable);
     }
 
 }

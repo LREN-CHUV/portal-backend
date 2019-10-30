@@ -13,7 +13,6 @@ import eu.hbp.mip.model.User;
 import eu.hbp.mip.model.UserInfo;
 import eu.hbp.mip.model.Variable;
 import eu.hbp.mip.repositories.*;
-import eu.hbp.mip.utils.DataUtil;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +53,6 @@ public class ModelsApi {
     @Autowired
     private VariableRepository variableRepository;
 
-    @Autowired
-    @Qualifier("dataUtil")
-    private DataUtil dataUtil;
-
-
     @ApiOperation(value = "Get models", response = Model.class, responseContainer = "List")
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List> getModels(
@@ -95,7 +89,7 @@ public class ModelsApi {
         models = models != null ? models : new LinkedList<>();
         for (Model m : models) {
             m.setDataset(datasetRepository.findOne(m.getDataset().getCode()));
-            modelsList.add(getModelWithDataset(m));
+            modelsList.add(m);
         }
 
         return ResponseEntity.ok(modelsList);
@@ -224,7 +218,7 @@ public class ModelsApi {
         Collection<String> yAxisVarsColl = new LinkedHashSet<>(yAxisVars);
         model.getConfig().setyAxisVariables(new LinkedList<>(yAxisVarsColl));
 
-        return ResponseEntity.ok(getModelWithDataset(model));
+        return ResponseEntity.ok(model);
     }
 
 
@@ -283,26 +277,6 @@ public class ModelsApi {
         LOGGER.info("Model updated (also saved/updated model.config and model.query)");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    private Model getModelWithDataset(Model model)
-    {
-        List<String> allVars = new LinkedList<>();
-        allVars.addAll(model.getDataset().getVariable());
-        allVars.addAll(model.getDataset().getHeader());
-        allVars.addAll(model.getDataset().getGrouping());
-
-        // WokenConversions conv = new WokenConversions();
-        // String filtersJson = model.getQuery().getFilters();
-        // Option<FilterRule> filters = conv.toFilterRule(filtersJson);
-        // String filtersSQL = conv.toSqlWhere(filters);
-
-        // Gson gson = new Gson();
-        // JsonObject jsonModel = gson.fromJson(gson.toJson(model, Model.class), JsonObject.class);
-        // jsonModel.get("dataset").getAsJsonObject()
-        //         .add("data", dataUtil.getDataFromVariables(allVars, filtersSQL));
-
-        return model; //gson.fromJson(jsonModel, Model.class);
     }
 
 }

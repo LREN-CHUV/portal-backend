@@ -13,7 +13,6 @@ public class GeneralStats {
 
     private Long users = null;
     private Long articles = null;
-    private Long variables = null;
 
 
     public GeneralStats() {
@@ -38,14 +37,5 @@ public class GeneralStats {
 
     public void setArticles(Long articles) {
         this.articles = articles;
-    }
-
-
-    public Long getVariables() {
-        return variables;
-    }
-
-    public void setVariables(Long variables) {
-        this.variables = variables;
     }
 }

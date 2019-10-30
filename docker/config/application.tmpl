@@ -14,13 +14,7 @@ spring:
     username: {{ default .Env.META_DB_USER "postgres" }}
     password: {{ .Env.META_DB_PASSWORD }}
     driver-class-name: org.postgresql.Driver
-  featuresDatasource:
-      url: {{ default .Env.FEATURES_DB_URL "jdbc:postgresql://172.22.0.1:5433/features" }}
-      schema: {{ default .Env.FEATURES_DB_SCHEMA "public" }}
-      main-table: {{ default .Env.FEATURES_DB_MAIN_TABLE "features" }}
-      username: {{ default .Env.FEATURES_DB_USER "postgres" }}
-      password: {{ .Env.FEATURES_DB_PASSWORD }}
-      driver-class-name: org.postgresql.Driver
+
   data:
     jpa:
       repositories:
@@ -96,5 +90,5 @@ services:
     workflowAuthorization: {{ default .Env.WORKFLOW_AUTHORIZATION "undefined" }}
   galaxy:
     galaxyUsername:  {{ default .Env.GALAXY_USERNAME "admin" }}
-    galaxyPassword:  {{ default .Env.GALAXY_PASSWORD "admin" }}
+    galaxyPassword:  {{ default .Env.GALAXY_PASSWORD "password" }}
 
