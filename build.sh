@@ -35,10 +35,7 @@ docker build --build-arg BUILD_DATE=$(date -Iseconds) \
     --build-arg VERSION=$VERSION \
     --tag "$IMAGE:latest" \
     --tag "$IMAGE:$VERSION" \
-    --tag jerrypan44/portal-backend:latest \
     .
-
-docker push jerrypan44/portal-backend:latest
 
 BUGSNAG_KEY=""
 eval $(grep -e "^\\s*BUGSNAG_KEY" Dockerfile | tr '\\' ' ')
@@ -53,7 +50,7 @@ if [[ -n "$BUGSNAG_KEY" ]]; then
       \"builderName\": \"$USER\",
       \"sourceControl\": {
         \"provider\": \"github\",
-        \"repository\": \"https://github.com/LREN-CHUV/portal-backend\",
+        \"repository\": \"https://github.com/HBPMedical/portal-backend\",
         \"revision\": \"$VCS_REF\"
       },
       \"metadata\": {}
