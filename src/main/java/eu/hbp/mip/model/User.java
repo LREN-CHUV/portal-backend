@@ -83,9 +83,6 @@ public class User {
 
     private Boolean agreeNDA = null;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Vote> appsVotes = new HashSet<>();
-
 
     public User() {
         /*
@@ -330,20 +327,5 @@ public class User {
 
     public void setAgreeNDA(Boolean agreeNDA) {
         this.agreeNDA = agreeNDA;
-    }
-
-
-    public Set<Vote> getAppsVotes() {
-        return appsVotes;
-    }
-
-    public void setAppsVotes(Set<Vote> appsVotes) {
-        this.appsVotes = appsVotes;
-    }
-
-
-    public Set<App> getVotedApps() {
-
-        return appsVotes.stream().map(Vote::getApp).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
