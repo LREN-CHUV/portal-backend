@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import scala.Option;
 
-import java.sql.Date;
 import java.util.*;
 import java.io.IOException;
 
@@ -79,12 +77,5 @@ public class MiningApi {
         } catch (IOException e) {
             return new ResponseEntity<>("Not found", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private static String unwrap(Option<String> option) {
-        if (option.isDefined())
-            return option.get();
-        else
-            return "";
     }
 }
