@@ -106,7 +106,7 @@ public class SecurityApi {
     public ResponseEntity getGalaxyConfiguration(){
         String stringEncoded = Base64.getEncoder().encodeToString((galaxyUsername + ":" + galaxyPassword).getBytes());
         JsonObject object = new JsonObject();
-        object.addProperty("authorization", "Basic " + stringEncoded);
+        object.addProperty("authorization", stringEncoded);
         object.addProperty("context", galaxyContext);
 
         return ResponseEntity.ok(gson.toJson(object));
