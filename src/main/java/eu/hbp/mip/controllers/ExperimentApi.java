@@ -230,6 +230,27 @@ public class ExperimentApi {
         }
     }
 
+    @ApiOperation(value = "get workflow result details", response = String.class)
+    @RequestMapping(value = "/workflow/resultsdetails/{historyId}/content/{resultId}", method = RequestMethod.GET)
+    public ResponseEntity<String> getWorkflowResultsDetails(
+            @ApiParam(value = "historyId", required = true) @PathVariable("historyId") String historyId,
+            @ApiParam(value = "resultId", required = true) @PathVariable("resultId") String resultId) {
+        LOGGER.info("Get a workflow result content");
+
+        String url = workflowUrl + "/getWorkflowResultsDetails/" + historyId + "/contents/" + resultId;
+        try {
+            StringBuilder response = new StringBuilder();
+            User user = userInfo.getUser();
+            String token = JWTUtil.getJWT(jwtSecret, user.getEmail());
+            HTTPUtil.sendAuthorizedHTTP(url, "", response, "GET", "Bearer " + token);
+            JsonElement element = new JsonParser().parse(response.toString());
+
+            return ResponseEntity.ok(gson.toJson(element));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "Mark an experiment as viewed", response = Experiment.class)
     @RequestMapping(value = "/{uuid}/markAsViewed", method = RequestMethod.GET)
     public ResponseEntity<String> markExperimentAsViewed(
