@@ -36,7 +36,6 @@ docker build --build-arg BUILD_DATE=$(date -Iseconds) \
     --tag "$IMAGE:latest" \
     --tag "jerrypan44/portal-backend:latest" \
     .
-	
 docker push "jerrypan44/portal-backend:latest"
 
 BUGSNAG_KEY=""
