@@ -33,7 +33,7 @@
         <bootstrap.version>3.3.7</bootstrap.version>
         <h2.version>1.4.192</h2.version>
         <postgresql.version>42.2.1</postgresql.version>
-        <springfox-swagger.version>2.5.0</springfox-swagger.version>
+        <springfox-swagger.version>2.10.0</springfox-swagger.version>
         <gson.version>2.7</gson.version>
         <slugify.version>2.1.5</slugify.version>
         <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
@@ -45,13 +45,13 @@
         <hibernate-jpa-2.1-api.version>1.0.0.Final</hibernate-jpa-2.1-api.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
         <spring-data-jpa.version>1.10.11.RELEASE</spring-data-jpa.version>
-        <spring-boot-starter-actuator.version>1.4.7.RELEASE</spring-boot-starter-actuator.version>
+        <spring-boot-starter-actuator.version>2.0.0.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <woken-messages.version>3.0.14</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
         <akka.version>2.5.22</akka.version>
         <spring-context.version>4.3.4.RELEASE</spring-context.version>
-        <protobuf-java.version>3.1.0</protobuf-java.version>
+        <protobuf-java.version>3.16.1</protobuf-java.version>
 
         <scala.epoch.version>2.11</scala.epoch.version>
         <scala.release.version>2.11.12</scala.release.version>
