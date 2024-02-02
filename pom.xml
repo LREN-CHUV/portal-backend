@@ -45,7 +45,7 @@
         <hibernate-jpa-2.1-api.version>1.0.0.Final</hibernate-jpa-2.1-api.version>
         <hibernate.version>4.3.11.Final</hibernate.version>
         <spring-data-jpa.version>1.10.11.RELEASE</spring-data-jpa.version>
-        <spring-boot-starter-actuator.version>1.4.7.RELEASE</spring-boot-starter-actuator.version>
+        <spring-boot-starter-actuator.version>2.0.0.RELEASE</spring-boot-starter-actuator.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <woken-messages.version>3.0.14</woken-messages.version>
         <javax-inject.version>1</javax-inject.version>
